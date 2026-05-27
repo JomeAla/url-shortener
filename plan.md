@@ -86,6 +86,12 @@ GET /{shortCode}  ──►  UrlService.resolve(shortCode)  ──►  Cache (hi
 32. Paystack / Stripe payment integration for paid short links
 33. Team workspaces with role-based access
 
+#### Admin Payment Settings
+34. Admin dashboard payment configuration page
+35. Choose one provider at a time (Paystack or Stripe)
+36. Sandbox/test mode toggle (test keys vs live keys)
+37. Credentials stored encrypted in the database (AES-256 at rest)
+
 #### Integrations & Automation
 34. Webhooks for click events (POST to user's endpoint on every click)
 35. Slack / Discord bot integration

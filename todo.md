@@ -56,6 +56,11 @@
 - [ ] Paystack / Stripe payment integration for paid links
 - [ ] Team workspaces with role-based access
 
+### Admin Payment Settings
+- [ ] Dashboard payment configuration page (switch between Paystack & Stripe)
+- [ ] Sandbox / live mode toggle for testing payments
+- [ ] Encrypted credential storage in database (AES-256)
+
 ### Integrations & Automation
 - [ ] Webhooks for click events
 - [ ] Slack / Discord bot integration
