@@ -32,11 +32,49 @@
 - [x] Write README with setup, API docs, usage
 - [x] Commit and push to GitHub
 
-## Phase 5: Future Ideas
-- [ ] QR code generation per short URL
-- [ ] Admin dashboard with charts & analytics
-- [ ] Paystack/telco payment integration for paid short links
-- [ ] Redis / PostgreSQL for production deployment
-- [ ] Custom short codes
-- [ ] Link expiry and password protection
-- [ ] Docker Compose deployment
+## Phase 5: Competitive Feature Roadmap
+
+### Core Link Features
+- [ ] Custom short codes / branded slugs
+- [ ] Link editing (change destination after creation)
+- [ ] Link expiry with optional auto-delete
+- [ ] Password-protected links
+- [ ] Bulk CSV/JSON link creation
+- [ ] UTM builder & campaign tagging presets
+
+### Analytics & Insights
+- [ ] Click analytics dashboard (time-series charts)
+- [ ] Referrer breakdown (direct, social, search)
+- [ ] Device & browser breakdown
+- [ ] Geographic map of clicks (GeoIP)
+- [ ] Export analytics to CSV/PDF
+
+### User System & Monetization
+- [ ] User accounts (email + OAuth: Google, GitHub)
+- [ ] API key management per user
+- [ ] Tiered rate limits per API key
+- [ ] Paystack / Stripe payment integration for paid links
+- [ ] Team workspaces with role-based access
+
+### Integrations & Automation
+- [ ] Webhooks for click events
+- [ ] Slack / Discord bot integration
+- [ ] Social media preview customization (OG tags)
+- [ ] Browser extension (right-click → shorten)
+- [ ] Zapier / Make / n8n integration
+
+### Technical & Infrastructure
+- [ ] Custom domain support (CNAME)
+- [ ] Redis caching for production
+- [ ] PostgreSQL for production persistence
+- [ ] Docker Compose with PostgreSQL + Redis
+- [ ] Load balancing & horizontal scaling
+- [ ] Rate limiting tiers (free / pro / enterprise)
+
+### Link Management
+- [ ] Link health monitoring (uptime checks)
+- [ ] QR code generation per link (with download)
+- [ ] Link retargeting / pixels (Facebook, Google Ads)
+- [ ] Trash / soft-delete with restore
+- [ ] Tags & folders for organizing links
+- [ ] Search & filter (code, destination, date, tags)

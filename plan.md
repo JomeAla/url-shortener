@@ -62,10 +62,49 @@ GET /{shortCode}  ──►  UrlService.resolve(shortCode)  ──►  Cache (hi
 16. CORS configuration
 17. README with setup and API docs
 
-### Phase 5: Future Enhancements
-18. QR code generation per short URL
-19. Admin dashboard with charts
-20. Paystack payment integration for paid short links
-21. Redis for caching (optional production add-on)
-22. Custom short codes
-23. Link expiry and password protection
+### Phase 5: Competitive Feature Roadmap
+
+#### Core Link Features
+18. Custom short codes / branded slugs (user-picked aliases)
+19. Link editing (change destination after creation, keep short code)
+20. Link expiry with optional auto-delete
+21. Password-protected links
+22. Bulk CSV/JSON link creation
+23. UTM builder & campaign tagging presets
+
+#### Analytics & Insights
+24. Click analytics dashboard: time-series charts (hourly/daily/monthly)
+25. Referrer breakdown (direct, social, search, etc.)
+26. Device & browser breakdown
+27. Geographic map of clicks (country/city level via GeoIP)
+28. Export analytics to CSV/PDF
+
+#### User System & Monetization
+29. User accounts with registration (email + OAuth: Google, GitHub)
+30. API key management for programmatic access (create per-user keys)
+31. Tiered rate limits per API key
+32. Paystack / Stripe payment integration for paid short links
+33. Team workspaces with role-based access
+
+#### Integrations & Automation
+34. Webhooks for click events (POST to user's endpoint on every click)
+35. Slack / Discord bot integration
+36. Social media preview customization (custom OG tags per short link)
+37. Browser extension (right-click → shorten current URL)
+38. Zapier / Make.com / n8n integration
+
+#### Technical & Infrastructure
+39. Custom domain support (CNAME your own domain)
+40. Redis caching for production (add back optionally)
+41. PostgreSQL for production persistence (add back optionally)
+42. Docker Compose with PostgreSQL + Redis for one-command deploy
+43. Load balancing & horizontal scaling readiness
+44. Rate limiting tiers (free: 100/h, pro: 10K/h, enterprise: unlimited)
+
+#### Link Management
+45. Link health monitoring (periodically check destination still alive)
+46. QR code generation per short link (with download)
+47. Link retargeting / pixels (Facebook, Google Ads)
+48. Trash / soft-delete with restore
+49. Tags & folders for organizing links
+50. Search & filter (by code, destination, date, tags)
