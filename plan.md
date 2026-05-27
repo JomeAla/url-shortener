@@ -1,7 +1,7 @@
-# High-Performance URL Shortener
+# URL Shortener
 
 ## Overview
-A URL shortening service built with Java 21 virtual threads for high concurrency, Redis for caching, and PostgreSQL for persistence. Includes click tracking analytics and rate limiting. Designed to handle 10K+ concurrent requests.
+A URL shortening service built with Java 21 virtual threads for high concurrency, H2 file-based persistence (with PostgreSQL option), and in-memory caching. Includes click tracking analytics, rate limiting, and a production web UI.
 
 ## Architecture
 
@@ -13,69 +13,59 @@ POST /api/shorten  ──►  Rate Limiter  ──►  UrlService.shorten(longUr
                                      (snowflake→base62)
                                               │
                                               ▼
-                                        PostgreSQL (save)
+                                           H2 (save)
                                               │
                                               ▼
-                                        Redis Cache (set)
+                                    In-Memory Cache (set)
 
-GET /{shortCode}  ──►  UrlService.resolve(shortCode)  ──►  Redis (cache hit → 302)
+GET /{shortCode}  ──►  UrlService.resolve(shortCode)  ──►  Cache (hit → 302)
                           │                                    │
                           ▼                                    ▼
-                    RedirectController                    PostgreSQL (miss → DB)
-                          │                              (async click increment)
+                    RedirectController                    H2 (miss)
+                          │                           (async click increment)
                           ▼
                      302 Redirect to longUrl
 ```
 
 ## Tech Stack
-- Java 21 (virtual threads, records, pattern matching)
-- Spring Boot 3.x + Spring Web
-- PostgreSQL (JPA/Hibernate)
-- Redis (Lettuce client, caching)
+- Java 21 (virtual threads, records)
+- Spring Boot 3.x + Spring Web, JPA, Validation, Actuator
+- H2 (file-based dev) / PostgreSQL (production)
+- In-memory cache (ConcurrentHashMap)
 - Maven
-- JMeter (load testing)
-
-## Target Skills Demonstrated
-- Modern Java 21 (virtual threads, records, sealed classes)
-- High-concurrency API design
-- Caching strategies (Redis, cache-aside pattern)
-- Rate limiting (token bucket algorithm)
-- REST API best practices
-- Performance awareness
+- Thymeleaf (web UI)
 
 ## Implementation Plan
 
-### DTOs
-- `ShortenRequest` — `{ "url": "..." }` with `@URL` validation
-- `ShortenResponse` — `{ "shortUrl": "...", "shortCode": "...", "longUrl": "..." }`
-- `StatsResponse` — `{ "shortCode": "...", "longUrl": "...", "clickCount": ..., "createdAt": ... }`
-
-## Config
-- `app.base-url` — service's own domain (e.g. `http://localhost:8080`)
-- `app.max-url-length` — maximum allowed URL length (default 2048)
-- Validation: reject blank/empty URLs, URLs exceeding max length, malformed URLs
-
-## Phase 1: Core Shortening
+### Phase 1: Core Shortening
 1. Initialize Spring Boot project (Java 21, virtual threads enabled)
-2. Create `Url` entity and repository (PostgreSQL, unique index on `shortCode`)
-3. Implement `IdGenerator` (snowflake-style ID → base62 encoding)
-4. Create DTO records: `ShortenRequest`, `ShortenResponse`, `StatsResponse`
-5. Create `UrlService` with `shorten()` + `resolve(String shortCode)` logic
+2. Create Url entity and repository (H2, unique index on shortCode)
+3. Implement IdGenerator (snowflake-style ID → base62 encoding)
+4. Create DTO records: ShortenRequest (with @URL), ShortenResponse, StatsResponse
+5. Create UrlService with shorten() + resolve()
 
 ### Phase 2: Caching & Performance
-5. Configure Redis (Lettuce client, connection pooling)
-6. Implement cache-aside pattern in UrlService
-7. Enable virtual threads (spring.threads.virtual.enabled=true)
-8. Add rate limiting with token bucket filter
+6. Implement in-memory CacheService with configurable TTL
+7. Enable virtual threads
 
 ### Phase 3: Analytics & Redirect
-9. Create ShortenController (POST /api/shorten)
-10. Create RedirectController (GET /{shortCode} → 302)
-11. Implement click tracking (async increment, no blocking)
-12. Add GET /api/stats/{shortCode} endpoint
+8. Create ShortenController (POST /api/shorten)
+9. Create RedirectController (GET /{shortCode} → 302)
+10. Implement click tracking (async increment via virtual threads)
+11. Add GET /api/stats/{shortCode} endpoint
+12. Add rate limiting with token bucket filter
 
-### Phase 4: Polish & Deploy
-13. Global exception handler + CORS configuration
-14. Load test with JMeter (10K concurrent requests)
-15. Validation and error handling
-16. README with performance benchmarks
+### Phase 4: Web UI & Polish
+13. Build Thymeleaf web UI
+14. Add GET /api/urls listing endpoint
+15. Global exception handler
+16. CORS configuration
+17. README with setup and API docs
+
+### Phase 5: Future Enhancements
+18. QR code generation per short URL
+19. Admin dashboard with charts
+20. Paystack payment integration for paid short links
+21. Redis for caching (optional production add-on)
+22. Custom short codes
+23. Link expiry and password protection

@@ -1,6 +1,6 @@
 # URL Shortener
 
-High-performance URL shortening service built with Java 21 virtual threads, Redis caching, PostgreSQL persistence, and token bucket rate limiting. Designed to handle 10K+ concurrent requests.
+High-performance URL shortening service with click tracking, rate limiting, and a production web UI. Built with Java 21 virtual threads.
 
 ## Architecture
 
@@ -12,15 +12,15 @@ POST /api/shorten  ──►  Rate Limiter  ──►  UrlService.shorten(longUr
                                      (snowflake→base62)
                                               │
                                               ▼
-                                        PostgreSQL (save)
+                                          H2/PostgreSQL (save)
                                               │
                                               ▼
-                                        Redis Cache (set)
+                                    In-Memory Cache (set)
 
-GET /{shortCode}  ──►  UrlService.resolve(shortCode)  ──►  Redis (cache hit → 302)
-                          │                                    │
-                          ▼                                    ▼
-                    RedirectController                    PostgreSQL (miss → DB)
+GET /{shortCode}  ──►  UrlService.resolve(shortCode)  ──►  Cache (hit → 302)
+                          │                                     │
+                          ▼                                     ▼
+                    RedirectController                    H2/PostgreSQL (miss)
                           │                              (async click increment)
                           ▼
                      302 Redirect to longUrl
@@ -29,31 +29,39 @@ GET /{shortCode}  ──►  UrlService.resolve(shortCode)  ──►  Redis (ca
 ## Tech Stack
 
 - **Java 21** with virtual threads
-- **Spring Boot 3.4** (Web, JPA, Data Redis, Validation, Actuator)
-- **PostgreSQL 17** (persistence, JPA/Hibernate)
-- **Redis 7** (caching, cache-aside pattern, 24h TTL)
+- **Spring Boot 3.4** (Web, JPA, Validation, Actuator)
+- **H2** (file-based, zero-install) / **PostgreSQL** (production)
+- **In-memory cache** (ConcurrentHashMap)
+- **Maven**
 
 ## Quick Start
-
-Requires PostgreSQL and Redis running locally (or adjust `application.yml`).
 
 ```bash
 # Build
 mvn clean package -DskipTests
 
-# Run
+# Run (no external dependencies needed)
 java -jar target/url-shortener-1.0.0.jar
 ```
 
-The service will be available at `http://localhost:8080`.
+Open **http://localhost:8081** in your browser.
+
+## Web UI
+
+The web UI at `/` provides:
+- Paste a URL and get a short link
+- One-click copy to clipboard
+- List of all shortened links with click counts
+- Real-time updates (polls every 15s)
 
 ## API Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
 | POST | `/api/shorten` | Shorten a URL |
+| GET | `/api/urls` | List all shortened URLs |
 | GET | `/{shortCode}` | Redirect to original URL |
-| GET | `/api/stats/{shortCode}` | Get click stats for a short URL |
+| GET | `/api/stats/{shortCode}` | Get click stats |
 | GET | `/actuator/health` | Health check |
 
 ## Example Usage
@@ -61,7 +69,7 @@ The service will be available at `http://localhost:8080`.
 ### Shorten a URL
 
 ```bash
-curl -X POST http://localhost:8080/api/shorten \
+curl -X POST http://localhost:8081/api/shorten \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com/very/long/url"}'
 ```
@@ -69,7 +77,7 @@ curl -X POST http://localhost:8080/api/shorten \
 Response:
 ```json
 {
-  "shortUrl": "http://localhost:8080/abc123",
+  "shortUrl": "http://localhost:8081/abc123",
   "shortCode": "abc123",
   "longUrl": "https://example.com/very/long/url"
 }
@@ -78,13 +86,13 @@ Response:
 ### Follow a redirect
 
 ```bash
-curl -v http://localhost:8080/abc123
+curl -v http://localhost:8081/abc123
 ```
 
 ### Get stats
 
 ```bash
-curl http://localhost:8080/api/stats/abc123
+curl http://localhost:8081/api/stats/abc123
 ```
 
 Response:
@@ -106,22 +114,22 @@ src/main/java/com/jomea/urlshortener/
 │   ├── AppProperties.java         # app.base-url, max-url-length
 │   └── RateLimitingFilter.java    # Token bucket per-IP rate limiter
 ├── controller/
-│   ├── ShortenController.java     # POST /api/shorten
-│   └── RedirectController.java    # GET /{shortCode}
+│   ├── ShortenController.java     # POST /api/shorten, GET /api/urls, GET /api/stats/{code}
+│   └── RedirectController.java    # GET /{shortCode} → 302
 ├── dto/
-│   ├── ShortenRequest.java        # Request body record
-│   ├── ShortenResponse.java       # Short URL response record
-│   └── StatsResponse.java         # Stats response record
+│   ├── ShortenRequest.java        # Request body with @URL validation
+│   ├── ShortenResponse.java       # Short URL response
+│   └── StatsResponse.java         # Stats response
 ├── entity/
-│   └── Url.java                   # JPA entity
+│   └── Url.java                   # JPA entity (id, longUrl, shortCode, createdAt, clickCount)
 ├── exception/
-│   └── GlobalExceptionHandler.java    # @RestControllerAdvice
+│   └── GlobalExceptionHandler.java
 ├── repository/
-│   └── UrlRepository.java         # Spring Data JPA
+│   └── UrlRepository.java
 └── service/
-    ├── CacheService.java          # Redis wrapper (24h TTL)
+    ├── CacheService.java          # In-memory cache
     ├── IdGenerator.java           # Snowflake-style → base62
-    └── UrlService.java            # Shorten + resolve + stats
+    └── UrlService.java            # Business logic
 ```
 
 ## Rate Limiting
@@ -135,11 +143,24 @@ src/main/java/com/jomea/urlshortener/
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `app.base-url` | `http://localhost:8080` | Service domain for short URLs |
+| `app.base-url` | `http://localhost:8081` | Service domain for short URLs |
 | `app.max-url-length` | `2048` | Maximum allowed URL length |
+| `server.port` | `8081` | HTTP server port |
 
-## Prerequisites
+## Switching to PostgreSQL
 
-- Java 21+
-- PostgreSQL 16+ (running on localhost:5432, database `urlshortener`, user `urlshortener`/`urlshortener`)
-- Redis 7+ (running on localhost:6379)
+Edit `application.yml`:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/urlshortener
+    username: urlshortener
+    password: urlshortener
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+```
+
+## Click Tracking
+
+Each redirect visit asynchronously increments the click counter in a virtual thread with `@Transactional` isolation. No blocking on the redirect path.
