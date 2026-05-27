@@ -1,15 +1,16 @@
 package com.jomea.urlshortener.repository;
 
 import com.jomea.urlshortener.entity.Url;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
@@ -19,6 +20,10 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
     Optional<Url> findByCustomCode(String customCode);
 
     List<Url> findAllByOrderByCreatedAtDesc();
+
+    List<Url> findByShortCodeContainingOrLongUrlContainingAllIgnoreCase(String shortCode, String longUrl, Sort sort);
+
+    List<Url> findByCreatedAtBetween(LocalDateTime from, LocalDateTime to, Sort sort);
 
     @Modifying
     @Transactional

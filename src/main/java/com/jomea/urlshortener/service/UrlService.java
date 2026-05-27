@@ -1,6 +1,8 @@
 package com.jomea.urlshortener.service;
 
 import com.jomea.urlshortener.config.AppProperties;
+import com.jomea.urlshortener.dto.BulkShortenRequest;
+import com.jomea.urlshortener.dto.BulkShortenResponseItem;
 import com.jomea.urlshortener.dto.ShortenResponse;
 import com.jomea.urlshortener.dto.StatsResponse;
 import com.jomea.urlshortener.entity.Url;
@@ -8,7 +10,10 @@ import com.jomea.urlshortener.repository.UrlRepository;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +94,92 @@ public class UrlService {
         boolean hasPassword = password != null && !password.isBlank();
         boolean isCustom = customCode != null && !customCode.isBlank();
         return new ShortenResponse(shortUrl, shortCode, longUrl, expiresAt, hasPassword, isCustom);
+    }
+
+    public List<BulkShortenResponseItem> shortenBulk(List<BulkShortenRequest> requests) {
+        List<BulkShortenResponseItem> results = new ArrayList<>();
+        for (int i = 0; i < requests.size(); i++) {
+            BulkShortenRequest req = requests.get(i);
+            try {
+                ShortenResponse response = shortenUrl(req.url(), req.customCode(), req.expiresAt(), req.password());
+                results.add(new BulkShortenResponseItem(
+                    i, "success", response.shortCode(), null, response.shortUrl(), response.longUrl()
+                ));
+            } catch (Exception e) {
+                results.add(new BulkShortenResponseItem(
+                    i, "error", null, e.getMessage(), null, req.url()
+                ));
+            }
+        }
+        return results;
+    }
+
+    public List<Url> searchUrls(String query, String dateFrom, String dateTo) {
+        if (query != null && !query.isBlank() && dateFrom != null && !dateFrom.isBlank() && dateTo != null && !dateTo.isBlank()) {
+            LocalDateTime from = LocalDateTime.parse(dateFrom);
+            LocalDateTime to = LocalDateTime.parse(dateTo);
+            return urlRepository.findByShortCodeContainingOrLongUrlContainingAllIgnoreCase(query, query, Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .filter(u -> u.getCreatedAt() != null && !u.getCreatedAt().isBefore(from) && !u.getCreatedAt().isAfter(to))
+                .toList();
+        } else if (query != null && !query.isBlank()) {
+            return urlRepository.findByShortCodeContainingOrLongUrlContainingAllIgnoreCase(query, query, Sort.by(Sort.Direction.DESC, "createdAt"));
+        } else if (dateFrom != null && !dateFrom.isBlank() && dateTo != null && !dateTo.isBlank()) {
+            LocalDateTime from = LocalDateTime.parse(dateFrom);
+            LocalDateTime to = LocalDateTime.parse(dateTo);
+            return urlRepository.findByCreatedAtBetween(from, to, Sort.by(Sort.Direction.DESC, "createdAt"));
+        } else {
+            return urlRepository.findAllByOrderByCreatedAtDesc();
+        }
+    }
+
+    public Url updateLink(String shortCode, String newLongUrl, String customCode, String expiresAt, String password) {
+        Url url = urlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new IllegalArgumentException("Link not found"));
+
+        if (newLongUrl != null && !newLongUrl.isBlank()) {
+            if (newLongUrl.length() > appProperties.getMaxUrlLength()) {
+                throw new IllegalArgumentException("URL exceeds maximum length");
+            }
+            url.setLongUrl(newLongUrl);
+        }
+
+        if (customCode != null && !customCode.isBlank() && !customCode.equals(url.getCustomCode())) {
+            if (!isValidCustomCode(customCode)) {
+                throw new IllegalArgumentException("Custom code must be alphanumeric and 4-20 characters");
+            }
+            if (urlRepository.findByCustomCode(customCode).isPresent()
+                    && !customCode.equals(url.getCustomCode())) {
+                throw new IllegalArgumentException("Custom code already taken");
+            }
+            url.setCustomCode(customCode);
+            url.setShortCode(customCode);
+        } else if (customCode != null && customCode.isBlank() && url.getCustomCode() != null) {
+            url.setCustomCode(null);
+        }
+
+        if (expiresAt != null && !expiresAt.isBlank()) {
+            url.setExpiresAt(LocalDateTime.parse(expiresAt));
+        } else if (expiresAt != null && expiresAt.isBlank()) {
+            url.setExpiresAt(null);
+        }
+
+        if (password != null && !password.isBlank()) {
+            url.setPasswordHash(passwordEncoder.encode(password));
+        } else if (password != null && password.isBlank()) {
+            url.setPasswordHash(null);
+        }
+
+        urlRepository.save(url);
+        cacheService.put(url.getShortCode(), url.getLongUrl());
+        return url;
+    }
+
+    public void deleteLink(String shortCode) {
+        Url url = urlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new IllegalArgumentException("Link not found"));
+        urlRepository.delete(url);
+        cacheService.invalidate(shortCode);
     }
 
     public Optional<String> resolveShortCode(String shortCode) {

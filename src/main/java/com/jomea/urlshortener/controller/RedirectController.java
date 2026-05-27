@@ -49,14 +49,17 @@ public class RedirectController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("requiresPassword", true, "shortCode", shortCode));
         }
+        String referer = request.getHeader("Referer");
+        String userAgent = request.getHeader("User-Agent");
+        String ipAddress = request.getRemoteAddr();
         Thread.ofVirtual().start(() -> {
             urlRepository.incrementClickCount(shortCode);
             ClickEvent event = new ClickEvent();
             event.setShortCode(shortCode);
             event.setTimestamp(java.time.LocalDateTime.now());
-            event.setReferer(request.getHeader("Referer"));
-            event.setUserAgent(request.getHeader("User-Agent"));
-            event.setIpAddress(request.getRemoteAddr());
+            event.setReferer(referer);
+            event.setUserAgent(userAgent);
+            event.setIpAddress(ipAddress);
             clickEventRepository.save(event);
         });
         return ResponseEntity.status(302).location(URI.create(url.getLongUrl())).build();
