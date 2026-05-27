@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
+import org.springframework.web.servlet.view.RedirectView;
+
 @RestController
 public class RedirectController {
 
@@ -20,7 +22,12 @@ public class RedirectController {
         this.urlRepository = urlRepository;
     }
 
-    @GetMapping("/{shortCode}")
+    @GetMapping("/")
+    public RedirectView root() {
+        return new RedirectView("/index.html");
+    }
+
+    @GetMapping("/{shortCode:[0-9A-Za-z]{6,12}}")
     public ResponseEntity<Void> redirect(@PathVariable String shortCode) {
         var opt = urlService.resolveShortCode(shortCode);
         if (opt.isPresent()) {

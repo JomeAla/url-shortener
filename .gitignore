@@ -1,7 +1,13 @@
 target/
 *.jar
 *.log
+*.err
+*.json
 .idea/
 *.iml
 .vscode/
 .DS_Store
+data/
+app.log
+app.err
+body*.json

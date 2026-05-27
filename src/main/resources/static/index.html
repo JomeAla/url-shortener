@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shrt — URL Shortener</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f9fb;
+    --surface: #ffffff;
+    --border: #e2e5ea;
+    --text: #1a1d23;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
+    --accent: #4f6ef7;
+    --accent-hover: #3b5ae0;
+    --accent-light: #eef1ff;
+    --green: #10b981;
+    --green-light: #ecfdf5;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-lg: 0 10px 25px -5px rgba(0,0,0,.08), 0 4px 10px -6px rgba(0,0,0,.04);
+    --transition: 180ms ease;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { width: 100%; max-width: 640px; }
+  .header { margin-bottom: 2.5rem; text-align: center; }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -.03em;
+    color: var(--text);
+  }
+  .header h1 span { color: var(--accent); }
+  .header p { color: var(--text-secondary); font-size: .9375rem; margin-top: .375rem; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .shorten-card { padding: 1.75rem; margin-bottom: 1.5rem; }
+  .shorten-card .input-group {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+  }
+  .shorten-card input {
+    flex: 1;
+    padding: .75rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: .9375rem;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+  }
+  .shorten-card input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+  .shorten-card input::placeholder { color: var(--text-tertiary); }
+  .btn {
+    padding: .75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: .9375rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(79,110,247,.3);
+  }
+  .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 2px 6px rgba(79,110,247,.4); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; transform: none; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    padding: .375rem .5rem;
+    font-size: .8125rem;
+  }
+  .btn-ghost:hover { color: var(--text); background: var(--bg); }
+  .shorten-status { font-size: .8125rem; margin-top: .625rem; color: var(--text-secondary); min-height: 1.25rem; }
+  .shorten-status .error { color: #ef4444; }
+  .result-pane {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--green-light);
+    border: 1px solid #a7f3d0;
+    border-radius: 8px;
+    animation: fadeSlideIn .25s ease;
+  }
+  .result-pane.show { display: flex; align-items: center; gap: .75rem; }
+  .result-pane .short-url {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #047857;
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .result-pane .short-url:hover { text-decoration: underline; }
+  .result-pane .copy-btn {
+    background: transparent;
+    border: 1px solid #a7f3d0;
+    border-radius: 6px;
+    padding: .375rem .75rem;
+    font-size: .8125rem;
+    font-weight: 500;
+    color: #047857;
+    cursor: pointer;
+    transition: background var(--transition);
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .result-pane .copy-btn:hover { background: #d1fae5; }
+  .result-pane .copy-btn.copied { background: #047857; color: #fff; border-color: #047857; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .list-card { padding: 1.25rem 1.5rem; }
+  .list-card .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .75rem;
+  }
+  .list-card .list-header h2 { font-size: .9375rem; font-weight: 600; color: var(--text); }
+  .list-card .list-header .count { font-size: .8125rem; color: var(--text-tertiary); }
+  .url-list { list-style: none; }
+  .url-item {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .url-item:first-child { border-top: none; }
+  .url-item .info { flex: 1; min-width: 0; }
+  .url-item .code {
+    font-size: .9375rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    display: block;
+  }
+  .url-item .code:hover { text-decoration: underline; }
+  .url-item .original {
+    font-size: .8125rem;
+    color: var(--text-tertiary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    margin-top: .125rem;
+  }
+  .url-item .meta {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-shrink: 0;
+  }
+  .url-item .clicks {
+    font-size: .8125rem;
+    color: var(--text-secondary);
+    background: var(--bg);
+    padding: .25rem .625rem;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .url-item .time {
+    font-size: .75rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+  }
+  .empty-state {
+    color: var(--text-tertiary);
+    text-align: center;
+    padding: 2rem 0;
+    font-size: .875rem;
+  }
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(calc(100% + 1.5rem));
+    background: #1a1d23;
+    color: #fff;
+    padding: .625rem 1.125rem;
+    border-radius: 8px;
+    font-size: .875rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 520px) {
+    body { padding: 1.5rem 1rem; }
+    .header h1 { font-size: 1.5rem; }
+    .shorten-card { padding: 1.25rem; }
+    .shorten-card .input-group { flex-direction: column; }
+    .shorten-card .input-group .btn { width: 100%; }
+    .result-pane.show { flex-direction: column; text-align: center; }
+    .url-item { flex-wrap: wrap; }
+    .url-item .meta { width: 100%; justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1><span>shrt</span>.ly</h1>
+    <p>Paste a long URL and make it short</p>
+  </div>
+
+  <div class="card shorten-card">
+    <div class="input-group">
+      <input type="url" id="urlInput" placeholder="https://example.com/very/long/url/path" autocomplete="off" autofocus spellcheck="false">
+      <button class="btn btn-primary" id="shortenBtn">Shorten</button>
+    </div>
+    <div class="shorten-status" id="shortenStatus"></div>
+    <div class="result-pane" id="resultPane">
+      <a class="short-url" id="shortUrlDisplay" target="_blank" rel="noopener"></a>
+      <button class="copy-btn" id="copyBtn">Copy</button>
+    </div>
+  </div>
+
+  <div class="card list-card">
+    <div class="list-header">
+      <h2>Links</h2>
+      <span class="count" id="linkCount"></span>
+    </div>
+    <ul class="url-list" id="urlList">
+      <li class="empty-state">No links yet. Shorten your first URL above.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const urlInput = document.getElementById('urlInput');
+  const shortenBtn = document.getElementById('shortenBtn');
+  const shortenStatus = document.getElementById('shortenStatus');
+  const resultPane = document.getElementById('resultPane');
+  const shortUrlDisplay = document.getElementById('shortUrlDisplay');
+  const copyBtn = document.getElementById('copyBtn');
+  const urlList = document.getElementById('urlList');
+  const linkCount = document.getElementById('linkCount');
+  const toast = document.getElementById('toast');
+
+  let toastTimer = null;
+
+  function notify(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  urlInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') shorten();
+  });
+
+  shortenBtn.addEventListener('click', shorten);
+
+  async function shorten() {
+    let url = urlInput.value.trim();
+    if (!url) { shortenStatus.textContent = ''; urlInput.focus(); return; }
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    shortenBtn.disabled = true;
+    shortenStatus.textContent = 'Shortening...';
+    resultPane.classList.remove('show');
+    try {
+      const res = await fetch('/api/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      shortUrlDisplay.textContent = data.shortUrl;
+      shortUrlDisplay.href = data.shortUrl;
+      resultPane.classList.add('show');
+      copyBtn.textContent = 'Copy';
+      copyBtn.className = 'copy-btn';
+      shortenStatus.textContent = '';
+      urlInput.value = '';
+      urlInput.focus();
+      loadLinks();
+    } catch (err) {
+      shortenStatus.innerHTML = '<span class="error">' + err.message + '</span>';
+    } finally {
+      shortenBtn.disabled = false;
+    }
+  }
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(shortUrlDisplay.textContent);
+      copyBtn.textContent = 'Copied!';
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy';
+        copyBtn.classList.remove('copied');
+      }, 1800);
+    } catch {
+      fallbackCopy(shortUrlDisplay.textContent);
+    }
+  });
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); notify('Copied to clipboard'); }
+    catch { notify('Press Ctrl+C to copy'); }
+    document.body.removeChild(ta);
+  }
+
+  async function loadLinks() {
+    try {
+      const res = await fetch('/api/urls');
+      if (!res.ok) throw new Error();
+      const urls = await res.json();
+      linkCount.textContent = urls.length + ' link' + (urls.length !== 1 ? 's' : '');
+      if (!urls.length) {
+        urlList.innerHTML = '<li class="empty-state">No links yet. Shorten your first URL above.</li>';
+        return;
+      }
+      const origin = window.location.origin;
+      urlList.innerHTML = urls.map(u => {
+        const time = formatTime(u.createdAt);
+        return '<li class="url-item">' +
+          '<div class="info">' +
+          '<a class="code" href="' + origin + '/' + u.shortCode + '" target="_blank" rel="noopener">' +
+          origin + '/' + u.shortCode +
+          '</a>' +
+          '<span class="original" title="' + u.longUrl + '">' + u.longUrl + '</span>' +
+          '</div>' +
+          '<div class="meta">' +
+          '<span class="clicks">' + u.clickCount + ' click' + (u.clickCount !== 1 ? 's' : '') + '</span>' +
+          '<span class="time">' + time + '</span>' +
+          '</div>' +
+          '</li>';
+      }).join('');
+    } catch {
+      if (!urlList.querySelector('.url-item')) {
+        urlList.innerHTML = '<li class="empty-state">Could not load links.</li>';
+      }
+    }
+  }
+
+  function formatTime(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = (now - d) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+    return d.toLocaleDateString();
+  }
+
+  loadLinks();
+  setInterval(loadLinks, 15000);
+</script>
+</body>
+</html>
