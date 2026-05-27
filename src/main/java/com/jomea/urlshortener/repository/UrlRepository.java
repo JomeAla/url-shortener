@@ -16,10 +16,15 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
 
     Optional<Url> findByShortCode(String shortCode);
 
+    Optional<Url> findByCustomCode(String customCode);
+
     List<Url> findAllByOrderByCreatedAtDesc();
 
     @Modifying
     @Transactional
     @Query("UPDATE Url u SET u.clickCount = u.clickCount + 1 WHERE u.shortCode = :code")
     void incrementClickCount(@Param("code") String shortCode);
+
+    @Query("SELECT COALESCE(SUM(u.clickCount), 0) FROM Url u")
+    long sumClickCount();
 }

@@ -31,6 +31,15 @@ public class Url {
     @Column(name = "click_count", nullable = false)
     private long clickCount = 0L;
 
+    @Column(name = "custom_code", length = 20)
+    private String customCode;
+
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
+    @Column(name = "password_hash")
+    private String passwordHash;
+
     public Url() {
     }
 
@@ -72,5 +81,29 @@ public class Url {
 
     public void setClickCount(long clickCount) {
         this.clickCount = clickCount;
+    }
+
+    public String getCustomCode() {
+        return customCode;
+    }
+
+    public void setCustomCode(String customCode) {
+        this.customCode = customCode;
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }
