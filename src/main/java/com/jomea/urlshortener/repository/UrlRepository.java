@@ -32,4 +32,13 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
 
     @Query("SELECT COALESCE(SUM(u.clickCount), 0) FROM Url u")
     long sumClickCount();
+
+    long countByUserId(Long userId);
+
+    List<Url> findByUserIdOrderByCreatedAtDesc(Long userId);
+
+    @Query("SELECT COALESCE(SUM(u.clickCount), 0) FROM Url u WHERE u.userId = :userId")
+    long sumClickCountByUserId(@Param("userId") Long userId);
+
+    List<Url> findByTagsContainingIgnoreCase(String tag);
 }

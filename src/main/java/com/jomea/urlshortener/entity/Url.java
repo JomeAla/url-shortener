@@ -40,70 +40,57 @@ public class Url {
     @Column(name = "password_hash")
     private String passwordHash;
 
+    @Column(name = "user_id")
+    private Long userId;
+
+    private String tags;
+
+    @Column(name = "utm_source")
+    private String utmSource;
+
+    @Column(name = "utm_medium")
+    private String utmMedium;
+
+    @Column(name = "utm_campaign")
+    private String utmCampaign;
+
+    @Column(name = "utm_term")
+    private String utmTerm;
+
+    @Column(name = "utm_content")
+    private String utmContent;
+
     public Url() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLongUrl() {
-        return longUrl;
-    }
-
-    public void setLongUrl(String longUrl) {
-        this.longUrl = longUrl;
-    }
-
-    public String getShortCode() {
-        return shortCode;
-    }
-
-    public void setShortCode(String shortCode) {
-        this.shortCode = shortCode;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public long getClickCount() {
-        return clickCount;
-    }
-
-    public void setClickCount(long clickCount) {
-        this.clickCount = clickCount;
-    }
-
-    public String getCustomCode() {
-        return customCode;
-    }
-
-    public void setCustomCode(String customCode) {
-        this.customCode = customCode;
-    }
-
-    public LocalDateTime getExpiresAt() {
-        return expiresAt;
-    }
-
-    public void setExpiresAt(LocalDateTime expiresAt) {
-        this.expiresAt = expiresAt;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getLongUrl() { return longUrl; }
+    public void setLongUrl(String longUrl) { this.longUrl = longUrl; }
+    public String getShortCode() { return shortCode; }
+    public void setShortCode(String shortCode) { this.shortCode = shortCode; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public long getClickCount() { return clickCount; }
+    public void setClickCount(long clickCount) { this.clickCount = clickCount; }
+    public String getCustomCode() { return customCode; }
+    public void setCustomCode(String customCode) { this.customCode = customCode; }
+    public LocalDateTime getExpiresAt() { return expiresAt; }
+    public void setExpiresAt(LocalDateTime expiresAt) { this.expiresAt = expiresAt; }
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
+    public String getTags() { return tags; }
+    public void setTags(String tags) { this.tags = tags; }
+    public String getUtmSource() { return utmSource; }
+    public void setUtmSource(String utmSource) { this.utmSource = utmSource; }
+    public String getUtmMedium() { return utmMedium; }
+    public void setUtmMedium(String utmMedium) { this.utmMedium = utmMedium; }
+    public String getUtmCampaign() { return utmCampaign; }
+    public void setUtmCampaign(String utmCampaign) { this.utmCampaign = utmCampaign; }
+    public String getUtmTerm() { return utmTerm; }
+    public void setUtmTerm(String utmTerm) { this.utmTerm = utmTerm; }
+    public String getUtmContent() { return utmContent; }
+    public void setUtmContent(String utmContent) { this.utmContent = utmContent; }
 }

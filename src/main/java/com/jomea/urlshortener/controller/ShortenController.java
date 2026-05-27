@@ -10,6 +10,9 @@ import com.jomea.urlshortener.entity.Plan;
 import com.jomea.urlshortener.entity.Url;
 import com.jomea.urlshortener.repository.PlanRepository;
 import com.jomea.urlshortener.repository.UrlRepository;
+import com.jomea.urlshortener.entity.User;
+import com.jomea.urlshortener.repository.UserRepository;
+import com.jomea.urlshortener.service.TierEnforcementService;
 import com.jomea.urlshortener.service.UrlService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -18,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,19 +41,27 @@ public class ShortenController {
     private final UrlService urlService;
     private final UrlRepository urlRepository;
     private final PlanRepository planRepository;
+    private final TierEnforcementService tierEnforcement;
+    private final UserRepository userRepository;
 
-    public ShortenController(UrlService urlService, UrlRepository urlRepository, PlanRepository planRepository) {
+    public ShortenController(UrlService urlService, UrlRepository urlRepository, PlanRepository planRepository,
+                              TierEnforcementService tierEnforcement, UserRepository userRepository) {
         this.urlService = urlService;
         this.urlRepository = urlRepository;
         this.planRepository = planRepository;
+        this.tierEnforcement = tierEnforcement;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/shorten")
     public ResponseEntity<?> shorten(@Valid @RequestBody ShortenRequest request) {
         try {
-            ShortenResponse response = urlService.shortenUrl(request.url(), request.customCode(), request.expiresAt(), request.password());
+            ShortenResponse response = urlService.shortenUrl(request.url(), request.customCode(),
+                request.expiresAt(), request.password(), request.tags(),
+                request.utmSource(), request.utmMedium(), request.utmCampaign(),
+                request.utmTerm(), request.utmContent());
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             log.error("shorten failed", e);
@@ -86,7 +98,14 @@ public class ShortenController {
             String customCode = (String) body.get("customCode");
             String expiresAt = (String) body.get("expiresAt");
             String password = (String) body.get("password");
-            Url updated = urlService.updateLink(shortCode, url, customCode, expiresAt, password);
+            String tags = (String) body.get("tags");
+            String utmSource = (String) body.get("utmSource");
+            String utmMedium = (String) body.get("utmMedium");
+            String utmCampaign = (String) body.get("utmCampaign");
+            String utmTerm = (String) body.get("utmTerm");
+            String utmContent = (String) body.get("utmContent");
+            Url updated = urlService.updateLink(shortCode, url, customCode, expiresAt, password,
+                tags, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

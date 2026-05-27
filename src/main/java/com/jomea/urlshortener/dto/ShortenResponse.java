@@ -6,6 +6,12 @@ public record ShortenResponse(
         String longUrl,
         String expiresAt,
         boolean hasPassword,
-        boolean isCustom
+        boolean isCustom,
+        String tags,
+        String utmSource,
+        String utmMedium,
+        String utmCampaign,
+        String utmTerm,
+        String utmContent
 ) {
 }

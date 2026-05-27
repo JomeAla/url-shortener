@@ -88,12 +88,13 @@
   .nav-brand span { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
   .nav-brand span em { font-style: normal; color: var(--accent); }
   .nav-links { display: flex; align-items: center; gap: 4px; }
-  .nav-links a {
-    text-decoration: none; font-size: 0.8125rem; font-weight: 500;
-    color: var(--text-secondary); padding: 6px 14px; border-radius: 100px;
-    transition: all 0.25s var(--ease-smooth);
-  }
-  .nav-links a:hover { color: var(--text-primary); background: rgba(0,0,0,0.04); }
+    .nav-links a {
+      text-decoration: none; font-size: 0.8125rem; font-weight: 500;
+      color: var(--text-secondary); padding: 6px 14px; border-radius: 100px;
+      transition: all 0.25s var(--ease-smooth); cursor: pointer;
+    }
+    .nav-links a:hover { color: var(--text-primary); background: rgba(0,0,0,0.04); }
+    .nav-links a.dash-link { display: none; }
   .nav-auth { display: flex; align-items: center; gap: 6px; }
   .nav-auth .btn-ghost {
     background: none; border: none; font: inherit; font-size: 0.8125rem; font-weight: 600;
@@ -440,6 +441,12 @@
   .admin-stat-inner .stat-value { font-size: 2rem; font-weight: 800; color: var(--accent); }
   .admin-stat-inner .stat-label { font-size: 0.75rem; color: var(--text-tertiary); margin-top: 2px; }
 
+  .settings-group { border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); margin-bottom: 8px; overflow: hidden; }
+  .settings-summary { padding: 10px 14px; font-size: 0.8125rem; font-weight: 600; cursor: pointer; user-select: none; background: var(--bg); }
+  .settings-summary:hover { background: rgba(0,0,0,0.02); }
+  .settings-body { padding: 10px 14px 14px; }
+  .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
   /* --- Modals --- */
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(11,13,23,0.5);
@@ -592,6 +599,9 @@
 
 <div class="app" id="app">
 
+  <!-- Public Promo Banners -->
+  <div id="publicBanners"></div>
+
   <!-- Fluid Island Nav -->
   <nav class="nav-island" id="navIsland">
     <a class="nav-brand" href="/">
@@ -602,8 +612,10 @@
       <span><em>shrt</em>ly</span>
     </a>
     <div class="nav-links">
-      <a href="#" onclick="switchView('links');return false">Links</a>
-      <a href="#" onclick="switchView('analytics');return false">Analytics</a>
+      <a href="#" onclick="document.getElementById('featuresSection').scrollIntoView({behavior:'smooth'});return false">Features</a>
+      <a href="#" onclick="document.getElementById('pricingSection').scrollIntoView({behavior:'smooth'});return false">Pricing</a>
+      <a class="dash-link" href="#" onclick="switchView('links');return false">My Links</a>
+      <a class="dash-link" href="#" onclick="switchView('analytics');return false">Analytics</a>
     </div>
     <div class="nav-auth" id="authActions">
       <div class="user-badge" id="userBadge" style="display:none">
@@ -660,11 +672,26 @@
           <div class="advanced-row">
             <span class="advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">+ Advanced options</span>
           </div>
-          <div class="advanced-options" id="advancedOptions">
-            <input type="text" id="customCodeInput" placeholder="Custom code (e.g. mylink)" maxlength="20">
-            <input type="datetime-local" id="expiryInput">
-            <input type="password" id="passwordInput" placeholder="Password protect">
+        <div class="advanced-options" id="advancedOptions">
+          <div class="advanced-grid">
+            <div class="advanced-field"><label>Custom code</label><input type="text" id="customCodeInput" maxlength="20" placeholder="e.g. my-link"></div>
+            <div class="advanced-field"><label>Expires at</label><input type="datetime-local" id="expiryInput"></div>
+            <div class="advanced-field"><label>Password protect</label><input type="password" id="passwordInput" placeholder="Leave blank for public"></div>
           </div>
+          <div class="advanced-grid" style="margin-top:8px">
+            <div class="advanced-field"><label>Tags</label><input type="text" id="tagsInput" placeholder="news, marketing, product"></div>
+          </div>
+          <details style="margin-top:8px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+            <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">UTM Parameters</summary>
+            <div class="advanced-grid" style="margin-top:8px">
+              <div class="advanced-field"><label>Source</label><input type="text" id="utmSource" placeholder="e.g. twitter"></div>
+              <div class="advanced-field"><label>Medium</label><input type="text" id="utmMedium" placeholder="e.g. social"></div>
+              <div class="advanced-field"><label>Campaign</label><input type="text" id="utmCampaign" placeholder="e.g. spring_sale"></div>
+              <div class="advanced-field"><label>Term</label><input type="text" id="utmTerm" placeholder="e.g. running+shoes"></div>
+              <div class="advanced-field"><label>Content</label><input type="text" id="utmContent" placeholder="e.g. hero_banner"></div>
+            </div>
+          </details>
+        </div>
           <div class="shorten-status" id="shortenStatus"></div>
           <div class="result-pane" id="resultPane">
             <a class="short-url" id="shortUrlDisplay" target="_blank" rel="noopener"></a>
@@ -675,31 +702,43 @@
     </section>
 
     <!-- Feature Grid -->
-    <section class="features">
+    <section class="features" id="featuresSection">
+      <div style="grid-column:1/-1;text-align:center;margin-bottom:8px">
+        <span class="hero-badge" style="display:inline-flex">Everything you need</span>
+        <h2 style="font-size:1.75rem;font-weight:800;letter-spacing:-0.03em;margin-top:8px">Powerful features, simple tools</h2>
+      </div>
       <div class="feature-outer fade-up">
         <div class="feature-inner">
-          <div class="feature-icon blue">&#x1f517;</div>
+          <div class="feature-icon blue" style="font-size:1.5rem">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
           <h3>Branded Links</h3>
           <p>Custom short codes that match your brand identity</p>
         </div>
       </div>
       <div class="feature-outer fade-up">
         <div class="feature-inner">
-          <div class="feature-icon purple">&#x1f4ca;</div>
+          <div class="feature-icon purple" style="font-size:1.5rem">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
           <h3>Analytics</h3>
           <p>Track clicks, referrers, devices, and browser data</p>
         </div>
       </div>
       <div class="feature-outer fade-up">
         <div class="feature-inner">
-          <div class="feature-icon green">&#x1f4f1;</div>
+          <div class="feature-icon green" style="font-size:1.5rem">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><rect x="14" y="14" width="3" height="3"/></svg>
+          </div>
           <h3>QR Codes</h3>
           <p>Generate scannable QR codes for every short link</p>
         </div>
       </div>
       <div class="feature-outer fade-up">
         <div class="feature-inner">
-          <div class="feature-icon amber">&#x2699;</div>
+          <div class="feature-icon amber" style="font-size:1.5rem">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+          </div>
           <h3>API Access</h3>
           <p>Build powerful integrations with our REST API</p>
         </div>
@@ -717,11 +756,27 @@
       </div>
     </section>
 
-    <!-- View Selector -->
-    <div class="view-selector fade-up">
+    <!-- Dashboard header (shown when logged in) -->
+    <div class="dash-header fade-up" id="dashHeader" style="display:none">
+      <h2 style="font-size:1.35rem;font-weight:700;letter-spacing:-0.02em">Your dashboard</h2>
+      <p style="font-size:0.875rem;color:var(--text-tertiary);margin-top:2px">Manage your links and track performance.</p>
+    </div>
+
+    <!-- View Selector (shown when logged in) -->
+    <div class="view-selector fade-up" id="viewSelector" style="display:none">
       <button class="tab active" onclick="switchView('links')">Links</button>
       <button class="tab" onclick="switchView('analytics')">Analytics</button>
+      <button class="tab" onclick="switchView('settings')">Settings</button>
       <button class="tab admin-tab" id="adminTabLink" onclick="showAdmin()">Admin</button>
+    </div>
+
+    <!-- Login prompt for guests -->
+    <div class="list-outer fade-up" id="loginPrompt" style="margin-bottom:16px">
+      <div class="list-inner" style="text-align:center;padding:32px">
+        <div style="font-size:0.9375rem;font-weight:600;margin-bottom:4px">Sign in to manage your links</div>
+        <p style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:16px">Track clicks, view analytics, and manage all your shortened URLs.</p>
+        <button class="btn-primary" onclick="openAuthModal('login')" style="font-size:0.875rem;padding:10px 24px">Sign in <span class="btn-icon">&#8599;</span></button>
+      </div>
     </div>
 
     <!-- Links View -->
@@ -764,7 +819,46 @@
           </div>
           <div id="analyticsContent">
             <p class="empty-state">Select a link to view analytics.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Promo Banners -->
+    <div class="list-outer" style="margin-top:16px">
+      <div class="list-inner">
+        <div class="list-header">
+          <span class="list-title">Promo Banners</span>
+          <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px" onclick="openBannerModal()">+ Add banner</button>
+        </div>
+        <ul class="url-list" id="adminBannerList"><li class="empty-state">Loading...</li></ul>
+      </div>
+    </div>
+
+    <!-- Coupons -->
+    <div class="list-outer" style="margin-top:16px">
+      <div class="list-inner">
+        <div class="list-header">
+          <span class="list-title">Coupons</span>
+          <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px" onclick="openCouponModal()">+ Add coupon</button>
+        </div>
+        <ul class="url-list" id="adminCouponList"><li class="empty-state">Loading...</li></ul>
+      </div>
+    </div>
+  </div>
+
+    <!-- Settings View (API Keys) -->
+    <div class="content-section" id="settingsView">
+      <div class="list-outer">
+        <div class="list-inner">
+          <div class="list-header">
+            <span class="list-title">API Keys</span>
+            <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px" onclick="createApiKey()">+ Create key</button>
           </div>
+          <div style="padding:8px 0">
+            <input type="text" id="apiKeyName" placeholder="Key name (e.g. CI/CD)" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+          </div>
+          <div id="apiKeyNewKey"></div>
+          <ul class="url-list" id="apiKeyList"><li class="empty-state">Loading...</li></ul>
         </div>
       </div>
     </div>
@@ -784,7 +878,10 @@
     </div>
     <div class="list-outer">
       <div class="list-inner">
-        <div class="list-header"><span class="list-title">Users</span></div>
+        <div class="list-header">
+          <span class="list-title">Users</span>
+          <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px" onclick="openCreateUserModal()">+ Create user</button>
+        </div>
         <ul class="url-list" id="adminUserList"><li class="empty-state">Loading...</li></ul>
       </div>
     </div>
@@ -796,6 +893,89 @@
           <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px" onclick="openAddPlanModal()">+ Add plan</button>
         </div>
         <ul class="url-list" id="adminPlanList"><li class="empty-state">Loading...</li></ul>
+      </div>
+    </div>
+
+    <div class="list-outer" style="margin-top:16px">
+      <div class="list-inner">
+        <div class="list-header">
+          <span class="list-title">Settings</span>
+          <button class="btn-primary" id="saveSettingsBtn" style="font-size:0.75rem;padding:5px 12px" onclick="saveSettings()">Save settings</button>
+        </div>
+
+        <div style="margin-top:8px" id="settingsSections">
+
+          <!-- Payment -->
+          <details class="settings-group" open>
+            <summary class="settings-summary">Payment</summary>
+            <div class="settings-body">
+              <div class="form-group"><label>Provider</label>
+                <select id="setPaymentProvider" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+                  <option value="">None</option>
+                  <option value="paystack">Paystack</option>
+                  <option value="stripe">Stripe</option>
+                </select>
+              </div>
+              <div class="settings-row">
+                <div class="form-group"><label>Public key</label><input type="text" id="setPaymentPublicKey" placeholder="pk_..."></div>
+                <div class="form-group"><label>Secret key</label><input type="password" id="setPaymentSecretKey" placeholder="sk_..."></div>
+              </div>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer;margin-top:6px">
+                <input type="checkbox" id="setSandboxMode" checked> Sandbox / Test mode
+              </label>
+            </div>
+          </details>
+
+          <!-- SMTP -->
+          <details class="settings-group" open>
+            <summary class="settings-summary">SMTP</summary>
+            <div class="settings-body">
+              <div class="settings-row">
+                <div class="form-group"><label>Host</label><input type="text" id="setSmtpHost" placeholder="smtp.example.com"></div>
+                <div class="form-group"><label>Port</label><input type="number" id="setSmtpPort" placeholder="587"></div>
+              </div>
+              <div class="settings-row">
+                <div class="form-group"><label>Username</label><input type="text" id="setSmtpUsername" placeholder="user@example.com"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="setSmtpPassword" placeholder="••••••••"></div>
+              </div>
+              <div class="settings-row">
+                <div class="form-group"><label>From email</label><input type="email" id="setSmtpFromEmail" placeholder="noreply@example.com"></div>
+                <div class="form-group"><label>From name</label><input type="text" id="setSmtpFromName" placeholder="Shrtly"></div>
+              </div>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer;margin-top:6px">
+                <input type="checkbox" id="setSmtpUseTls" checked> Use TLS
+              </label>
+            </div>
+          </details>
+
+          <!-- Branding -->
+          <details class="settings-group" open>
+            <summary class="settings-summary">Branding</summary>
+            <div class="settings-body">
+              <div class="settings-row">
+                <div class="form-group"><label>Site name</label><input type="text" id="setSiteName" placeholder="Shrtly"></div>
+                <div class="form-group"><label>Site description</label><input type="text" id="setSiteDescription" placeholder="URL Shortener"></div>
+              </div>
+              <div class="settings-row">
+                <div class="form-group" style="flex:1"><label>Logo</label>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <input type="file" id="setLogoFile" accept="image/png,image/jpeg,image/svg+xml" style="font-size:0.8125rem">
+                    <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px;white-space:nowrap" onclick="uploadFile('logo')">Upload</button>
+                  </div>
+                  <div id="setLogoPreview" style="margin-top:4px;font-size:0.75rem;color:var(--text-tertiary)"></div>
+                </div>
+                <div class="form-group" style="flex:1"><label>Favicon</label>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <input type="file" id="setFaviconFile" accept="image/png,image/x-icon,image/svg+xml" style="font-size:0.8125rem">
+                    <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px;white-space:nowrap" onclick="uploadFile('favicon')">Upload</button>
+                  </div>
+                  <div id="setFaviconPreview" style="margin-top:4px;font-size:0.75rem;color:var(--text-tertiary)"></div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+        </div>
       </div>
     </div>
   </div>
@@ -854,6 +1034,100 @@
     </div>
   </div>
 
+  <!-- Banner Modal -->
+  <div class="modal-overlay" id="bannerModal">
+    <div class="modal-outer" style="max-width:520px">
+      <div class="modal-inner">
+        <h2 id="bannerModalTitle">Add banner</h2>
+        <div class="sub" id="bannerModalSub">Create a promotional banner.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Title</label><input type="text" id="bannerTitle"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Message</label><input type="text" id="bannerMessage"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div class="form-group" style="margin-bottom:0"><label>CTA text</label><input type="text" id="bannerCtaText" placeholder="Learn more"></div>
+          <div class="form-group" style="margin-bottom:0"><label>CTA URL</label><input type="text" id="bannerCtaUrl" placeholder="/pricing"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div class="form-group" style="margin-bottom:0"><label>BG color</label><input type="text" id="bannerBgColor" value="#3563e9"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Text color</label><input type="text" id="bannerTextColor" value="#ffffff"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Position</label>
+            <select id="bannerPosition" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+              <option value="top">Top</option>
+              <option value="bottom">Bottom</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0"><label>Show to</label>
+            <select id="bannerShowTo" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+              <option value="all">All</option>
+              <option value="guests">Guests only</option>
+              <option value="logged_in">Logged in only</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding-top:20px">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer"><input type="checkbox" id="bannerDismissible" checked> Dismissible</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer"><input type="checkbox" id="bannerActive" checked> Active</label>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Start date</label><input type="datetime-local" id="bannerStartDate"></div>
+          <div class="form-group" style="margin-bottom:0"><label>End date</label><input type="datetime-local" id="bannerEndDate"></div>
+        </div>
+        <div class="modal-actions">
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeBannerModal()">Cancel</button>
+          <button class="btn-primary" id="bannerSubmitBtn" onclick="submitBanner()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save banner</button>
+        </div>
+        <div class="modal-error" id="bannerError"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coupon Modal -->
+  <div class="modal-overlay" id="couponModal">
+    <div class="modal-outer" style="max-width:520px">
+      <div class="modal-inner">
+        <h2 id="couponModalTitle">Add coupon</h2>
+        <div class="sub" id="couponModalSub">Create a discount coupon.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Code</label><input type="text" id="couponCode" placeholder="SAVE20" style="text-transform:uppercase"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Type</label>
+            <select id="couponDiscountType" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+              <option value="percentage">Percentage</option>
+              <option value="fixed">Fixed amount</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Value</label><input type="number" id="couponDiscountValue" step="0.01" min="0" placeholder="20"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Max uses</label><input type="number" id="couponMaxUses" min="0" placeholder="Leave empty = unlimited"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Min amount</label><input type="number" id="couponMinAmount" step="0.01" min="0" placeholder="Leave empty = none"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Plan (optional)</label>
+            <select id="couponPlanSlug" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+              <option value="">Any plan</option>
+              <option value="pro">Pro</option>
+              <option value="enterprise">Enterprise</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Expires at</label><input type="datetime-local" id="couponExpiresAt"></div>
+          <div style="display:flex;align-items:flex-end;padding-bottom:8px">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer"><input type="checkbox" id="couponActive" checked> Active</label>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCouponModal()">Cancel</button>
+          <button class="btn-primary" id="couponSubmitBtn" onclick="submitCoupon()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save coupon</button>
+        </div>
+        <div class="modal-error" id="couponError"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer fade-up">
     <span>&copy; 2026 Shrtly</span>
@@ -883,7 +1157,7 @@
         <button class="btn-primary" id="authSubmitBtn" onclick="submitAuth()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Sign in</button>
       </div>
       <div class="modal-error" id="authError"></div>
-      <div class="modal-toggle"><span id="authToggle" onclick="toggleAuthMode()">Create an account</span></div>
+      <div class="modal-toggle"><span id="authToggle" onclick="toggleAuthMode()">Create an account</span> <span style="margin-left:12px;font-size:0.75rem;color:var(--accent);cursor:pointer" onclick="showForgotPassword()">Forgot password?</span></div>
     </div>
   </div>
 </div>
@@ -914,6 +1188,17 @@
       <div class="form-group"><label>Custom code</label><input type="text" id="editCustomCode" maxlength="20" placeholder="Leave blank for auto-generated"></div>
       <div class="form-group"><label>Expires at</label><input type="datetime-local" id="editExpiry"></div>
       <div class="form-group"><label>Password (leave blank to remove)</label><input type="password" id="editPassword" placeholder="New password"></div>
+      <div class="form-group"><label>Tags</label><input type="text" id="editTags" placeholder="news, marketing, product"></div>
+      <details style="margin-top:4px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+        <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">UTM Parameters</summary>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+          <div class="form-group" style="margin-bottom:0"><label>Source</label><input type="text" id="editUtmSource"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Medium</label><input type="text" id="editUtmMedium"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Campaign</label><input type="text" id="editUtmCampaign"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Term</label><input type="text" id="editUtmTerm"></div>
+          <div class="form-group" style="margin-bottom:0;grid-column:1/-1"><label>Content</label><input type="text" id="editUtmContent"></div>
+        </div>
+      </details>
       <div class="modal-actions">
         <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeEditModal()">Cancel</button>
         <button class="btn-primary" id="editSubmitBtn" onclick="submitEdit()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save</button>
@@ -938,7 +1223,81 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+  <!-- Create User Modal -->
+  <div class="modal-overlay" id="createUserModal">
+    <div class="modal-outer" style="max-width:440px">
+      <div class="modal-inner">
+        <h2>Create user</h2>
+        <div class="sub">Create a new account manually.</div>
+        <div class="form-group"><label>Name</label><input type="text" id="cuName"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="cuEmail"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="cuPassword" placeholder="Min 6 characters"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Role</label>
+            <select id="cuRole" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+              <option value="USER">User</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0"><label>Tier</label>
+            <select id="cuTier" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+              <option value="free">Free</option>
+              <option value="pro">Pro</option>
+              <option value="enterprise">Enterprise</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCreateUserModal()">Cancel</button>
+          <button class="btn-primary" id="cuSubmitBtn" onclick="submitCreateUser()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Create</button>
+        </div>
+        <div class="modal-error" id="cuError"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="modal-outer" style="max-width:440px">
+      <div class="modal-inner">
+        <h2>Complete your subscription</h2>
+        <div class="sub" id="checkoutPlanInfo">Loading plan details...</div>
+        <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span id="checkoutPlanName" style="font-weight:700;font-size:1rem"></span>
+            <span id="checkoutPlanPrice" style="font-weight:800;font-size:1.25rem;color:var(--accent)"></span>
+          </div>
+          <div id="checkoutDiscountRow" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.06)">
+            <div style="display:flex;justify-content:space-between;font-size:0.8125rem">
+              <span style="color:var(--green)">Discount</span>
+              <span id="checkoutDiscountAmount" style="color:var(--green);font-weight:600"></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.8125rem;margin-top:4px">
+              <span style="color:var(--text-secondary)">Total</span>
+              <span id="checkoutTotalAmount" style="font-weight:700"></span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:4px">
+          <label>Coupon code (optional)</label>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="checkoutCouponInput" placeholder="SAVE20" style="text-transform:uppercase;flex:1" onkeydown="if(event.key==='Enter')validateCouponInput()">
+            <button class="btn-primary" id="checkoutValidateBtn" onclick="validateCouponInput()" style="font-size:0.75rem;padding:8px 14px;white-space:nowrap">Apply</button>
+          </div>
+          <div id="checkoutCouponFeedback" style="font-size:0.75rem;margin-top:4px;min-height:1rem"></div>
+        </div>
+        <div class="modal-actions" style="margin-top:16px">
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCheckoutModal()">Cancel</button>
+          <button class="btn-primary" id="checkoutSubmitBtn" onclick="proceedToPayment()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">
+            Subscribe <span class="btn-icon" style="width:18px;height:18px;font-size:0.625rem">&#8599;</span>
+          </button>
+        </div>
+        <div class="modal-error" id="checkoutError"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
 <script>
   // --- State ---
@@ -994,6 +1353,12 @@
     const customCode = $('customCodeInput').value.trim() || null;
     const expiresAt = $('expiryInput').value ? new Date($('expiryInput').value).toISOString().replace('Z','') : null;
     const password = $('passwordInput').value || null;
+    const tags = $('tagsInput').value.trim() || null;
+    const utmSource = $('utmSource').value.trim() || null;
+    const utmMedium = $('utmMedium').value.trim() || null;
+    const utmCampaign = $('utmCampaign').value.trim() || null;
+    const utmTerm = $('utmTerm').value.trim() || null;
+    const utmContent = $('utmContent').value.trim() || null;
 
     $('shortenBtn').disabled = true;
     $('shortenStatus').textContent = 'Shortening...';
@@ -1004,6 +1369,12 @@
       if (customCode) body.customCode = customCode;
       if (expiresAt) body.expiresAt = expiresAt;
       if (password) body.password = password;
+      if (tags) body.tags = tags;
+      if (utmSource) body.utmSource = utmSource;
+      if (utmMedium) body.utmMedium = utmMedium;
+      if (utmCampaign) body.utmCampaign = utmCampaign;
+      if (utmTerm) body.utmTerm = utmTerm;
+      if (utmContent) body.utmContent = utmContent;
 
       const res = await fetch('/api/shorten', {
         method: 'POST',
@@ -1022,6 +1393,9 @@
       $('customCodeInput').value = '';
       $('expiryInput').value = '';
       $('passwordInput').value = '';
+      $('tagsInput').value = '';
+      $('utmSource').value = ''; $('utmMedium').value = ''; $('utmCampaign').value = '';
+      $('utmTerm').value = ''; $('utmContent').value = '';
       $('advancedOptions').classList.remove('open');
       $('advancedToggle').textContent = '+ Advanced options';
       $('urlInput').focus();
@@ -1062,7 +1436,9 @@
     });
     $('linksView').classList.toggle('show', view === 'links');
     $('analyticsView').classList.toggle('show', view === 'analytics');
+    $('settingsView').classList.toggle('show', view === 'settings');
     if (view === 'analytics') loadAnalyticsLinkSelect();
+    if (view === 'settings') loadApiKeys();
   }
 
   // --- Load Links ---
@@ -1136,6 +1512,12 @@
     $('editCustomCode').value = url.customCode || '';
     $('editExpiry').value = url.expiresAt ? url.expiresAt.substring(0,16) : '';
     $('editPassword').value = '';
+    $('editTags').value = url.tags || '';
+    $('editUtmSource').value = url.utmSource || '';
+    $('editUtmMedium').value = url.utmMedium || '';
+    $('editUtmCampaign').value = url.utmCampaign || '';
+    $('editUtmTerm').value = url.utmTerm || '';
+    $('editUtmContent').value = url.utmContent || '';
     $('editError').textContent = '';
     $('editModal').classList.add('open');
   }
@@ -1156,7 +1538,13 @@
           url: url.startsWith('http') ? url : 'https://' + url,
           customCode: $('editCustomCode').value.trim() || '',
           expiresAt: $('editExpiry').value ? new Date($('editExpiry').value).toISOString().replace('Z','') : '',
-          password: $('editPassword').value || ''
+          password: $('editPassword').value || '',
+          tags: $('editTags').value.trim() || '',
+          utmSource: $('editUtmSource').value.trim() || '',
+          utmMedium: $('editUtmMedium').value.trim() || '',
+          utmCampaign: $('editUtmCampaign').value.trim() || '',
+          utmTerm: $('editUtmTerm').value.trim() || '',
+          utmContent: $('editUtmContent').value.trim() || ''
         })
       });
       const data = await res.json();
@@ -1372,9 +1760,116 @@
     try { return JSON.parse(str); } catch { return fallback; }
   }
 
-  function pricingCTA(slug) {
-    if (currentUser) { notify('Upgrade to ' + slug + ' coming soon!'); return; }
-    openAuthModal('register');
+  // --- Checkout Modal with Coupon ---
+  let checkoutPlanSlug = null;
+  let checkoutPlanData = null;
+  let checkoutAppliedCoupon = null;
+  let checkoutDiscount = null;
+
+  async function pricingCTA(slug) {
+    if (!currentUser) { openAuthModal('register'); return; }
+    if (slug === 'free') { notify('You are already on the Free plan'); return; }
+    try {
+      const res = await fetch('/api/plans');
+      if (!res.ok) return;
+      const plans = await res.json();
+      const plan = plans.find(p => p.slug === slug);
+      if (!plan) { notify('Plan not found'); return; }
+      checkoutPlanSlug = slug;
+      checkoutPlanData = plan;
+      checkoutAppliedCoupon = null;
+      checkoutDiscount = null;
+      $('checkoutPlanName').textContent = plan.name;
+      $('checkoutPlanPrice').textContent = getCurrencySymbol(plan.currency) + parseFloat(plan.price).toFixed(2) + '/' + plan.billingPeriod;
+      $('checkoutPlanInfo').textContent = plan.description || 'Subscribe to ' + plan.name;
+      $('checkoutDiscountRow').style.display = 'none';
+      $('checkoutCouponInput').value = '';
+      $('checkoutCouponFeedback').textContent = '';
+      $('checkoutCouponFeedback').style.color = '';
+      $('checkoutError').textContent = '';
+      $('checkoutSubmitBtn').disabled = false;
+      $('checkoutSubmitBtn').innerHTML = 'Subscribe <span class="btn-icon" style="width:18px;height:18px;font-size:0.625rem">&#8599;</span>';
+      $('checkoutModal').classList.add('open');
+    } catch { notify('Failed to load plan details'); }
+  }
+
+  function closeCheckoutModal() {
+    $('checkoutModal').classList.remove('open');
+    checkoutPlanSlug = null;
+    checkoutPlanData = null;
+    checkoutAppliedCoupon = null;
+    checkoutDiscount = null;
+  }
+
+  async function validateCouponInput() {
+    const code = $('checkoutCouponInput').value.trim();
+    const feedback = $('checkoutCouponFeedback');
+    if (!code) { feedback.textContent = ''; return; }
+    feedback.textContent = 'Validating...';
+    feedback.style.color = 'var(--text-tertiary)';
+    $('checkoutValidateBtn').disabled = true;
+    try {
+      const res = await fetch('/api/subscriptions/validate-coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, planSlug: checkoutPlanSlug })
+      });
+      const data = await res.json();
+      if (data.valid) {
+        checkoutAppliedCoupon = code;
+        checkoutDiscount = data;
+        const p = checkoutPlanData;
+        const price = parseFloat(p.price);
+        const discVal = parseFloat(data.discountValue);
+        const discAmount = data.discountType === 'percentage' ? price * (discVal / 100) : discVal;
+        const finalPrice = Math.max(0, price - discAmount);
+        $('checkoutDiscountRow').style.display = 'block';
+        $('checkoutDiscountAmount').textContent = '-' + getCurrencySymbol(p.currency) + discAmount.toFixed(2);
+        $('checkoutTotalAmount').textContent = getCurrencySymbol(p.currency) + (finalPrice === 0 ? 'FREE' : finalPrice.toFixed(2));
+        feedback.textContent = data.description + ' discount applied!';
+        feedback.style.color = 'var(--green)';
+      } else {
+        checkoutAppliedCoupon = null;
+        checkoutDiscount = null;
+        $('checkoutDiscountRow').style.display = 'none';
+        feedback.textContent = data.error || 'Invalid coupon';
+        feedback.style.color = 'var(--red)';
+      }
+    } catch {
+      feedback.textContent = 'Failed to validate coupon';
+      feedback.style.color = 'var(--red)';
+    }
+    finally { $('checkoutValidateBtn').disabled = false; }
+  }
+
+  async function proceedToPayment() {
+    $('checkoutError').textContent = '';
+    $('checkoutSubmitBtn').disabled = true;
+    $('checkoutSubmitBtn').textContent = 'Processing...';
+    try {
+      const body = {};
+      if (checkoutAppliedCoupon) body.coupon = checkoutAppliedCoupon;
+      const res = await fetch('/api/subscriptions/initialize/' + checkoutPlanSlug, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      if (data.authorization_url) {
+        window.open(data.authorization_url, '_blank');
+        notify('Redirecting to payment...');
+      } else if (data.status === 'activated') {
+        closeCheckoutModal();
+        notify('Plan activated!');
+        checkAuth();
+        loadPlans();
+      } else {
+        closeCheckoutModal();
+        notify('Subscription initiated');
+      }
+    } catch (err) { $('checkoutError').textContent = err.message; }
+    finally { $('checkoutSubmitBtn').disabled = false; $('checkoutSubmitBtn').innerHTML = 'Subscribe <span class="btn-icon" style="width:18px;height:18px;font-size:0.625rem">&#8599;</span>'; }
   }
 
   // --- Admin Plans ---
@@ -1493,6 +1988,49 @@
     } catch { notify('Failed to delete plan'); }
   }
 
+  // --- Admin Users ---
+  function openCreateUserModal() {
+    $('cuName').value = ''; $('cuEmail').value = ''; $('cuPassword').value = '';
+    $('cuRole').value = 'USER'; $('cuTier').value = 'free';
+    $('cuError').textContent = '';
+    $('createUserModal').classList.add('open');
+  }
+
+  function closeCreateUserModal() { $('createUserModal').classList.remove('open'); }
+
+  async function submitCreateUser() {
+    const name = $('cuName').value.trim();
+    const email = $('cuEmail').value.trim();
+    const password = $('cuPassword').value;
+    if (!name || !email || !password) { $('cuError').textContent = 'All fields required'; return; }
+    if (password.length < 6) { $('cuError').textContent = 'Password min 6 characters'; return; }
+    $('cuError').textContent = '';
+    $('cuSubmitBtn').disabled = true;
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role: $('cuRole').value, tier: $('cuRole').value === 'ADMIN' ? null : $('cuTier').value })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      closeCreateUserModal();
+      notify('User created');
+      showAdmin();
+    } catch (err) { $('cuError').textContent = err.message; }
+    finally { $('cuSubmitBtn').disabled = false; }
+  }
+
+  async function deleteUser(id) {
+    if (!confirm('Delete this user? This cannot be undone.')) return;
+    try {
+      const res = await fetch('/api/admin/users/' + id, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Delete failed');
+      notify('User deleted');
+      showAdmin();
+    } catch (err) { notify(err.message); }
+  }
+
   // --- Auth ---
   async function checkAuth() {
     try {
@@ -1505,6 +2043,10 @@
         $('userRole').textContent = data.user.role;
         $('loginBtn').style.display = 'none';
         $('registerBtn').style.display = 'none';
+        $('viewSelector').style.display = 'flex';
+        $('dashHeader').style.display = 'block';
+        $('loginPrompt').style.display = 'none';
+        document.querySelectorAll('.dash-link').forEach(el => el.style.display = 'inline-block');
         if (data.user.role === 'ADMIN') {
           $('adminLink').style.display = 'inline';
           $('adminTabLink').classList.add('show');
@@ -1514,7 +2056,12 @@
         $('userBadge').style.display = 'none';
         $('loginBtn').style.display = 'inline-block';
         $('registerBtn').style.display = 'inline-block';
+        $('viewSelector').style.display = 'none';
+        $('dashHeader').style.display = 'none';
+        $('loginPrompt').style.display = 'block';
+        document.querySelectorAll('.dash-link').forEach(el => el.style.display = 'none');
         $('adminTabLink').classList.remove('show');
+        switchView('links');
       }
     } catch {}
   }
@@ -1540,21 +2087,30 @@
   }
 
   function closeAuthModal() { $('authModal').classList.remove('open'); }
-  function toggleAuthMode() { openAuthModal(authMode === 'login' ? 'register' : 'login'); }
+  function toggleAuthMode() {
+    if (authMode === 'forgot') { openAuthModal('login'); return; }
+    openAuthModal(authMode === 'login' ? 'register' : 'login');
+  }
 
   async function submitAuth() {
     const email = $('authEmail').value.trim();
     const password = $('authPassword').value;
+    const name = $('regName').value.trim();
     $('authError').textContent = '';
-    if (!email || !password) { $('authError').textContent = 'Email and password are required'; return; }
 
     try {
       let body, url;
-      if (authMode === 'login') {
+      if (authMode === 'reset') {
+        if (!password || password.length < 6) { $('authError').textContent = 'Password must be at least 6 characters'; return; }
+        url = '/api/auth/reset-password'; body = { token: window.resetToken, password };
+      } else if (authMode === 'forgot') {
+        if (!email) { $('authError').textContent = 'Email is required'; return; }
+        url = '/api/auth/forgot-password'; body = { email };
+      } else if (authMode === 'login') {
+        if (!email || !password) { $('authError').textContent = 'Email and password are required'; return; }
         url = '/api/auth/login'; body = { email, password };
       } else {
-        const name = $('regName').value.trim();
-        if (!name) { $('authError').textContent = 'Name is required'; return; }
+        if (!name || !email || !password) { $('authError').textContent = 'All fields are required'; return; }
         url = '/api/auth/register'; body = { name, email, password };
       }
 
@@ -1563,10 +2119,15 @@
         body: JSON.stringify(body), credentials: 'same-origin'
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Authentication failed');
+      if (!res.ok) throw new Error(data.error || 'Request failed');
       closeAuthModal();
-      checkAuth();
-      notify(authMode === 'login' ? 'Signed in as ' + data.name : 'Registered as ' + data.name);
+      if (authMode === 'forgot') {
+        notify('Reset link sent if email exists');
+      } else {
+        checkAuth();
+        loadPublicBanners();
+        notify(authMode === 'login' ? 'Signed in as ' + data.name : 'Registered as ' + data.name);
+      }
     } catch (err) { $('authError').textContent = err.message; }
   }
 
@@ -1575,9 +2136,84 @@
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
       currentUser = null;
       checkAuth();
+      loadPublicBanners();
       hideAdmin();
       notify('Logged out');
     } catch {}
+  }
+
+  // --- Admin Settings ---
+  async function loadSettings() {
+    try {
+      const res = await fetch('/api/admin/settings');
+      if (!res.ok) return;
+      const s = await res.json();
+      $('setPaymentProvider').value = s.paymentProvider || '';
+      $('setPaymentPublicKey').value = s.paymentPublicKey || '';
+      $('setPaymentSecretKey').value = s.paymentSecretKey || '';
+      $('setSandboxMode').checked = s.sandboxMode;
+      $('setSmtpHost').value = s.smtpHost || '';
+      $('setSmtpPort').value = s.smtpPort || '';
+      $('setSmtpUsername').value = s.smtpUsername || '';
+      $('setSmtpPassword').value = s.smtpPassword || '';
+      $('setSmtpFromEmail').value = s.smtpFromEmail || '';
+      $('setSmtpFromName').value = s.smtpFromName || '';
+      $('setSmtpUseTls').checked = s.smtpUseTls;
+      $('setSiteName').value = s.siteName || '';
+      $('setSiteDescription').value = s.siteDescription || '';
+      if (s.logoUrl) $('setLogoPreview').innerHTML = 'Current: <a href="' + s.logoUrl + '" target="_blank">' + s.logoUrl.split('/').pop() + '</a>';
+      if (s.faviconUrl) $('setFaviconPreview').innerHTML = 'Current: <a href="' + s.faviconUrl + '" target="_blank">' + s.faviconUrl.split('/').pop() + '</a>';
+    } catch {}
+  }
+
+  async function saveSettings() {
+    const btn = $('saveSettingsBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paymentProvider: $('setPaymentProvider').value,
+          paymentPublicKey: $('setPaymentPublicKey').value,
+          paymentSecretKey: $('setPaymentSecretKey').value,
+          sandboxMode: $('setSandboxMode').checked,
+          smtpHost: $('setSmtpHost').value,
+          smtpPort: parseInt($('setSmtpPort').value) || null,
+          smtpUsername: $('setSmtpUsername').value,
+          smtpPassword: $('setSmtpPassword').value,
+          smtpFromEmail: $('setSmtpFromEmail').value,
+          smtpFromName: $('setSmtpFromName').value,
+          smtpUseTls: $('setSmtpUseTls').checked,
+          siteName: $('setSiteName').value,
+          siteDescription: $('setSiteDescription').value
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      notify('Settings saved');
+      loadSettings();
+    } catch (err) { notify('Error: ' + err.message); }
+    finally { btn.disabled = false; btn.textContent = 'Save settings'; }
+  }
+
+  async function uploadFile(type) {
+    const fileInput = type === 'logo' ? $('setLogoFile') : $('setFaviconFile');
+    const preview = type === 'logo' ? $('setLogoPreview') : $('setFaviconPreview');
+    const file = fileInput.files[0];
+    if (!file) { notify('Select a file first'); return; }
+    const form = new FormData();
+    form.append('file', file);
+    form.append('type', type);
+    try {
+      const res = await fetch('/api/admin/settings/upload', { method: 'POST', body: form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      preview.innerHTML = 'Uploaded: <a href="' + data.url + '" target="_blank">' + data.url.split('/').pop() + '</a>';
+      notify(type.charAt(0).toUpperCase() + type.slice(1) + ' uploaded');
+      fileInput.value = '';
+    } catch (err) { notify('Error: ' + err.message); }
   }
 
   // --- Admin ---
@@ -1595,9 +2231,21 @@
 
       const users = await usersRes.json();
       $('adminUserList').innerHTML = users.length
-        ? users.map(u => '<li class="url-item"><div class="info"><strong>' + u.name + '</strong><span class="original">' + u.email + ' &middot; ' + (u.tier || 'free') + '</span></div><div class="meta"><span class="clicks">' + u.role + '</span></div></li>').join('')
+        ? users.map(u => {
+            const tierLabel = u.tier || '<em style="color:var(--accent)">Platform Owner</em>';
+            const isAdmin = u.role === 'ADMIN';
+            return '<li class="url-item">' +
+              '<div class="info"><strong>' + u.name + '</strong><span class="original">' + u.email + ' &middot; ' + tierLabel + '</span></div>' +
+              '<div class="meta">' +
+              '<span class="clicks">' + u.role + '</span>' +
+              (!isAdmin ? '<button class="action-btn danger" onclick="deleteUser(' + u.id + ')" title="Delete user">&#x2716;</button>' : '') +
+              '</div></li>';
+          }).join('')
         : '<li class="empty-state">No users yet.</li>';
       loadAdminPlans();
+      loadAdminBanners();
+      loadAdminCoupons();
+      loadSettings();
     } catch { notify('Failed to load admin data'); }
   }
 
@@ -1606,12 +2254,342 @@
     $('mainContent').style.display = 'block';
   }
 
+  // --- Dynamic Branding ---
+  async function loadBranding() {
+    try {
+      const res = await fetch('/api/admin/settings');
+      if (!res.ok) return;
+      const s = await res.json();
+      if (s.siteName) {
+        document.title = s.siteName + ' \u2014 URL Shortener';
+        document.querySelector('.nav-brand span').innerHTML = s.siteName.replace(/^(.)/, '<em>$1</em>');
+      }
+      if (s.faviconUrl) document.querySelector('link[rel="icon"]').href = s.faviconUrl;
+      if (s.logoUrl) {
+        const img = document.querySelector('.nav-brand svg');
+        if (img) { img.outerHTML = '<img src="' + s.logoUrl + '" style="height:28px;width:auto">'; }
+      }
+    } catch {}
+  }
+
+  // --- Forgot Password ---
+  function showForgotPassword() {
+    $('authTitle').textContent = 'Reset password';
+    $('authSub').textContent = 'Enter your email to receive a reset link.';
+    $('authSubmitBtn').textContent = 'Send reset link';
+    $('authToggle').textContent = 'Back to sign in';
+    $('registerFields').style.display = 'none';
+    authMode = 'forgot';
+  }
+
+  // --- API Keys ---
+  async function loadApiKeys() {
+    try {
+      const res = await fetch('/api/keys');
+      if (!res.ok) return;
+      const keys = await res.json();
+      const list = $('apiKeyList');
+      list.innerHTML = keys.length
+        ? keys.map(k => '<li class="url-item"><div class="info"><strong>' + k.name + '</strong><span class="original">' + k.prefix + '...</span></div><div class="meta"><span class="time">' + (k.lastUsedAt ? 'Last used ' + formatTime(k.lastUsedAt) : 'Never used') + '</span><button class="action-btn danger" onclick="deleteApiKey(' + k.id + ')" title="Delete key">&#x2716;</button></div></li>').join('')
+        : '<li class="empty-state">No API keys yet.</li>';
+    } catch {}
+    $('apiKeyNewKey').style.display = 'none';
+  }
+
+  async function createApiKey() {
+    const name = $('apiKeyName').value.trim() || 'API Key';
+    try {
+      const res = await fetch('/api/keys', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      $('apiKeyNewKey').innerHTML = '<div style="background:var(--green-soft);border:1px solid rgba(15,151,61,0.2);border-radius:var(--radius-sm);padding:12px;margin-top:8px"><strong style="color:var(--green)">Save this key!</strong><div style="font-family:monospace;font-size:0.8125rem;word-break:break-all;margin-top:4px">' + data.key + '</div><div style="font-size:0.75rem;color:var(--text-tertiary);margin-top:2px">It won\'t be shown again.</div></div>';
+      $('apiKeyNewKey').style.display = 'block';
+      $('apiKeyName').value = '';
+      loadApiKeys();
+    } catch (err) { notify('Error: ' + err.message); }
+  }
+
+  async function deleteApiKey(id) {
+    if (!confirm('Delete this API key?')) return;
+    try {
+      const res = await fetch('/api/keys/' + id, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed');
+      notify('Key deleted');
+      loadApiKeys();
+    } catch { notify('Failed to delete key'); }
+  }
+
+  // --- Promo Banner Admin CRUD ---
+  let editBannerId = null;
+
+  async function loadAdminBanners() {
+    try {
+      const res = await fetch('/api/admin/banners');
+      if (!res.ok) return;
+      const banners = await res.json();
+      $('adminBannerList').innerHTML = banners.length
+        ? banners.map(b => {
+            const status = b.active ? 'Active' : 'Inactive';
+            const statusColor = b.active ? 'var(--green)' : 'var(--text-tertiary)';
+            const statusBg = b.active ? 'var(--green-soft)' : 'var(--bg)';
+            return '<li class="url-item">' +
+              '<div class="info"><strong>' + b.title + '</strong><span class="original">' + b.message.substring(0, 60) + (b.message.length > 60 ? '...' : '') + '</span></div>' +
+              '<div class="meta">' +
+              '<span class="clicks" style="background:' + statusBg + ';color:' + statusColor + '">' + status + '</span>' +
+              '<button class="action-btn" onclick="editBanner(' + b.id + ')" title="Edit">&#x270e;</button>' +
+              '<button class="action-btn danger" onclick="deleteBanner(' + b.id + ')" title="Delete">&#x2716;</button>' +
+              '</div></li>';
+          }).join('')
+        : '<li class="empty-state">No banners yet. Create one above.</li>';
+    } catch { $('adminBannerList').innerHTML = '<li class="empty-state">Failed to load banners.</li>'; }
+  }
+
+  function openBannerModal() {
+    editBannerId = null;
+    $('bannerModalTitle').textContent = 'Add banner';
+    $('bannerModalSub').textContent = 'Create a promotional banner.';
+    $('bannerSubmitBtn').textContent = 'Save banner';
+    $('bannerTitle').value = ''; $('bannerMessage').value = '';
+    $('bannerCtaText').value = ''; $('bannerCtaUrl').value = '';
+    $('bannerBgColor').value = '#3563e9'; $('bannerTextColor').value = '#ffffff';
+    $('bannerPosition').value = 'top'; $('bannerShowTo').value = 'all';
+    $('bannerDismissible').checked = true; $('bannerActive').checked = true;
+    $('bannerStartDate').value = ''; $('bannerEndDate').value = '';
+    $('bannerError').textContent = '';
+    $('bannerModal').classList.add('open');
+  }
+
+  function closeBannerModal() { $('bannerModal').classList.remove('open'); editBannerId = null; }
+
+  async function editBanner(id) {
+    try {
+      const res = await fetch('/api/admin/banners');
+      if (!res.ok) return;
+      const banners = await res.json();
+      const b = banners.find(x => x.id === id);
+      if (!b) return;
+      editBannerId = id;
+      $('bannerModalTitle').textContent = 'Edit banner';
+      $('bannerModalSub').textContent = 'Update promotional banner.';
+      $('bannerSubmitBtn').textContent = 'Update banner';
+      $('bannerTitle').value = b.title || '';
+      $('bannerMessage').value = b.message || '';
+      $('bannerCtaText').value = b.ctaText || '';
+      $('bannerCtaUrl').value = b.ctaUrl || '';
+      $('bannerBgColor').value = b.bgColor || '#3563e9';
+      $('bannerTextColor').value = b.textColor || '#ffffff';
+      $('bannerPosition').value = b.position || 'top';
+      $('bannerShowTo').value = b.showTo || 'all';
+      $('bannerDismissible').checked = b.dismissible !== false;
+      $('bannerActive').checked = b.active !== false;
+      $('bannerStartDate').value = b.startDate ? b.startDate.substring(0, 16) : '';
+      $('bannerEndDate').value = b.endDate ? b.endDate.substring(0, 16) : '';
+      $('bannerError').textContent = '';
+      $('bannerModal').classList.add('open');
+    } catch { notify('Failed to load banner details'); }
+  }
+
+  async function submitBanner() {
+    const title = $('bannerTitle').value.trim();
+    const message = $('bannerMessage').value.trim();
+    if (!title || !message) { $('bannerError').textContent = 'Title and message are required'; return; }
+    $('bannerError').textContent = '';
+    $('bannerSubmitBtn').disabled = true;
+    const body = {
+      title, message,
+      ctaText: $('bannerCtaText').value.trim(),
+      ctaUrl: $('bannerCtaUrl').value.trim(),
+      bgColor: $('bannerBgColor').value,
+      textColor: $('bannerTextColor').value,
+      position: $('bannerPosition').value,
+      showTo: $('bannerShowTo').value,
+      dismissible: $('bannerDismissible').checked,
+      active: $('bannerActive').checked
+    };
+    if ($('bannerStartDate').value) body.startDate = new Date($('bannerStartDate').value).toISOString().replace('Z', '');
+    if ($('bannerEndDate').value) body.endDate = new Date($('bannerEndDate').value).toISOString().replace('Z', '');
+    try {
+      const url = editBannerId ? '/api/admin/banners/' + editBannerId : '/api/admin/banners';
+      const method = editBannerId ? 'PUT' : 'POST';
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save banner');
+      closeBannerModal();
+      notify(editBannerId ? 'Banner updated' : 'Banner created');
+      loadAdminBanners();
+    } catch (err) { $('bannerError').textContent = err.message; }
+    finally { $('bannerSubmitBtn').disabled = false; }
+  }
+
+  async function deleteBanner(id) {
+    if (!confirm('Delete this banner?')) return;
+    try {
+      const res = await fetch('/api/admin/banners/' + id, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      notify('Banner deleted');
+      loadAdminBanners();
+    } catch { notify('Failed to delete banner'); }
+  }
+
+  // --- Coupon Admin CRUD ---
+  let editCouponId = null;
+
+  async function loadAdminCoupons() {
+    try {
+      const res = await fetch('/api/admin/coupons');
+      if (!res.ok) return;
+      const coupons = await res.json();
+      $('adminCouponList').innerHTML = coupons.length
+        ? coupons.map(c => {
+            const typeLabel = c.discountType === 'percentage' ? c.discountValue + '%' : '$' + c.discountValue;
+            const status = c.active ? 'Active' : 'Inactive';
+            const statusColor = c.active ? 'var(--green)' : 'var(--text-tertiary)';
+            const statusBg = c.active ? 'var(--green-soft)' : 'var(--bg)';
+            const uses = c.maxUses ? c.currentUses + '/' + c.maxUses : c.currentUses;
+            return '<li class="url-item">' +
+              '<div class="info"><strong>' + c.code + '</strong><span class="original">' + typeLabel + ' &middot; Uses: ' + uses + (c.planSlug ? ' &middot; ' + c.planSlug : '') + '</span></div>' +
+              '<div class="meta">' +
+              '<span class="clicks" style="background:' + statusBg + ';color:' + statusColor + '">' + status + '</span>' +
+              '<button class="action-btn" onclick="editCoupon(' + c.id + ')" title="Edit">&#x270e;</button>' +
+              '<button class="action-btn danger" onclick="deleteCoupon(' + c.id + ')" title="Delete">&#x2716;</button>' +
+              '</div></li>';
+          }).join('')
+        : '<li class="empty-state">No coupons yet. Create one above.</li>';
+    } catch { $('adminCouponList').innerHTML = '<li class="empty-state">Failed to load coupons.</li>'; }
+  }
+
+  function openCouponModal() {
+    editCouponId = null;
+    $('couponModalTitle').textContent = 'Add coupon';
+    $('couponModalSub').textContent = 'Create a discount coupon.';
+    $('couponSubmitBtn').textContent = 'Save coupon';
+    $('couponCode').value = ''; $('couponDiscountType').value = 'percentage';
+    $('couponDiscountValue').value = ''; $('couponMaxUses').value = '';
+    $('couponMinAmount').value = ''; $('couponPlanSlug').value = '';
+    $('couponExpiresAt').value = ''; $('couponActive').checked = true;
+    $('couponError').textContent = '';
+    $('couponModal').classList.add('open');
+  }
+
+  function closeCouponModal() { $('couponModal').classList.remove('open'); editCouponId = null; }
+
+  async function editCoupon(id) {
+    try {
+      const res = await fetch('/api/admin/coupons');
+      if (!res.ok) return;
+      const coupons = await res.json();
+      const c = coupons.find(x => x.id === id);
+      if (!c) return;
+      editCouponId = id;
+      $('couponModalTitle').textContent = 'Edit coupon';
+      $('couponModalSub').textContent = 'Update discount coupon.';
+      $('couponSubmitBtn').textContent = 'Update coupon';
+      $('couponCode').value = c.code || '';
+      $('couponDiscountType').value = c.discountType || 'percentage';
+      $('couponDiscountValue').value = c.discountValue || '';
+      $('couponMaxUses').value = c.maxUses || '';
+      $('couponMinAmount').value = c.minAmount || '';
+      $('couponPlanSlug').value = c.planSlug || '';
+      $('couponExpiresAt').value = c.expiresAt ? c.expiresAt.substring(0, 16) : '';
+      $('couponActive').checked = c.active !== false;
+      $('couponError').textContent = '';
+      $('couponModal').classList.add('open');
+    } catch { notify('Failed to load coupon details'); }
+  }
+
+  async function submitCoupon() {
+    const code = $('couponCode').value.trim();
+    const discountValue = parseFloat($('couponDiscountValue').value);
+    if (!code) { $('couponError').textContent = 'Code is required'; return; }
+    if (!discountValue || discountValue <= 0) { $('couponError').textContent = 'Valid discount value is required'; return; }
+    $('couponError').textContent = '';
+    $('couponSubmitBtn').disabled = true;
+    const body = {
+      code,
+      discountType: $('couponDiscountType').value,
+      discountValue,
+      active: $('couponActive').checked
+    };
+    if ($('couponMaxUses').value) body.maxUses = parseInt($('couponMaxUses').value);
+    if ($('couponMinAmount').value) body.minAmount = parseFloat($('couponMinAmount').value);
+    if ($('couponPlanSlug').value) body.planSlug = $('couponPlanSlug').value;
+    if ($('couponExpiresAt').value) body.expiresAt = new Date($('couponExpiresAt').value).toISOString().replace('Z', '');
+    try {
+      const url = editCouponId ? '/api/admin/coupons/' + editCouponId : '/api/admin/coupons';
+      const method = editCouponId ? 'PUT' : 'POST';
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save coupon');
+      closeCouponModal();
+      notify(editCouponId ? 'Coupon updated' : 'Coupon created');
+      loadAdminCoupons();
+    } catch (err) { $('couponError').textContent = err.message; }
+    finally { $('couponSubmitBtn').disabled = false; }
+  }
+
+  async function deleteCoupon(id) {
+    if (!confirm('Delete this coupon?')) return;
+    try {
+      const res = await fetch('/api/admin/coupons/' + id, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      notify('Coupon deleted');
+      loadAdminCoupons();
+    } catch { notify('Failed to delete coupon'); }
+  }
+
+  // --- Public Promo Banner Display ---
+  async function loadPublicBanners() {
+    try {
+      const res = await fetch('/api/banners');
+      if (!res.ok) return;
+      const banners = await res.json();
+      const container = document.getElementById('publicBanners');
+      if (!container) return;
+      if (!banners.length) { container.style.display = 'none'; return; }
+      container.style.display = 'block';
+      container.innerHTML = banners.map(b => {
+        const isUser = currentUser !== null;
+        if (b.showTo === 'guests' && isUser) return '';
+        if (b.showTo === 'logged_in' && !isUser) return '';
+        const cta = b.ctaText && b.ctaUrl ? '<a href="' + b.ctaUrl + '" style="color:inherit;text-decoration:underline;font-weight:600;margin-left:8px">' + b.ctaText + '</a>' : '';
+        const dismissBtn = b.dismissible ? '<button onclick="this.parentElement.remove()" style="background:none;border:none;color:inherit;font-size:1.1rem;cursor:pointer;padding:0 4px;opacity:0.7">&times;</button>' : '';
+        const pos = b.position === 'bottom' ? 'fixed;bottom:0;left:0;right:0' : 'relative';
+        return '<div style="position:' + pos + ';z-index:50;background:' + b.bgColor + ';color:' + b.textColor + ';padding:10px 24px;text-align:center;font-size:0.875rem;display:flex;align-items:center;justify-content:center;gap:8px">' +
+          '<span><strong>' + b.title + ':</strong> ' + b.message + '</span>' +
+          cta +
+          dismissBtn +
+          '</div>';
+      }).join('');
+    } catch {}
+  }
+
+  // --- Password reset from URL ---
+  function checkResetToken() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('reset_token');
+    if (!token) return;
+    $('authTitle').textContent = 'Reset password';
+    $('authSub').textContent = 'Enter your new password.';
+    $('authSubmitBtn').textContent = 'Reset password';
+    $('authToggle').textContent = '';
+    $('registerFields').style.display = 'none';
+    authMode = 'reset';
+    window.resetToken = token;
+    openAuthModal('reset');
+  }
+
   // --- Init ---
+  checkAuth();
+  loadPublicBanners();
+  loadBranding();
+  checkResetToken();
   loadLinks();
   loadPlans();
-  setInterval(() => { if (!$('searchInput').value) loadLinks(); }, 15000);
+  setInterval(() => { if ($('viewSelector').style.display !== 'none' && !$('searchInput').value) loadLinks(); }, 15000);
   setInterval(loadPlans, 60000);
-  checkAuth();
 
   // Password link interceptor
   document.addEventListener('click', async function(e) {

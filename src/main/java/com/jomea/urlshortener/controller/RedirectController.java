@@ -2,8 +2,11 @@ package com.jomea.urlshortener.controller;
 
 import com.jomea.urlshortener.entity.ClickEvent;
 import com.jomea.urlshortener.entity.Url;
+import com.jomea.urlshortener.entity.User;
 import com.jomea.urlshortener.repository.ClickEventRepository;
 import com.jomea.urlshortener.repository.UrlRepository;
+import com.jomea.urlshortener.repository.UserRepository;
+import com.jomea.urlshortener.service.TierEnforcementService;
 import com.jomea.urlshortener.service.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
@@ -22,11 +25,18 @@ public class RedirectController {
     private final UrlService urlService;
     private final UrlRepository urlRepository;
     private final ClickEventRepository clickEventRepository;
+    private final TierEnforcementService tierEnforcement;
+    private final UserRepository userRepository;
 
-    public RedirectController(UrlService urlService, UrlRepository urlRepository, ClickEventRepository clickEventRepository) {
+    public RedirectController(UrlService urlService, UrlRepository urlRepository,
+                               ClickEventRepository clickEventRepository,
+                               TierEnforcementService tierEnforcement,
+                               UserRepository userRepository) {
         this.urlService = urlService;
         this.urlRepository = urlRepository;
         this.clickEventRepository = clickEventRepository;
+        this.tierEnforcement = tierEnforcement;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/")
@@ -48,6 +58,17 @@ public class RedirectController {
         if (url.getPasswordHash() != null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("requiresPassword", true, "shortCode", shortCode));
+        }
+        if (url.getUserId() != null) {
+            User owner = userRepository.findById(url.getUserId()).orElse(null);
+            if (owner != null) {
+                try {
+                    tierEnforcement.checkCanAccessUrl(owner, url.getClickCount());
+                } catch (IllegalStateException e) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", e.getMessage()));
+                }
+            }
         }
         String referer = request.getHeader("Referer");
         String userAgent = request.getHeader("User-Agent");

@@ -6,7 +6,9 @@ import com.jomea.urlshortener.dto.BulkShortenResponseItem;
 import com.jomea.urlshortener.dto.ShortenResponse;
 import com.jomea.urlshortener.dto.StatsResponse;
 import com.jomea.urlshortener.entity.Url;
+import com.jomea.urlshortener.entity.User;
 import com.jomea.urlshortener.repository.UrlRepository;
+import com.jomea.urlshortener.repository.UserRepository;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,18 +29,31 @@ public class UrlService {
     private final CacheService cacheService;
     private final AppProperties appProperties;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final TierEnforcementService tierEnforcement;
 
     public UrlService(UrlRepository urlRepository, IdGenerator idGenerator,
                       CacheService cacheService, AppProperties appProperties,
-                      PasswordEncoder passwordEncoder) {
+                      PasswordEncoder passwordEncoder, UserRepository userRepository,
+                      TierEnforcementService tierEnforcement) {
         this.urlRepository = urlRepository;
         this.idGenerator = idGenerator;
         this.cacheService = cacheService;
         this.appProperties = appProperties;
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+        this.tierEnforcement = tierEnforcement;
     }
 
-    public ShortenResponse shortenUrl(String longUrl, String customCode, String expiresAt, String password) {
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) return null;
+        return userRepository.findByEmail(auth.getName()).orElse(null);
+    }
+
+    public ShortenResponse shortenUrl(String longUrl, String customCode, String expiresAt, String password,
+                                       String tags, String utmSource, String utmMedium, String utmCampaign,
+                                       String utmTerm, String utmContent) {
         if (longUrl == null || longUrl.isBlank()) {
             throw new IllegalArgumentException("URL must not be blank");
         }
@@ -62,6 +79,11 @@ public class UrlService {
             }
         }
 
+        User user = getCurrentUser();
+        if (user != null) {
+            tierEnforcement.checkCanCreateUrl(user);
+        }
+
         String shortCode;
         if (customCode != null && !customCode.isBlank()) {
             shortCode = customCode;
@@ -69,11 +91,36 @@ public class UrlService {
             shortCode = idGenerator.nextId();
         }
 
+        StringBuilder finalUrl = new StringBuilder(longUrl);
+        String querySep = longUrl.contains("?") ? "&" : "?";
+        boolean addedUtm = false;
+        if (utmSource != null && !utmSource.isBlank()) {
+            finalUrl.append(querySep).append("utm_source=").append(encodeParam(utmSource));
+            querySep = "&"; addedUtm = true;
+        }
+        if (utmMedium != null && !utmMedium.isBlank()) {
+            finalUrl.append(querySep).append("utm_medium=").append(encodeParam(utmMedium));
+            querySep = "&"; addedUtm = true;
+        }
+        if (utmCampaign != null && !utmCampaign.isBlank()) {
+            finalUrl.append(querySep).append("utm_campaign=").append(encodeParam(utmCampaign));
+            querySep = "&"; addedUtm = true;
+        }
+        if (utmTerm != null && !utmTerm.isBlank()) {
+            finalUrl.append(querySep).append("utm_term=").append(encodeParam(utmTerm));
+            querySep = "&"; addedUtm = true;
+        }
+        if (utmContent != null && !utmContent.isBlank()) {
+            finalUrl.append(querySep).append("utm_content=").append(encodeParam(utmContent));
+        }
+
         Url url = new Url();
         url.setShortCode(shortCode);
-        url.setLongUrl(longUrl);
+        url.setLongUrl(finalUrl.toString());
         url.setCreatedAt(LocalDateTime.now());
         url.setClickCount(0);
+
+        if (user != null) url.setUserId(user.getId());
 
         if (customCode != null && !customCode.isBlank()) {
             url.setCustomCode(customCode);
@@ -87,13 +134,29 @@ public class UrlService {
             url.setPasswordHash(passwordEncoder.encode(password));
         }
 
+        if (tags != null && !tags.isBlank()) url.setTags(tags.trim());
+        if (utmSource != null && !utmSource.isBlank()) url.setUtmSource(utmSource);
+        if (utmMedium != null && !utmMedium.isBlank()) url.setUtmMedium(utmMedium);
+        if (utmCampaign != null && !utmCampaign.isBlank()) url.setUtmCampaign(utmCampaign);
+        if (utmTerm != null && !utmTerm.isBlank()) url.setUtmTerm(utmTerm);
+        if (utmContent != null && !utmContent.isBlank()) url.setUtmContent(utmContent);
+
         urlRepository.save(url);
-        cacheService.put(shortCode, longUrl);
+        cacheService.put(shortCode, finalUrl.toString());
 
         String shortUrl = appProperties.getBaseUrl() + "/" + shortCode;
         boolean hasPassword = password != null && !password.isBlank();
         boolean isCustom = customCode != null && !customCode.isBlank();
-        return new ShortenResponse(shortUrl, shortCode, longUrl, expiresAt, hasPassword, isCustom);
+        return new ShortenResponse(shortUrl, shortCode, longUrl, expiresAt, hasPassword, isCustom,
+            tags, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
+    }
+
+    private String encodeParam(String value) {
+        try {
+            return java.net.URLEncoder.encode(value, java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            return value;
+        }
     }
 
     public List<BulkShortenResponseItem> shortenBulk(List<BulkShortenRequest> requests) {
@@ -101,7 +164,8 @@ public class UrlService {
         for (int i = 0; i < requests.size(); i++) {
             BulkShortenRequest req = requests.get(i);
             try {
-                ShortenResponse response = shortenUrl(req.url(), req.customCode(), req.expiresAt(), req.password());
+                ShortenResponse response = shortenUrl(req.url(), req.customCode(), req.expiresAt(), req.password(),
+                    null, null, null, null, null, null);
                 results.add(new BulkShortenResponseItem(
                     i, "success", response.shortCode(), null, response.shortUrl(), response.longUrl()
                 ));
@@ -115,25 +179,33 @@ public class UrlService {
     }
 
     public List<Url> searchUrls(String query, String dateFrom, String dateTo) {
+        User user = getCurrentUser();
+        List<Url> all;
         if (query != null && !query.isBlank() && dateFrom != null && !dateFrom.isBlank() && dateTo != null && !dateTo.isBlank()) {
             LocalDateTime from = LocalDateTime.parse(dateFrom);
             LocalDateTime to = LocalDateTime.parse(dateTo);
-            return urlRepository.findByShortCodeContainingOrLongUrlContainingAllIgnoreCase(query, query, Sort.by(Sort.Direction.DESC, "createdAt"))
+            all = urlRepository.findByShortCodeContainingOrLongUrlContainingAllIgnoreCase(query, query, Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
                 .filter(u -> u.getCreatedAt() != null && !u.getCreatedAt().isBefore(from) && !u.getCreatedAt().isAfter(to))
                 .toList();
         } else if (query != null && !query.isBlank()) {
-            return urlRepository.findByShortCodeContainingOrLongUrlContainingAllIgnoreCase(query, query, Sort.by(Sort.Direction.DESC, "createdAt"));
+            all = urlRepository.findByShortCodeContainingOrLongUrlContainingAllIgnoreCase(query, query, Sort.by(Sort.Direction.DESC, "createdAt"));
         } else if (dateFrom != null && !dateFrom.isBlank() && dateTo != null && !dateTo.isBlank()) {
             LocalDateTime from = LocalDateTime.parse(dateFrom);
             LocalDateTime to = LocalDateTime.parse(dateTo);
-            return urlRepository.findByCreatedAtBetween(from, to, Sort.by(Sort.Direction.DESC, "createdAt"));
+            all = urlRepository.findByCreatedAtBetween(from, to, Sort.by(Sort.Direction.DESC, "createdAt"));
         } else {
-            return urlRepository.findAllByOrderByCreatedAtDesc();
+            all = urlRepository.findAllByOrderByCreatedAtDesc();
         }
+        if (user != null) {
+            return all.stream().filter(u -> u.getUserId() == null || u.getUserId().equals(user.getId())).toList();
+        }
+        return all.stream().filter(u -> u.getUserId() == null).toList();
     }
 
-    public Url updateLink(String shortCode, String newLongUrl, String customCode, String expiresAt, String password) {
+    public Url updateLink(String shortCode, String newLongUrl, String customCode, String expiresAt, String password,
+                           String tags, String utmSource, String utmMedium, String utmCampaign,
+                           String utmTerm, String utmContent) {
         Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new IllegalArgumentException("Link not found"));
 
@@ -169,6 +241,13 @@ public class UrlService {
         } else if (password != null && password.isBlank()) {
             url.setPasswordHash(null);
         }
+
+        if (tags != null) url.setTags(tags.isBlank() ? null : tags.trim());
+        if (utmSource != null) url.setUtmSource(utmSource.isBlank() ? null : utmSource);
+        if (utmMedium != null) url.setUtmMedium(utmMedium.isBlank() ? null : utmMedium);
+        if (utmCampaign != null) url.setUtmCampaign(utmCampaign.isBlank() ? null : utmCampaign);
+        if (utmTerm != null) url.setUtmTerm(utmTerm.isBlank() ? null : utmTerm);
+        if (utmContent != null) url.setUtmContent(utmContent.isBlank() ? null : utmContent);
 
         urlRepository.save(url);
         cacheService.put(url.getShortCode(), url.getLongUrl());

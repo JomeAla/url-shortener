@@ -13,6 +13,8 @@ public class AppProperties {
 
     private int maxUrlLength = 2048;
 
+    private String defaultCurrency = "NGN";
+
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -28,4 +30,7 @@ public class AppProperties {
     public void setMaxUrlLength(int maxUrlLength) {
         this.maxUrlLength = maxUrlLength;
     }
+
+    public String getDefaultCurrency() { return defaultCurrency; }
+    public void setDefaultCurrency(String defaultCurrency) { this.defaultCurrency = defaultCurrency; }
 }

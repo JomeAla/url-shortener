@@ -30,8 +30,7 @@ public class User {
     @Column(nullable = false)
     private String role = "USER";
 
-    @Column(nullable = false)
-    private String tier = "free";
+    private String tier;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

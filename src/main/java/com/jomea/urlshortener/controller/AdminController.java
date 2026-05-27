@@ -1,14 +1,25 @@
 package com.jomea.urlshortener.controller;
 
+import com.jomea.urlshortener.config.AesEncryption;
+import com.jomea.urlshortener.config.AppProperties;
+import com.jomea.urlshortener.dto.AppSettingsDto;
 import com.jomea.urlshortener.dto.PlanDto;
 import com.jomea.urlshortener.dto.UserDto;
+import com.jomea.urlshortener.entity.AppSettings;
+import com.jomea.urlshortener.entity.Coupon;
 import com.jomea.urlshortener.entity.Plan;
+import com.jomea.urlshortener.entity.PromoBanner;
 import com.jomea.urlshortener.entity.Url;
+import com.jomea.urlshortener.entity.User;
+import com.jomea.urlshortener.repository.AppSettingsRepository;
+import com.jomea.urlshortener.repository.CouponRepository;
 import com.jomea.urlshortener.repository.PlanRepository;
+import com.jomea.urlshortener.repository.PromoBannerRepository;
 import com.jomea.urlshortener.repository.UrlRepository;
 import com.jomea.urlshortener.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +27,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +44,27 @@ public class AdminController {
     private final UrlRepository urlRepository;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
+    private final AppSettingsRepository appSettingsRepository;
+    private final PromoBannerRepository promoBannerRepository;
+    private final CouponRepository couponRepository;
+    private final AesEncryption aesEncryption;
+    private final PasswordEncoder passwordEncoder;
+    private final AppProperties appProperties;
 
-    public AdminController(UrlRepository urlRepository, UserRepository userRepository, PlanRepository planRepository) {
+    public AdminController(UrlRepository urlRepository, UserRepository userRepository,
+                           PlanRepository planRepository, AppSettingsRepository appSettingsRepository,
+                           PromoBannerRepository promoBannerRepository, CouponRepository couponRepository,
+                           AesEncryption aesEncryption, PasswordEncoder passwordEncoder,
+                           AppProperties appProperties) {
         this.urlRepository = urlRepository;
         this.userRepository = userRepository;
         this.planRepository = planRepository;
+        this.appSettingsRepository = appSettingsRepository;
+        this.promoBannerRepository = promoBannerRepository;
+        this.couponRepository = couponRepository;
+        this.aesEncryption = aesEncryption;
+        this.passwordEncoder = passwordEncoder;
+        this.appProperties = appProperties;
     }
 
     @GetMapping("/urls")
@@ -81,7 +112,7 @@ public class AdminController {
             plan.setSlug((String) body.get("slug"));
             plan.setDescription((String) body.getOrDefault("description", ""));
             plan.setPrice(new java.math.BigDecimal(body.get("price").toString()));
-            plan.setCurrency((String) body.getOrDefault("currency", "USD"));
+            plan.setCurrency((String) body.getOrDefault("currency", appProperties.getDefaultCurrency()));
             plan.setBillingPeriod((String) body.getOrDefault("billingPeriod", "monthly"));
             plan.setMaxUrls(Integer.parseInt(body.getOrDefault("maxUrls", "0").toString()));
             plan.setMaxClicksPerUrl(Integer.parseInt(body.getOrDefault("maxClicksPerUrl", "0").toString()));
@@ -131,5 +162,311 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<?> createUser(@RequestBody Map<String, Object> body) {
+        try {
+            String email = (String) body.get("email");
+            if (email == null || userRepository.existsByEmail(email)) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Email already exists or invalid"));
+            }
+            User user = new User();
+            user.setName((String) body.getOrDefault("name", "User"));
+            user.setEmail(email);
+            user.setPassword(passwordEncoder.encode((String) body.get("password")));
+            user.setRole((String) body.getOrDefault("role", "USER"));
+            user.setTier((String) body.getOrDefault("tier", "free"));
+            user.setCreatedAt(LocalDateTime.now());
+            userRepository.save(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User created"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            if ("ADMIN".equals(user.getRole())) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Cannot delete admin accounts"));
+            }
+            userRepository.delete(user);
+            return ResponseEntity.ok(Map.of("message", "User deleted"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // --- Promo Banners ---
+
+    @GetMapping("/banners")
+    public ResponseEntity<List<PromoBanner>> listBanners() {
+        return ResponseEntity.ok(promoBannerRepository.findAllByOrderByCreatedAtDesc());
+    }
+
+    @PostMapping("/banners")
+    public ResponseEntity<?> createBanner(@RequestBody Map<String, Object> body) {
+        try {
+            PromoBanner b = new PromoBanner();
+            b.setTitle((String) body.get("title"));
+            b.setMessage((String) body.get("message"));
+            b.setCtaText((String) body.getOrDefault("ctaText", ""));
+            b.setCtaUrl((String) body.getOrDefault("ctaUrl", ""));
+            b.setBgColor((String) body.getOrDefault("bgColor", "#3563e9"));
+            b.setTextColor((String) body.getOrDefault("textColor", "#ffffff"));
+            b.setPosition((String) body.getOrDefault("position", "top"));
+            b.setShowTo((String) body.getOrDefault("showTo", "all"));
+            b.setDismissible(Boolean.parseBoolean(body.getOrDefault("dismissible", "true").toString()));
+            b.setActive(Boolean.parseBoolean(body.getOrDefault("active", "true").toString()));
+            b.setCreatedAt(LocalDateTime.now());
+            if (body.containsKey("startDate")) b.setStartDate(LocalDateTime.parse((String) body.get("startDate")));
+            if (body.containsKey("endDate")) b.setEndDate(LocalDateTime.parse((String) body.get("endDate")));
+            promoBannerRepository.save(b);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Banner created"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/banners/{id}")
+    public ResponseEntity<?> updateBanner(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        try {
+            PromoBanner b = promoBannerRepository.findById(id).orElseThrow();
+            if (body.containsKey("title")) b.setTitle((String) body.get("title"));
+            if (body.containsKey("message")) b.setMessage((String) body.get("message"));
+            if (body.containsKey("ctaText")) b.setCtaText((String) body.get("ctaText"));
+            if (body.containsKey("ctaUrl")) b.setCtaUrl((String) body.get("ctaUrl"));
+            if (body.containsKey("bgColor")) b.setBgColor((String) body.get("bgColor"));
+            if (body.containsKey("textColor")) b.setTextColor((String) body.get("textColor"));
+            if (body.containsKey("position")) b.setPosition((String) body.get("position"));
+            if (body.containsKey("showTo")) b.setShowTo((String) body.get("showTo"));
+            if (body.containsKey("dismissible")) b.setDismissible(Boolean.parseBoolean(body.get("dismissible").toString()));
+            if (body.containsKey("active")) b.setActive(Boolean.parseBoolean(body.get("active").toString()));
+            if (body.containsKey("startDate")) b.setStartDate(LocalDateTime.parse((String) body.get("startDate")));
+            if (body.containsKey("endDate")) b.setEndDate(LocalDateTime.parse((String) body.get("endDate")));
+            promoBannerRepository.save(b);
+            return ResponseEntity.ok(Map.of("message", "Banner updated"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/banners/{id}")
+    public ResponseEntity<?> deleteBanner(@PathVariable Long id) {
+        try {
+            promoBannerRepository.deleteById(id);
+            return ResponseEntity.ok(Map.of("message", "Banner deleted"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // --- Coupons ---
+
+    @GetMapping("/coupons")
+    public ResponseEntity<List<Coupon>> listCoupons() {
+        return ResponseEntity.ok(couponRepository.findAllByOrderByCreatedAtDesc());
+    }
+
+    @PostMapping("/coupons")
+    public ResponseEntity<?> createCoupon(@RequestBody Map<String, Object> body) {
+        try {
+            String code = ((String) body.get("code")).toUpperCase().trim();
+            if (couponRepository.findByCodeIgnoreCase(code).isPresent()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Coupon code already exists"));
+            }
+            Coupon c = new Coupon();
+            c.setCode(code);
+            c.setDiscountType((String) body.get("discountType"));
+            c.setDiscountValue(new java.math.BigDecimal(body.get("discountValue").toString()));
+            if (body.containsKey("maxUses")) c.setMaxUses(Integer.parseInt(body.get("maxUses").toString()));
+            if (body.containsKey("minAmount")) c.setMinAmount(new java.math.BigDecimal(body.get("minAmount").toString()));
+            if (body.containsKey("planSlug")) c.setPlanSlug((String) body.get("planSlug"));
+            if (body.containsKey("expiresAt")) c.setExpiresAt(LocalDateTime.parse((String) body.get("expiresAt")));
+            c.setActive(Boolean.parseBoolean(body.getOrDefault("active", "true").toString()));
+            c.setCreatedAt(LocalDateTime.now());
+            couponRepository.save(c);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Coupon created"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/coupons/{id}")
+    public ResponseEntity<?> updateCoupon(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        try {
+            Coupon c = couponRepository.findById(id).orElseThrow();
+            if (body.containsKey("code")) c.setCode(((String) body.get("code")).toUpperCase().trim());
+            if (body.containsKey("discountType")) c.setDiscountType((String) body.get("discountType"));
+            if (body.containsKey("discountValue")) c.setDiscountValue(new java.math.BigDecimal(body.get("discountValue").toString()));
+            if (body.containsKey("maxUses")) c.setMaxUses(Integer.parseInt(body.get("maxUses").toString()));
+            if (body.containsKey("minAmount")) c.setMinAmount(new java.math.BigDecimal(body.get("minAmount").toString()));
+            if (body.containsKey("planSlug")) c.setPlanSlug((String) body.get("planSlug"));
+            if (body.containsKey("expiresAt")) c.setExpiresAt(LocalDateTime.parse((String) body.get("expiresAt")));
+            if (body.containsKey("active")) c.setActive(Boolean.parseBoolean(body.get("active").toString()));
+            couponRepository.save(c);
+            return ResponseEntity.ok(Map.of("message", "Coupon updated"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/coupons/{id}")
+    public ResponseEntity<?> deleteCoupon(@PathVariable Long id) {
+        try {
+            couponRepository.deleteById(id);
+            return ResponseEntity.ok(Map.of("message", "Coupon deleted"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // --- Settings ---
+
+    private String mask(String value) {
+        return (value == null || value.isEmpty()) ? "" : "*****";
+    }
+
+    @GetMapping("/settings")
+    public ResponseEntity<AppSettingsDto> getSettings() {
+        AppSettings s = appSettingsRepository.findById(1L).orElse(new AppSettings());
+        AppSettingsDto dto = new AppSettingsDto();
+        dto.setPaymentProvider(s.getPaymentProvider());
+        dto.setPaymentPublicKey(mask(s.getPaymentPublicKey()));
+        dto.setPaymentSecretKey(mask(s.getPaymentSecretKey()));
+        dto.setSandboxMode(s.isSandboxMode());
+        dto.setSmtpHost(s.getSmtpHost());
+        dto.setSmtpPort(s.getSmtpPort());
+        dto.setSmtpUsername(mask(s.getSmtpUsername()));
+        dto.setSmtpPassword(mask(s.getSmtpPassword()));
+        dto.setSmtpFromEmail(s.getSmtpFromEmail());
+        dto.setSmtpFromName(s.getSmtpFromName());
+        dto.setSmtpUseTls(s.isSmtpUseTls());
+        dto.setSiteName(s.getSiteName());
+        dto.setSiteDescription(s.getSiteDescription());
+        dto.setLogoUrl(s.getLogoUrl());
+        dto.setFaviconUrl(s.getFaviconUrl());
+        dto.setUpdatedAt(s.getUpdatedAt());
+        dto.setUpdatedBy(s.getUpdatedBy());
+        return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/settings")
+    public ResponseEntity<?> updateSettings(@RequestBody Map<String, Object> body) {
+        try {
+            AppSettings s = appSettingsRepository.findById(1L).orElseGet(() -> {
+                AppSettings ns = new AppSettings();
+                ns.setId(1L);
+                return ns;
+            });
+
+            if (body.containsKey("paymentProvider"))
+                s.setPaymentProvider((String) body.get("paymentProvider"));
+            if (body.containsKey("sandboxMode"))
+                s.setSandboxMode(Boolean.parseBoolean(body.get("sandboxMode").toString()));
+
+            // Payment keys — only update if not masked
+            if (body.containsKey("paymentPublicKey")) {
+                String v = (String) body.get("paymentPublicKey");
+                if (v != null && !v.contains("*****"))
+                    s.setPaymentPublicKey(aesEncryption.encrypt(v));
+            }
+            if (body.containsKey("paymentSecretKey")) {
+                String v = (String) body.get("paymentSecretKey");
+                if (v != null && !v.contains("*****"))
+                    s.setPaymentSecretKey(aesEncryption.encrypt(v));
+            }
+
+            if (body.containsKey("smtpHost"))
+                s.setSmtpHost((String) body.get("smtpHost"));
+            if (body.containsKey("smtpPort"))
+                s.setSmtpPort(Integer.valueOf(body.get("smtpPort").toString()));
+            if (body.containsKey("smtpFromEmail"))
+                s.setSmtpFromEmail((String) body.get("smtpFromEmail"));
+            if (body.containsKey("smtpFromName"))
+                s.setSmtpFromName((String) body.get("smtpFromName"));
+            if (body.containsKey("smtpUseTls"))
+                s.setSmtpUseTls(Boolean.parseBoolean(body.get("smtpUseTls").toString()));
+
+            // SMTP credentials — only update if not masked
+            if (body.containsKey("smtpUsername")) {
+                String v = (String) body.get("smtpUsername");
+                if (v != null && !v.contains("*****"))
+                    s.setSmtpUsername(aesEncryption.encrypt(v));
+            }
+            if (body.containsKey("smtpPassword")) {
+                String v = (String) body.get("smtpPassword");
+                if (v != null && !v.contains("*****"))
+                    s.setSmtpPassword(aesEncryption.encrypt(v));
+            }
+
+            if (body.containsKey("siteName"))
+                s.setSiteName((String) body.get("siteName"));
+            if (body.containsKey("siteDescription"))
+                s.setSiteDescription((String) body.get("siteDescription"));
+
+            s.setUpdatedAt(LocalDateTime.now());
+
+            User currentUser = getCurrentUser();
+            s.setUpdatedBy(currentUser != null ? currentUser.getEmail() : "admin");
+
+            appSettingsRepository.save(s);
+            return ResponseEntity.ok(Map.of("message", "Settings updated"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/settings/upload")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
+                                         @RequestParam("type") String type) {
+        try {
+            if (file.isEmpty())
+                return ResponseEntity.badRequest().body(Map.of("error", "File is empty"));
+
+            String originalName = file.getOriginalFilename();
+            String ext = "";
+            if (originalName != null && originalName.contains(".")) {
+                ext = originalName.substring(originalName.lastIndexOf("."));
+            }
+            String filename = type + "_" + System.currentTimeMillis() + ext;
+            Path uploadDir = Path.of("uploads");
+            Files.createDirectories(uploadDir);
+            Path dest = uploadDir.resolve(filename);
+            Files.write(dest, file.getBytes());
+
+            String url = "/uploads/" + filename;
+
+            AppSettings s = appSettingsRepository.findById(1L).orElseGet(() -> {
+                AppSettings ns = new AppSettings();
+                ns.setId(1L);
+                return ns;
+            });
+
+            if ("logo".equals(type)) s.setLogoUrl(url);
+            else if ("favicon".equals(type)) s.setFaviconUrl(url);
+            else return ResponseEntity.badRequest().body(Map.of("error", "Unknown type: " + type));
+
+            s.setUpdatedAt(LocalDateTime.now());
+            User currentUser = getCurrentUser();
+            s.setUpdatedBy(currentUser != null ? currentUser.getEmail() : "admin");
+            appSettingsRepository.save(s);
+
+            return ResponseEntity.ok(Map.of("url", url, "message", "File uploaded"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    private User getCurrentUser() {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) return null;
+        Object principal = auth.getPrincipal();
+        if (principal instanceof org.springframework.security.core.userdetails.User) {
+            return userRepository.findByEmail(((org.springframework.security.core.userdetails.User) principal).getUsername()).orElse(null);
+        }
+        return null;
     }
 }
