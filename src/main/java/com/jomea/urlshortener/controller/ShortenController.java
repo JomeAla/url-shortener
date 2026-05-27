@@ -2,10 +2,13 @@ package com.jomea.urlshortener.controller;
 
 import com.jomea.urlshortener.dto.BulkShortenRequest;
 import com.jomea.urlshortener.dto.BulkShortenResponseItem;
+import com.jomea.urlshortener.dto.PlanDto;
 import com.jomea.urlshortener.dto.ShortenRequest;
 import com.jomea.urlshortener.dto.ShortenResponse;
 import com.jomea.urlshortener.dto.StatsResponse;
+import com.jomea.urlshortener.entity.Plan;
 import com.jomea.urlshortener.entity.Url;
+import com.jomea.urlshortener.repository.PlanRepository;
 import com.jomea.urlshortener.repository.UrlRepository;
 import com.jomea.urlshortener.service.UrlService;
 import jakarta.validation.Valid;
@@ -33,10 +36,12 @@ public class ShortenController {
 
     private final UrlService urlService;
     private final UrlRepository urlRepository;
+    private final PlanRepository planRepository;
 
-    public ShortenController(UrlService urlService, UrlRepository urlRepository) {
+    public ShortenController(UrlService urlService, UrlRepository urlRepository, PlanRepository planRepository) {
         this.urlService = urlService;
         this.urlRepository = urlRepository;
+        this.planRepository = planRepository;
     }
 
     @PostMapping("/shorten")
@@ -103,5 +108,16 @@ public class ShortenController {
         return urlService.getStats(shortCode)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/plans")
+    public ResponseEntity<List<PlanDto>> listPlans() {
+        List<PlanDto> dtos = planRepository.findByActiveTrueOrderBySortOrderAsc().stream()
+            .map(p -> new PlanDto(p.getId(), p.getName(), p.getSlug(), p.getDescription(),
+                p.getPrice(), p.getCurrency(), p.getBillingPeriod(), p.getMaxUrls(),
+                p.getMaxClicksPerUrl(), p.isCustomDomains(), p.isApiAccess(), p.getFeatures(),
+                p.getSortOrder(), p.isActive(), p.getCreatedAt()))
+            .toList();
+        return ResponseEntity.ok(dtos);
     }
 }

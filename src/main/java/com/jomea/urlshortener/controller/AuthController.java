@@ -69,7 +69,7 @@ public class AuthController {
         securityContextRepository.saveContext(SecurityContextHolder.getContext(), httpRequest, httpResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new AuthResponse(user.getEmail(), user.getName(), user.getRole()));
+            .body(new AuthResponse(user.getEmail(), user.getName(), user.getRole(), user.getTier()));
     }
 
     @PostMapping("/login")
@@ -84,7 +84,7 @@ public class AuthController {
             securityContextRepository.saveContext(SecurityContextHolder.getContext(), httpRequest, httpResponse);
 
             var user = userRepository.findByEmail(request.email()).orElseThrow();
-            return ResponseEntity.ok(new AuthResponse(user.getEmail(), user.getName(), user.getRole()));
+            return ResponseEntity.ok(new AuthResponse(user.getEmail(), user.getName(), user.getRole(), user.getTier()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid email or password"));
@@ -99,7 +99,7 @@ public class AuthController {
         var user = userRepository.findByEmail(authentication.getName()).orElseThrow();
         return ResponseEntity.ok(Map.of(
             "authenticated", true,
-            "user", new AuthResponse(user.getEmail(), user.getName(), user.getRole())
+            "user", new AuthResponse(user.getEmail(), user.getName(), user.getRole(), user.getTier())
         ));
     }
 

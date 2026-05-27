@@ -30,6 +30,9 @@ public class User {
     @Column(nullable = false)
     private String role = "USER";
 
+    @Column(nullable = false)
+    private String tier = "free";
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -75,6 +78,9 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public String getTier() { return tier; }
+    public void setTier(String tier) { this.tier = tier; }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

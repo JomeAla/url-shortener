@@ -271,6 +271,37 @@
   .feature-inner h3 { font-size: 0.9375rem; font-weight: 700; margin-bottom: 4px; }
   .feature-inner p { font-size: 0.8125rem; color: var(--text-tertiary); line-height: 1.5; }
 
+  /* --- Pricing Section --- */
+  .pricing { margin-bottom: 48px; }
+  .pricing-header { text-align: center; margin-bottom: 32px; }
+  .pricing-header h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .pricing-header p { font-size: 0.9375rem; color: var(--text-secondary); }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .pricing-outer { background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(0,0,0,0.03); transition: all 0.4s var(--ease-smooth); position: relative; }
+  .pricing-outer:hover { box-shadow: var(--shadow-card); transform: translateY(-3px); }
+  .pricing-outer.featured { background: linear-gradient(135deg, var(--accent), #7c3aed); padding: 2px; }
+  .pricing-outer.featured .pricing-inner { background: var(--surface); border-radius: calc(var(--radius-lg) - 2px); }
+  .pricing-outer.featured .pricing-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; font-size: 0.6875rem; font-weight: 700; padding: 3px 14px; border-radius: 100px; letter-spacing: 0.02em; z-index: 2; }
+  .pricing-inner { background: var(--surface); border-radius: calc(var(--radius-lg) - 1.5px); padding: 28px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6); }
+  .pricing-inner h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
+  .pricing-inner .pricing-sub { font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 16px; }
+  .pricing-inner .pricing-amount { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; }
+  .pricing-inner .pricing-amount .currency { font-size: 1.25rem; font-weight: 600; color: var(--text-secondary); vertical-align: super; }
+  .pricing-inner .pricing-amount .period { font-size: 0.875rem; font-weight: 500; color: var(--text-tertiary); }
+  .pricing-inner .pricing-desc { font-size: 0.8125rem; color: var(--text-secondary); margin: 12px 0 16px; line-height: 1.5; }
+  .pricing-features { list-style: none; margin-bottom: 20px; }
+  .pricing-features li { font-size: 0.8125rem; color: var(--text-secondary); padding: 6px 0; display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(0,0,0,0.04); }
+  .pricing-features li:first-child { border-top: none; }
+  .pricing-features li .check { color: var(--green); font-weight: 700; }
+  .pricing-features li .cross { color: var(--text-tertiary); }
+  .pricing-cta { width: 100%; justify-content: center; font-size: 0.875rem; padding: 10px; }
+  .pricing-free-text { text-align: center; font-size: 0.8125rem; color: var(--text-tertiary); margin-top: 8px; }
+
+  @media (max-width: 768px) {
+    .pricing-grid { grid-template-columns: 1fr; }
+    .pricing-header h2 { font-size: 1.5rem; }
+  }
+
   /* --- View Selector --- */
   .view-selector { display: flex; gap: 4px; margin-bottom: 16px; background: var(--surface-glass); padding: 4px; border-radius: 100px; width: fit-content; backdrop-filter: blur(8px); }
   .view-selector .tab {
@@ -675,6 +706,17 @@
       </div>
     </section>
 
+    <!-- Pricing Section -->
+    <section class="pricing fade-up" id="pricingSection">
+      <div class="pricing-header">
+        <h2>Simple, transparent pricing</h2>
+        <p>Choose the plan that fits your needs. Upgrade anytime.</p>
+      </div>
+      <div class="pricing-grid" id="pricingGrid">
+        <div class="empty-state" style="grid-column:1/-1;padding:32px">Loading plans...</div>
+      </div>
+    </section>
+
     <!-- View Selector -->
     <div class="view-selector fade-up">
       <button class="tab active" onclick="switchView('links')">Links</button>
@@ -744,6 +786,70 @@
       <div class="list-inner">
         <div class="list-header"><span class="list-title">Users</span></div>
         <ul class="url-list" id="adminUserList"><li class="empty-state">Loading...</li></ul>
+      </div>
+    </div>
+
+    <div class="list-outer" style="margin-top:16px">
+      <div class="list-inner">
+        <div class="list-header">
+          <span class="list-title">Pricing Plans</span>
+          <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px" onclick="openAddPlanModal()">+ Add plan</button>
+        </div>
+        <ul class="url-list" id="adminPlanList"><li class="empty-state">Loading...</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Plan Modal -->
+  <div class="modal-overlay" id="planModal">
+    <div class="modal-outer" style="max-width:520px">
+      <div class="modal-inner">
+        <h2 id="planModalTitle">Add plan</h2>
+        <div class="sub" id="planModalSub">Create a new pricing plan.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Name</label><input type="text" id="planName"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Slug</label><input type="text" id="planSlug" placeholder="e.g. pro"></div>
+        </div>
+        <div class="form-group"><label>Description</label><input type="text" id="planDesc" placeholder="For professionals and small teams"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Price</label><input type="number" id="planPrice" step="0.01" min="0"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Currency</label>
+            <select id="planCurrency" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+              <option value="USD">USD</option>
+              <option value="NGN">NGN</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0"><label>Period</label>
+            <select id="planPeriod" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:10px">
+          <div class="form-group" style="margin-bottom:0"><label>Max URLs</label><input type="number" id="planMaxUrls" min="0" placeholder="e.g. 500"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Max clicks/URL</label><input type="number" id="planMaxClicks" min="0" placeholder="0=unlimited"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Sort order</label><input type="number" id="planSortOrder" min="0" placeholder="1"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Features (JSON)</label><input type="text" id="planFeatures" placeholder='["feature 1","feature 2"]'></div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:12px;align-items:center">
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer">
+            <input type="checkbox" id="planCustomDomains" checked> Custom domains
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer">
+            <input type="checkbox" id="planApiAccess" checked> API access
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer">
+            <input type="checkbox" id="planActive" checked> Active
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closePlanModal()">Cancel</button>
+          <button class="btn-primary" id="planSubmitBtn" onclick="submitPlan()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save plan</button>
+        </div>
+        <div class="modal-error" id="planError"></div>
       </div>
     </div>
   </div>
@@ -1219,6 +1325,174 @@
     }
   }
 
+  // --- Pricing Plans ---
+  async function loadPlans() {
+    try {
+      const res = await fetch('/api/plans');
+      if (!res.ok) return;
+      const plans = await res.json();
+      if (!plans.length) { $('pricingGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1">No plans available.</div>'; return; }
+      const maxPrice = Math.max(...plans.map(p => parseFloat(p.price)));
+      const featured = plans.find(p => p.slug === 'pro') || plans[Math.floor(plans.length / 2)];
+      $('pricingGrid').innerHTML = plans.map(p => {
+        const isFeatured = p.slug === featured.slug;
+        const features = safeParseJSON(p.features, []);
+        const price = parseFloat(p.price);
+        const isFree = price === 0;
+        return '<div class="pricing-outer' + (isFeatured ? ' featured' : '') + '">' +
+          (isFeatured ? '<div class="pricing-badge">Most popular</div>' : '') +
+          '<div class="pricing-inner">' +
+          '<h3>' + p.name + '</h3>' +
+          '<div class="pricing-sub">' + (p.description || '') + '</div>' +
+          '<div class="pricing-amount">' +
+          '<span class="currency">' + getCurrencySymbol(p.currency) + '</span>' +
+          (isFree ? '0' : price.toFixed(2)) +
+          '<span class="period">/' + p.billingPeriod + '</span>' +
+          '</div>' +
+          '<div class="pricing-desc">' + (isFree ? 'Get started for free' : (p.maxUrls >= 10000 ? 'For large teams' : 'Everything you need')) + '</div>' +
+          '<ul class="pricing-features">' +
+          features.map(f => '<li><span class="check">&#10003;</span> ' + f + '</li>').join('') +
+          '</ul>' +
+          '<button class="btn-primary pricing-cta" onclick="pricingCTA(\'' + p.slug + '\')">' +
+          (isFree ? 'Get started' : 'Subscribe') +
+          ' <span class="btn-icon" style="width:20px;height:20px;font-size:0.625rem">&#8599;</span></button>' +
+          (isFree ? '<div class="pricing-free-text">No credit card required</div>' : '') +
+          '</div></div>';
+      }).join('');
+    } catch { $('pricingGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1">Could not load plans.</div>'; }
+  }
+
+  function getCurrencySymbol(code) {
+    const symbols = { USD: '$', NGN: '\u20A6', EUR: '\u20AC', GBP: '\u00A3' };
+    return symbols[code] || code + ' ';
+  }
+
+  function safeParseJSON(str, fallback) {
+    if (!str) return fallback;
+    try { return JSON.parse(str); } catch { return fallback; }
+  }
+
+  function pricingCTA(slug) {
+    if (currentUser) { notify('Upgrade to ' + slug + ' coming soon!'); return; }
+    openAuthModal('register');
+  }
+
+  // --- Admin Plans ---
+  let editPlanId = null;
+
+  async function loadAdminPlans() {
+    try {
+      const res = await fetch('/api/admin/plans');
+      if (!res.ok) return;
+      const plans = await res.json();
+      $('adminPlanList').innerHTML = plans.length
+        ? plans.map(p => {
+            const features = safeParseJSON(p.features, []);
+            return '<li class="url-item">' +
+              '<div class="info"><strong>' + p.name + '</strong><span class="original">' + p.slug + ' &middot; ' + getCurrencySymbol(p.currency) + parseFloat(p.price).toFixed(2) + '/' + p.billingPeriod + (p.active ? '' : ' &middot; <span style="color:var(--red)">inactive</span>') + '</span></div>' +
+              '<div class="meta">' +
+              '<span class="clicks" style="background:' + (p.active ? 'var(--green-soft)' : 'var(--bg)') + ';color:' + (p.active ? 'var(--green)' : 'var(--text-tertiary)') + '">' + (p.active ? 'Active' : 'Inactive') + '</span>' +
+              '<button class="action-btn" onclick="editPlan(' + p.id + ')" title="Edit">&#x270e;</button>' +
+              '<button class="action-btn danger" onclick="deletePlan(' + p.id + ')" title="Delete">&#x2716;</button>' +
+              '</div></li>';
+          }).join('')
+        : '<li class="empty-state">No plans yet. Create one above.</li>';
+    } catch { $('adminPlanList').innerHTML = '<li class="empty-state">Failed to load plans.</li>'; }
+  }
+
+  function openAddPlanModal() {
+    editPlanId = null;
+    $('planModalTitle').textContent = 'Add plan';
+    $('planModalSub').textContent = 'Create a new pricing plan.';
+    $('planSubmitBtn').textContent = 'Save plan';
+    $('planName').value = ''; $('planSlug').value = ''; $('planDesc').value = ''; $('planPrice').value = '';
+    $('planMaxUrls').value = ''; $('planMaxClicks').value = ''; $('planSortOrder').value = ''; $('planFeatures').value = '';
+    $('planCurrency').value = 'USD';
+    $('planPeriod').value = 'monthly';
+    $('planCustomDomains').checked = true;
+    $('planApiAccess').checked = true;
+    $('planActive').checked = true;
+    $('planError').textContent = '';
+    $('planModal').classList.add('open');
+  }
+
+  function closePlanModal() { $('planModal').classList.remove('open'); editPlanId = null; }
+
+  async function editPlan(id) {
+    try {
+      const res = await fetch('/api/admin/plans');
+      if (!res.ok) return;
+      const plans = await res.json();
+      const plan = plans.find(p => p.id === id);
+      if (!plan) return;
+      editPlanId = id;
+      $('planModalTitle').textContent = 'Edit plan';
+      $('planModalSub').textContent = 'Update pricing plan details.';
+      $('planSubmitBtn').textContent = 'Update plan';
+      $('planName').value = plan.name;
+      $('planSlug').value = plan.slug;
+      $('planDesc').value = plan.description || '';
+      $('planPrice').value = plan.price;
+      $('planCurrency').value = plan.currency;
+      $('planPeriod').value = plan.billingPeriod;
+      $('planMaxUrls').value = plan.maxUrls;
+      $('planMaxClicks').value = plan.maxClicksPerUrl;
+      $('planSortOrder').value = plan.sortOrder;
+      $('planFeatures').value = plan.features || '[]';
+      $('planCustomDomains').checked = plan.customDomains;
+      $('planApiAccess').checked = plan.apiAccess;
+      $('planActive').checked = plan.active;
+      $('planError').textContent = '';
+      $('planModal').classList.add('open');
+    } catch { notify('Failed to load plan details'); }
+  }
+
+  async function submitPlan() {
+    const name = $('planName').value.trim();
+    const slug = $('planSlug').value.trim();
+    const price = parseFloat($('planPrice').value) || 0;
+    if (!name || !slug) { $('planError').textContent = 'Name and slug are required'; return; }
+    $('planError').textContent = '';
+    $('planSubmitBtn').disabled = true;
+    const body = {
+      name, slug,
+      description: $('planDesc').value.trim(),
+      price,
+      currency: $('planCurrency').value,
+      billingPeriod: $('planPeriod').value,
+      maxUrls: parseInt($('planMaxUrls').value) || 0,
+      maxClicksPerUrl: parseInt($('planMaxClicks').value) || 0,
+      sortOrder: parseInt($('planSortOrder').value) || 0,
+      features: $('planFeatures').value.trim() || '[]',
+      customDomains: $('planCustomDomains').checked,
+      apiAccess: $('planApiAccess').checked,
+      active: $('planActive').checked
+    };
+    try {
+      const url = editPlanId ? '/api/admin/plans/' + editPlanId : '/api/admin/plans';
+      const method = editPlanId ? 'PUT' : 'POST';
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save plan');
+      closePlanModal();
+      notify(editPlanId ? 'Plan updated' : 'Plan created');
+      loadAdminPlans();
+      loadPlans();
+    } catch (err) { $('planError').textContent = err.message; }
+    finally { $('planSubmitBtn').disabled = false; }
+  }
+
+  async function deletePlan(id) {
+    if (!confirm('Delete this plan? This cannot be undone.')) return;
+    try {
+      const res = await fetch('/api/admin/plans/' + id, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      notify('Plan deleted');
+      loadAdminPlans();
+      loadPlans();
+    } catch { notify('Failed to delete plan'); }
+  }
+
   // --- Auth ---
   async function checkAuth() {
     try {
@@ -1321,8 +1595,9 @@
 
       const users = await usersRes.json();
       $('adminUserList').innerHTML = users.length
-        ? users.map(u => '<li class="url-item"><div class="info"><strong>' + u.name + '</strong><span class="original">' + u.email + '</span></div><div class="meta"><span class="clicks">' + u.role + '</span></div></li>').join('')
+        ? users.map(u => '<li class="url-item"><div class="info"><strong>' + u.name + '</strong><span class="original">' + u.email + ' &middot; ' + (u.tier || 'free') + '</span></div><div class="meta"><span class="clicks">' + u.role + '</span></div></li>').join('')
         : '<li class="empty-state">No users yet.</li>';
+      loadAdminPlans();
     } catch { notify('Failed to load admin data'); }
   }
 
@@ -1333,7 +1608,9 @@
 
   // --- Init ---
   loadLinks();
+  loadPlans();
   setInterval(() => { if (!$('searchInput').value) loadLinks(); }, 15000);
+  setInterval(loadPlans, 60000);
   checkAuth();
 
   // Password link interceptor
