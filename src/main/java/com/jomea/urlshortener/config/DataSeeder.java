@@ -73,7 +73,7 @@ public class DataSeeder implements CommandLineRunner {
         pro.setName("Pro");
         pro.setSlug("pro");
         pro.setDescription("For professionals and small teams");
-        pro.setPrice(new BigDecimal("9.99"));
+        pro.setPrice(new BigDecimal("5000"));
         pro.setCurrency(currency);
         pro.setBillingPeriod("monthly");
         pro.setMaxUrls(500);
@@ -91,7 +91,7 @@ public class DataSeeder implements CommandLineRunner {
         enterprise.setName("Enterprise");
         enterprise.setSlug("enterprise");
         enterprise.setDescription("For large teams and businesses");
-        enterprise.setPrice(new BigDecimal("49.99"));
+        enterprise.setPrice(new BigDecimal("20000"));
         enterprise.setCurrency(currency);
         enterprise.setBillingPeriod("monthly");
         enterprise.setMaxUrls(10000);
