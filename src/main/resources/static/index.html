@@ -12,42 +12,42 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f7f5f0;
-    --surface: #ffffff;
-    --surface-glass: rgba(255,255,255,0.82);
-    --border-subtle: rgba(0,0,0,0.05);
-    --border-glass: rgba(255,255,255,0.5);
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-tertiary: #94a3b8;
-    --accent: #0f172a;
-    --accent-soft: #eef2f6;
-    --accent-glow: rgba(15,23,42,0.08);
-    --accent-hover: #1e293b;
-    --gold: #b8860b;
-    --gold-soft: #fdf6e3;
-    --gold-glow: rgba(184,134,11,0.12);
-    --green: #0d7a52;
-    --green-soft: #e6f7f0;
-    --red: #b91c1c;
-    --red-soft: #fef2f2;
-    --amber: #92400e;
-    --amber-soft: #fffbeb;
-    --purple: #6d28d9;
-    --purple-soft: #f3f0ff;
-    --teal: #0f766e;
-    --teal-soft: #f0fdfa;
-    --rose: #be123c;
-    --rose-soft: #fef2f2;
+    --bg: #080c14;
+    --surface: #11151f;
+    --surface-glass: rgba(255,255,255,0.03);
+    --border-subtle: rgba(255,255,255,0.06);
+    --border-glass: rgba(255,255,255,0.08);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --accent: #d4a54a;
+    --accent-soft: rgba(212,165,74,0.1);
+    --accent-glow: rgba(212,165,74,0.15);
+    --accent-hover: #e2b85c;
+    --gold: #d4a54a;
+    --gold-soft: rgba(212,165,74,0.1);
+    --gold-glow: rgba(212,165,74,0.2);
+    --green: #22c55e;
+    --green-soft: rgba(34,197,94,0.1);
+    --red: #ef4444;
+    --red-soft: rgba(239,68,68,0.1);
+    --amber: #f59e0b;
+    --amber-soft: rgba(245,158,11,0.1);
+    --purple: #8b5cf6;
+    --purple-soft: rgba(139,92,246,0.1);
+    --teal: #14b8a6;
+    --teal-soft: rgba(20,184,166,0.1);
+    --rose: #f43f5e;
+    --rose-soft: rgba(244,63,94,0.1);
     --radius-sm: 10px;
     --radius-md: 16px;
     --radius-lg: 24px;
     --radius-xl: 32px;
     --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    --shadow-card: 0 0 0 1px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04), 0 12px 32px -8px rgba(0,0,0,0.06);
-    --shadow-glass: 0 0 0 1px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.06);
-    --shadow-elevated: 0 0 0 1px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06), 0 24px 48px -12px rgba(0,0,0,0.1);
-    --shadow-warm: 0 0 0 1px rgba(184,134,11,0.08), 0 4px 20px rgba(184,134,11,0.06), 0 12px 40px -8px rgba(0,0,0,0.08);
+    --shadow-card: 0 0 0 1px rgba(255,255,255,0.04), 0 2px 8px rgba(0,0,0,0.2), 0 12px 32px -8px rgba(0,0,0,0.3);
+    --shadow-glass: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.3);
+    --shadow-elevated: 0 0 0 1px rgba(255,255,255,0.04), 0 4px 16px rgba(0,0,0,0.3), 0 24px 48px -12px rgba(0,0,0,0.4);
+    --shadow-warm: 0 0 0 1px rgba(212,165,74,0.1), 0 4px 20px rgba(212,165,74,0.08), 0 12px 40px -8px rgba(0,0,0,0.3);
     --ease-spring: cubic-bezier(0.32,0.72,0,1);
     --ease-smooth: cubic-bezier(0.22,1,0.36,1);
   }
@@ -65,22 +65,22 @@
     position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
   }
   .bg-decor .orb {
-    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3;
+    position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4;
   }
   .bg-decor .orb-1 {
-    width: 700px; height: 700px;
-    background: radial-gradient(circle, rgba(184,134,11,0.2), rgba(184,134,11,0.05), transparent);
-    top: -250px; right: -200px;
+    width: 750px; height: 750px;
+    background: radial-gradient(circle, rgba(212,165,74,0.12), rgba(212,165,74,0.03), transparent);
+    top: -280px; right: -200px;
   }
   .bg-decor .orb-2 {
     width: 550px; height: 550px;
-    background: radial-gradient(circle, rgba(15,23,42,0.12), transparent);
+    background: radial-gradient(circle, rgba(139,92,246,0.08), transparent);
     bottom: -180px; left: -250px;
   }
   .bg-decor .orb-3 {
-    width: 350px; height: 350px;
-    background: radial-gradient(circle, rgba(184,134,11,0.08), transparent);
-    top: 35%; left: 55%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(212,165,74,0.06), transparent);
+    top: 30%; left: 60%;
   }
   .app { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 24px 48px; }
 
@@ -97,7 +97,7 @@
     box-shadow: var(--shadow-glass);
     transition: box-shadow 0.4s var(--ease-smooth);
   }
-  .nav-island.scrolled { box-shadow: var(--shadow-elevated); }
+  .nav-island.scrolled { box-shadow: var(--shadow-elevated), 0 0 0 1px rgba(212,165,74,0.08); }
   .nav-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-primary); }
   .nav-brand svg { width: 28px; height: 28px; }
   .nav-brand span { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
@@ -108,7 +108,7 @@
       color: var(--text-secondary); padding: 6px 14px; border-radius: 100px;
       transition: all 0.25s var(--ease-smooth); cursor: pointer;
     }
-    .nav-links a:hover { color: var(--text-primary); background: rgba(0,0,0,0.04); }
+    .nav-links a:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
     .nav-links a.dash-link { display: none; }
   .nav-auth { display: flex; align-items: center; gap: 6px; }
   .nav-auth .btn-ghost {
@@ -116,7 +116,7 @@
     color: var(--text-secondary); cursor: pointer; padding: 7px 16px; border-radius: 100px;
     transition: all 0.25s var(--ease-smooth);
   }
-  .nav-auth .btn-ghost:hover { color: var(--text-primary); background: rgba(0,0,0,0.04); }
+  .nav-auth .btn-ghost:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
   .user-badge {
     display: flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: var(--text-secondary);
   }
@@ -137,14 +137,14 @@
 
   .btn-primary {
     display: inline-flex; align-items: center; gap: 8px;
-    background: linear-gradient(135deg, var(--accent), #1e293b);
+    background: linear-gradient(135deg, var(--accent), #b8942e);
     color: #fff; border: none;
     font: inherit; font-size: 0.8125rem; font-weight: 600;
     padding: 7px 16px 7px 20px; border-radius: 100px;
     cursor: pointer; transition: all 0.3s var(--ease-spring);
     box-shadow: 0 1px 3px var(--accent-glow);
   }
-  .btn-primary:hover { background: linear-gradient(135deg, #1e293b, var(--accent)); box-shadow: 0 4px 16px var(--accent-glow), 0 0 0 1px rgba(184,134,11,0.15); transform: translateY(-1px); }
+  .btn-primary:hover { background: linear-gradient(135deg, #b8942e, var(--accent)); box-shadow: 0 4px 16px var(--accent-glow), 0 0 0 1px rgba(212,165,74,0.2); transform: translateY(-1px); }
   .btn-primary:active { transform: scale(0.97); }
 
   /* --- Hero Split Layout --- */
@@ -159,18 +159,18 @@
   }
   .hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
-    background: linear-gradient(135deg, var(--gold-soft), #f8f0d6);
+    background: linear-gradient(135deg, var(--gold-soft), rgba(212,165,74,0.08));
     color: var(--gold);
     font-size: 0.8125rem; font-weight: 700; padding: 6px 18px; border-radius: 100px;
     margin-bottom: 24px; letter-spacing: 0.02em;
-    border: 1px solid rgba(184,134,11,0.15);
+    border: 1px solid rgba(212,165,74,0.2);
     box-shadow: 0 2px 8px var(--gold-glow);
   }
   .hero h1 {
     font-size: 3.5rem; font-weight: 800; line-height: 1.08; letter-spacing: -0.04em;
     margin-bottom: 20px;
   }
-  .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--gold), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--gold), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .hero p {
     font-size: 1.15rem; color: var(--text-secondary); line-height: 1.65;
     margin-bottom: 36px; max-width: 520px;
@@ -183,7 +183,7 @@
   }
   .hero-visual .vis-ring {
     position: absolute; border-radius: 50%;
-    border: 1.5px solid rgba(184,134,11,0.1);
+    border: 1.5px solid rgba(212,165,74,0.15);
     top: 50%; left: 50%; transform: translate(-50%,-50%);
   }
   .hero-visual .vis-ring-1 { width: 100%; height: 100%; }
@@ -191,9 +191,9 @@
   .hero-visual .vis-ring-3 { width: 52%; height: 52%; border-color: var(--gold); border-width: 2px; border-style: dashed; opacity: 0.6; }
   .hero-visual .vis-centre {
     width: 72px; height: 72px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), #1e293b);
+    background: linear-gradient(135deg, var(--accent), #b8942e);
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 60px rgba(184,134,11,0.15);
+    box-shadow: 0 0 60px rgba(212,165,74,0.2);
     position: relative; z-index: 2;
   }
   .hero-visual .vis-centre svg { width: 28px; height: 28px; color: #fff; }
@@ -204,7 +204,7 @@
   .hero-visual .vis-dot-1 { top: 8%; left: 22%; background: var(--gold); }
   .hero-visual .vis-dot-2 { top: 30%; right: 4%; }
   .hero-visual .vis-dot-3 { bottom: 12%; left: 15%; }
-  .hero-visual .vis-dot-4 { bottom: 38%; right: 18%; background: var(--accent); }
+  .hero-visual .vis-dot-4 { bottom: 38%; right: 18%; background: var(--purple); }
   .hero-visual .vis-dot-pulse {
     animation: pulse-dot 2.5s ease-in-out infinite;
   }
@@ -215,15 +215,15 @@
 
   /* --- Shorten Card (Double-Bezel) --- */
   .shorten-outer {
-    background: rgba(255,255,255,0.5); padding: 2px;
+    background: rgba(255,255,255,0.03); padding: 2px;
     border-radius: var(--radius-xl);
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.04);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
     margin-bottom: 20px;
   }
   .shorten-inner {
     background: var(--surface); border-radius: calc(var(--radius-xl) - 2px);
     padding: 20px 24px 24px;
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.03);
   }
   .shorten-input-row {
     display: flex; gap: 8px; align-items: center;
@@ -237,7 +237,7 @@
   }
   .shorten-input-row input {
     width: 100%; padding: 14px 14px 14px 44px;
-    border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-md);
+    border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-md);
     font: inherit; font-size: 0.9375rem; color: var(--text-primary);
     background: var(--bg); outline: none; transition: all 0.25s var(--ease-smooth);
   }
@@ -263,29 +263,29 @@
   }
   .shorten-btn:hover .btn-icon { transform: translateX(2px) translateY(-1px); }
 
-  .oauth-btn { display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:9px 14px;border:1.5px solid rgba(0,0,0,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-primary);font:inherit;font-size:0.8125rem;font-weight:600;cursor:pointer;transition:all 0.2s var(--ease-smooth) }
-  .oauth-btn:hover { border-color:var(--accent);background:rgba(184,134,11,0.03) }
+  .oauth-btn { display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:9px 14px;border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-primary);font:inherit;font-size:0.8125rem;font-weight:600;cursor:pointer;transition:all 0.2s var(--ease-smooth) }
+  .oauth-btn:hover { border-color:var(--accent);background:rgba(212,165,74,0.06) }
   .shorten-status { font-size: 0.8125rem; margin-top: 10px; color: var(--text-secondary); min-height: 1.25rem; }
   .shorten-status .error { color: var(--red); }
   .result-pane {
     display: none; margin-top: 16px; padding: 14px 18px;
-    background: var(--green-soft); border: 1px solid rgba(15,151,61,0.2);
+    background: var(--green-soft); border: 1px solid rgba(34,197,94,0.2);
     border-radius: var(--radius-md); align-items: center; gap: 12px;
     animation: slideUp 0.35s var(--ease-smooth);
   }
   .result-pane.show { display: flex; }
   .result-pane .short-url {
-    flex: 1; font-size: 1rem; font-weight: 600; color: #0a7a37;
+    flex: 1; font-size: 1rem; font-weight: 600; color: var(--green);
     text-decoration: none; word-break: break-all;
   }
   .result-pane .short-url:hover { text-decoration: underline; }
   .copy-btn {
-    background: transparent; border: 1px solid rgba(15,151,61,0.25); border-radius: 8px;
+    background: transparent; border: 1px solid rgba(34,197,94,0.25); border-radius: 8px;
     padding: 6px 14px; font: inherit; font-size: 0.8125rem; font-weight: 500;
-    color: #0a7a37; cursor: pointer; transition: all 0.2s var(--ease-smooth); white-space: nowrap;
+    color: var(--green); cursor: pointer; transition: all 0.2s var(--ease-smooth); white-space: nowrap;
   }
-  .copy-btn:hover { background: rgba(15,151,61,0.08); }
-  .copy-btn.copied { background: #0f973d; color: #fff; border-color: #0f973d; }
+  .copy-btn:hover { background: rgba(34,197,94,0.08); }
+  .copy-btn.copied { background: var(--green); color: #fff; border-color: var(--green); }
 
   .advanced-row {
     display: flex; align-items: center; gap: 8px; margin-top: 14px;
@@ -306,7 +306,7 @@
     margin-bottom: 3px;
   }
   .advanced-options input {
-    width: 100%; padding: 10px 14px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm);
+    width: 100%; padding: 10px 14px; border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm);
     font: inherit; font-size: 0.8125rem; color: var(--text-primary);
     background: var(--bg); outline: none; transition: all 0.2s var(--ease-smooth);
   }
@@ -324,14 +324,14 @@
   .bento-item-wide { grid-column: span 2; }
   .bento-item-full { grid-column: 1 / -1; }
   .feature-outer {
-    background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg);
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+    background: rgba(255,255,255,0.03); padding: 1.5px; border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04);
     transition: all 0.5s var(--ease-smooth);
     position: relative; overflow: hidden;
   }
   .feature-outer::before {
     content: ''; position: absolute; inset: -2px; border-radius: inherit;
-    background: linear-gradient(135deg, transparent 40%, rgba(53,99,233,0.04) 100%);
+    background: linear-gradient(135deg, transparent 40%, rgba(212,165,74,0.04) 100%);
     opacity: 0; transition: opacity 0.5s var(--ease-smooth); pointer-events: none;
   }
   .feature-outer:hover::before { opacity: 1; }
@@ -339,7 +339,7 @@
   .feature-inner {
     background: var(--surface); border-radius: calc(var(--radius-lg) - 1.5px);
     padding: 20px; text-align: center;
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.03);
     position: relative; z-index: 1;
   }
   .feature-inner.horizontal {
@@ -372,8 +372,8 @@
   .feature-inner .feature-preview .bar {
     flex: 1; height: 16px; border-radius: 4px; background: var(--accent-soft);
   }
-  .feature-inner .feature-preview .bar:nth-child(2) { background: rgba(53,99,233,0.3); }
-  .feature-inner .feature-preview .bar:nth-child(3) { background: rgba(53,99,233,0.5); }
+  .feature-inner .feature-preview .bar:nth-child(2) { background: rgba(212,165,74,0.2); }
+  .feature-inner .feature-preview .bar:nth-child(3) { background: rgba(212,165,74,0.35); }
   .feature-inner .feature-preview .bar:nth-child(4) { background: var(--accent); }
   .feature-inner .feat-label {
     font-size: 0.6875rem; color: var(--text-tertiary); margin-top: 6px;
@@ -386,12 +386,12 @@
   .pricing-header h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
   .pricing-header p { font-size: 0.9375rem; color: var(--text-secondary); }
   .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .pricing-outer { background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(0,0,0,0.03); transition: all 0.5s var(--ease-smooth); position: relative; }
+  .pricing-outer { background: rgba(255,255,255,0.03); padding: 1.5px; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(255,255,255,0.04); transition: all 0.5s var(--ease-smooth); position: relative; }
   .pricing-outer:hover { box-shadow: var(--shadow-card); transform: translateY(-4px); }
-  .pricing-outer.featured { background: linear-gradient(135deg, var(--gold), var(--accent)); padding: 2px; }
+  .pricing-outer.featured { background: linear-gradient(135deg, rgba(212,165,74,0.3), rgba(212,165,74,0.1)); padding: 2px; }
   .pricing-outer.featured .pricing-inner { background: var(--surface); border-radius: calc(var(--radius-lg) - 2px); }
-  .pricing-outer.featured .pricing-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), #a0750a); color: #fff; font-size: 0.6875rem; font-weight: 700; padding: 3px 14px; border-radius: 100px; letter-spacing: 0.02em; z-index: 2; box-shadow: 0 2px 8px var(--gold-glow); }
-  .pricing-inner { background: var(--surface); border-radius: calc(var(--radius-lg) - 1.5px); padding: 28px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6); }
+  .pricing-outer.featured .pricing-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), #b8942e); color: #fff; font-size: 0.6875rem; font-weight: 700; padding: 3px 14px; border-radius: 100px; letter-spacing: 0.02em; z-index: 2; box-shadow: 0 2px 8px var(--gold-glow); }
+  .pricing-inner { background: var(--surface); border-radius: calc(var(--radius-lg) - 1.5px); padding: 28px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.03); }
   .pricing-inner h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 2px; }
   .pricing-inner .pricing-sub { font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 16px; }
   .pricing-inner .pricing-amount { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; }
@@ -399,7 +399,7 @@
   .pricing-inner .pricing-amount .period { font-size: 0.875rem; font-weight: 500; color: var(--text-tertiary); }
   .pricing-inner .pricing-desc { font-size: 0.8125rem; color: var(--text-secondary); margin: 12px 0 16px; line-height: 1.5; }
   .pricing-features { list-style: none; margin-bottom: 24px; }
-  .pricing-features li { font-size: 0.8125rem; color: var(--text-secondary); padding: 7px 0; display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(0,0,0,0.04); }
+  .pricing-features li { font-size: 0.8125rem; color: var(--text-secondary); padding: 7px 0; display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
   .pricing-features li:first-child { border-top: none; }
   .pricing-features li .check { color: var(--green); font-weight: 700; }
   .pricing-features li .cross { color: var(--text-tertiary); }
@@ -444,13 +444,13 @@
 
   /* --- URL List (Double-Bezel) --- */
   .list-outer {
-    background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg);
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.03); margin-bottom: 16px;
+    background: rgba(255,255,255,0.03); padding: 1.5px; border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04); margin-bottom: 16px;
   }
   .list-inner {
     background: var(--surface); border-radius: calc(var(--radius-lg) - 1.5px);
     padding: 20px 24px;
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.03);
   }
   .list-header {
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
@@ -459,7 +459,7 @@
   .list-header .count { font-size: 0.8125rem; color: var(--text-tertiary); }
   .list-search {
     width: 100%; padding: 10px 14px 10px 38px;
-    border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm);
+    border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm);
     font: inherit; font-size: 0.8125rem; color: var(--text-primary);
     background: var(--bg); outline: none; margin-bottom: 12px;
     transition: all 0.2s var(--ease-smooth);
@@ -467,14 +467,14 @@
   .list-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
   .filter-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
   .filter-row label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; }
-  .filter-row input { padding: 8px 12px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm); font: inherit; font-size: 0.75rem; background: var(--bg); outline: none; transition: all 0.2s var(--ease-smooth); }
+  .filter-row input { padding: 8px 12px; border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm); font: inherit; font-size: 0.75rem; background: var(--bg); outline: none; transition: all 0.2s var(--ease-smooth); }
   .filter-row input:focus { border-color: var(--accent); }
   .filter-clear { font-size: 0.75rem; color: var(--text-tertiary); cursor: pointer; text-decoration: none; }
   .filter-clear:hover { color: var(--accent); }
-  .trash-badge { font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: 100px; background: #fef2f2; color: var(--red); }
+  .trash-badge { font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: 100px; background: var(--red-soft); color: var(--red); }
   .tag-badge { display: inline-block; padding: 1px 8px; border-radius: 100px; font-size: 0.625rem; font-weight: 600; margin: 1px 2px; line-height: 1.6; }
   .tag-badge-sm { padding: 0 6px; font-size: 0.5625rem; }
-  .folder-select { padding: 8px 12px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm); font: inherit; font-size: 0.75rem; background: var(--bg); outline: none; cursor: pointer; }
+  .folder-select { padding: 8px 12px; border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm); font: inherit; font-size: 0.75rem; background: var(--bg); outline: none; cursor: pointer; }
   .folder-select:focus { border-color: var(--accent); }
   .color-picker { display: flex; gap: 4px; flex-wrap: wrap; }
   .color-swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
@@ -485,22 +485,22 @@
   .tab-btn { padding: 8px 18px; font-size: 0.8125rem; font-weight: 600; color: var(--text-tertiary); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s var(--ease-smooth); font-family: var(--font); }
   .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
   .tab-btn:hover { color: var(--text-secondary); }
-  .bulk-textarea { width: 100%; min-height: 160px; padding: 12px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm); font-family: var(--mono); font-size: 0.75rem; background: var(--bg); outline: none; resize: vertical; color: var(--text-primary); }
+  .bulk-textarea { width: 100%; min-height: 160px; padding: 12px; border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm); font-family: var(--mono); font-size: 0.75rem; background: var(--bg); outline: none; resize: vertical; color: var(--text-primary); }
   .bulk-textarea:focus { border-color: var(--accent); }
-  .bulk-file-wrap { display: flex; align-items: center; gap: 10px; padding: 20px; border: 2px dashed rgba(0,0,0,0.08); border-radius: var(--radius-md); background: var(--bg); cursor: pointer; }
+  .bulk-file-wrap { display: flex; align-items: center; gap: 10px; padding: 20px; border: 2px dashed rgba(255,255,255,0.1); border-radius: var(--radius-md); background: var(--bg); cursor: pointer; }
   .bulk-file-wrap:hover { border-color: var(--accent); }
   .bulk-preview { margin-top: 16px; }
   .bulk-preview h4 { font-size: 0.8125rem; font-weight: 600; margin-bottom: 8px; }
   .bulk-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 8px; }
-  .bulk-table th { text-align: left; padding: 6px 8px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.03em; background: var(--bg); }
-  .bulk-table td { padding: 6px 8px; border-bottom: 1px solid rgba(0,0,0,0.03); vertical-align: middle; }
+  .bulk-table th { text-align: left; padding: 6px 8px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.03em; background: var(--bg); }
+  .bulk-table td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
   .bulk-table td:first-child { font-family: var(--mono); font-size: 0.6875rem; color: var(--text-primary); }
   .bulk-table .row-success td { color: var(--green); }
   .bulk-table .row-error td { color: var(--red); }
   .bulk-table .truncate { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
   .bulk-summary { font-size: 0.875rem; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 12px; font-weight: 600; }
   .bulk-summary.success { background: var(--green-soft); color: var(--green); }
-  .bulk-summary.partial { background: #fffbeb; color: var(--amber); }
+  .bulk-summary.partial { background: var(--amber-soft); color: var(--amber); }
   .list-search-wrap { position: relative; }
   .list-search-wrap .search-icon {
     position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
@@ -509,7 +509,7 @@
   .url-list { list-style: none; }
   .url-item {
     display: flex; align-items: center; gap: 12px;
-    padding: 12px 0; border-top: 1px solid rgba(0,0,0,0.04);
+    padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.06);
   }
   .url-item:first-child { border-top: none; }
   .url-item .info { flex: 1; min-width: 0; }
@@ -531,18 +531,18 @@
   }
   .url-item .time { font-size: 0.75rem; color: var(--text-tertiary); white-space: nowrap; }
   .url-item .action-btn {
-    background: none; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px;
+    background: none; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
     cursor: pointer; padding: 4px 8px; font-size: 0.75rem; color: var(--text-tertiary);
     font-family: inherit; transition: all 0.2s var(--ease-smooth);
   }
   .url-item .action-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
-  .url-item .action-btn.danger:hover { background: #fef2f2; color: var(--red); border-color: var(--red); }
+  .url-item .action-btn.danger:hover { background: var(--red-soft); color: var(--red); border-color: var(--red); }
   .empty-state { color: var(--text-tertiary); text-align: center; padding: 32px 0; font-size: 0.875rem; }
 
   /* --- Analytics View --- */
   .analytics-toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
   .analytics-toolbar select, .analytics-toolbar input {
-    padding: 8px 12px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm);
+    padding: 8px 12px; border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm);
     font: inherit; font-size: 0.8125rem; background: var(--bg); outline: none;
     transition: all 0.2s var(--ease-smooth);
   }
@@ -551,12 +551,12 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
   }
   .analytics-card-outer {
-    background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-md);
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+    background: rgba(255,255,255,0.03); padding: 1.5px; border-radius: var(--radius-md);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04);
   }
   .analytics-card-inner {
     background: var(--surface); border-radius: calc(var(--radius-md) - 1.5px);
-    padding: 16px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+    padding: 16px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.03);
   }
   .analytics-card-inner h4 { font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
   .analytics-stat { font-size: 1.75rem; font-weight: 800; color: var(--accent); }
@@ -578,7 +578,7 @@
   .click-log { font-size: 0.8125rem; }
   .click-log .log-row {
     display: flex; justify-content: space-between; padding: 6px 0;
-    border-top: 1px solid rgba(0,0,0,0.04); font-size: 0.75rem; color: var(--text-secondary);
+    border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.75rem; color: var(--text-secondary);
   }
   .click-log .log-row:first-child { border-top: none; }
   .click-log .log-row .log-time { color: var(--text-tertiary); flex-shrink: 0; }
@@ -590,37 +590,37 @@
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;
   }
   .admin-stat-outer {
-    background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-md);
+    background: rgba(255,255,255,0.03); padding: 1.5px; border-radius: var(--radius-md);
   }
   .admin-stat-inner {
     background: var(--surface); border-radius: calc(var(--radius-md) - 1.5px);
     padding: 20px; text-align: center;
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.03);
   }
   .admin-stat-inner .stat-value { font-size: 2rem; font-weight: 800; color: var(--accent); }
   .admin-stat-inner .stat-label { font-size: 0.75rem; color: var(--text-tertiary); margin-top: 2px; }
 
   .settings-group { border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); margin-bottom: 8px; overflow: hidden; }
   .settings-summary { padding: 10px 14px; font-size: 0.8125rem; font-weight: 600; cursor: pointer; user-select: none; background: var(--bg); }
-  .settings-summary:hover { background: rgba(0,0,0,0.02); }
+  .settings-summary:hover { background: rgba(255,255,255,0.04); }
   .settings-body { padding: 10px 14px 14px; }
   .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   /* --- Modals --- */
   .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(11,13,23,0.5);
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
     backdrop-filter: blur(8px); z-index: 200;
     justify-content: center; align-items: center; padding: 24px;
   }
   .modal-overlay.open { display: flex; }
   .modal-outer {
-    background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg);
+    background: rgba(255,255,255,0.03); padding: 1.5px; border-radius: var(--radius-lg);
     box-shadow: var(--shadow-elevated); width: 100%; max-width: 420px;
     animation: modalIn 0.35s var(--ease-smooth);
   }
   .modal-inner {
     background: var(--surface); border-radius: calc(var(--radius-lg) - 1.5px);
-    padding: 28px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+    padding: 28px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.03);
   }
   @keyframes modalIn {
     from { opacity: 0; transform: scale(0.95) translateY(8px); }
@@ -631,7 +631,7 @@
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; font-size: 0.8125rem; font-weight: 500; margin-bottom: 4px; color: var(--text-secondary); }
   .form-group input {
-    width: 100%; padding: 10px 14px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm);
+    width: 100%; padding: 10px 14px; border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm);
     font: inherit; font-size: 0.9375rem; color: var(--text-primary);
     background: var(--bg); outline: none; transition: all 0.2s var(--ease-smooth);
   }
@@ -664,17 +664,17 @@
   .password-gate { display: none; text-align: center; max-width: 480px; margin: 48px auto; }
   .password-gate.show { display: block; }
   .gate-outer {
-    background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg);
+    background: rgba(255,255,255,0.03); padding: 1.5px; border-radius: var(--radius-lg);
   }
   .gate-inner {
     background: var(--surface); border-radius: calc(var(--radius-lg) - 1.5px);
-    padding: 32px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+    padding: 32px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.03);
   }
   .gate-inner h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
   .gate-inner p { font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 20px; }
   .gate-inner .input-group { display: flex; gap: 8px; justify-content: center; }
   .gate-inner input {
-    padding: 10px 14px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm);
+    padding: 10px 14px; border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm);
     font: inherit; font-size: 0.9375rem; outline: none; flex: 1; max-width: 240px;
     transition: all 0.2s var(--ease-smooth);
   }
@@ -683,7 +683,7 @@
   /* --- Bulk Import Modal --- */
   .bulk-textarea {
     width: 100%; min-height: 160px; padding: 12px 14px;
-    border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm);
+    border: 1.5px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm);
     font: inherit; font-size: 0.8125rem; font-family: monospace;
     background: var(--bg); outline: none; resize: vertical;
     transition: all 0.2s var(--ease-smooth);
@@ -691,7 +691,7 @@
   .bulk-textarea:focus { border-color: var(--accent); }
   .bulk-results { margin-top: 12px; max-height: 200px; overflow-y: auto; }
   .bulk-results .bulk-item {
-    padding: 6px 0; border-top: 1px solid rgba(0,0,0,0.04);
+    padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.06);
     font-size: 0.8125rem; display: flex; align-items: center; gap: 8px;
   }
   .bulk-results .bulk-item .status-dot {
@@ -720,8 +720,8 @@
   .all-features-header p { font-size: 0.9375rem; color: var(--text-secondary); }
   .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .feat-group-outer {
-    background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg);
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+    background: rgba(255,255,255,0.03); padding: 1.5px; border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04);
     transition: all 0.4s var(--ease-smooth);
     position: relative; overflow: hidden;
   }
@@ -731,7 +731,7 @@
   }
   .feat-group-inner {
     background: var(--surface); border-radius: calc(var(--radius-md) - 1.5px);
-    padding: 22px 20px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+    padding: 22px 20px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.03);
   }
   .feat-group-title {
     font-size: 0.9rem; font-weight: 700; margin-bottom: 12px;
@@ -745,7 +745,7 @@
   }
   .feat-row {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 7px 0; font-size: 0.8125rem; border-top: 1px solid rgba(0,0,0,0.03);
+    padding: 7px 0; font-size: 0.8125rem; border-top: 1px solid rgba(255,255,255,0.04);
   }
   .feat-row:first-of-type { border-top: none; }
   .feat-row .feat-name { color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
@@ -759,7 +759,7 @@
   }
   .feat-row .feat-tier.t-free { background: var(--green-soft); color: var(--green); }
   .feat-row .feat-tier.t-pro { background: var(--accent-soft); color: var(--accent); }
-  .feat-row .feat-tier.t-ent { background: #fffbeb; color: var(--amber); }
+  .feat-row .feat-tier.t-ent { background: var(--amber-soft); color: var(--amber); }
 
   @media (max-width: 768px) {
     .feat-grid { grid-template-columns: 1fr; }
@@ -768,7 +768,7 @@
   /* --- Footer --- */
   .footer {
     margin-top: 64px; padding-top: 24px;
-    border-top: 1px solid rgba(0,0,0,0.04);
+    border-top: 1px solid rgba(255,255,255,0.06);
     display: flex; justify-content: space-between; align-items: center;
     font-size: 0.8125rem; color: var(--text-tertiary);
   }
@@ -832,11 +832,12 @@
     <div class="nav-links">
       <a href="#" onclick="document.getElementById('featuresSection').scrollIntoView({behavior:'smooth'});return false">Features</a>
       <a href="#" onclick="document.getElementById('pricingSection').scrollIntoView({behavior:'smooth'});return false">Pricing</a>
+      <a href="/docs.html">Docs</a>
       <a class="dash-link" href="#" onclick="switchView('links');return false">My Links</a>
       <a class="dash-link" href="#" onclick="switchView('analytics');return false">Analytics</a>
       <a class="dash-link" href="#" onclick="switchView('webhooks');return false">Webhooks</a>
       <span class="dash-link" id="workspaceSwitcherWrap" style="display:none;font-size:0.75rem">
-        <select id="workspaceSwitcher" onchange="switchWorkspace()" style="padding:3px 8px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.75rem;background:var(--surface);outline:none;cursor:pointer">
+        <select id="workspaceSwitcher" onchange="switchWorkspace()" style="padding:3px 8px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.75rem;background:var(--surface);outline:none;cursor:pointer">
           <option value="">Workspace</option>
         </select>
         <a class="filter-clear" onclick="openWorkspaceModal()" style="font-size:0.7rem;margin-left:4px">Manage</a>
@@ -907,12 +908,12 @@
             <div class="advanced-grid" style="margin-top:8px">
               <div class="advanced-field"><label>Tags <a class="filter-clear" onclick="openTagModal()" style="font-size:0.65rem">manage</a></label><input type="text" id="tagsInput" placeholder="news, marketing, product"></div>
               <div class="advanced-field"><label>Folder</label>
-                <select id="folderInput" style="width:100%;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;background:var(--bg);outline:none">
+                <select id="folderInput" style="width:100%;padding:8px 12px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;background:var(--bg);outline:none">
                   <option value="">No folder</option>
                 </select>
               </div>
             </div>
-            <details style="margin-top:8px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+            <details style="margin-top:8px;border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
               <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">UTM Parameters</summary>
               <div class="advanced-grid" style="margin-top:8px">
                 <div class="advanced-field"><label>Source</label><input type="text" id="utmSource" placeholder="e.g. twitter"></div>
@@ -922,7 +923,7 @@
                 <div class="advanced-field"><label>Content</label><input type="text" id="utmContent" placeholder="e.g. hero_banner"></div>
               </div>
             </details>
-            <details style="margin-top:6px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+            <details style="margin-top:6px;border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
               <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">Social Preview (OG Tags)</summary>
               <div class="advanced-grid" style="margin-top:8px">
                 <div class="advanced-field"><label>Title</label><input type="text" id="ogTitle" maxlength="200" placeholder="e.g. Check out this deal!"></div>
@@ -1025,7 +1026,7 @@
               <h3>Built for Africa</h3>
               <p>Fast redirects, local CDN, and reliable infrastructure optimized for African traffic with NGN &amp; multi-currency pricing.</p>
             </div>
-            <div style="font-size:0.75rem;color:var(--gold);font-weight:700;white-space:nowrap;padding:4px 14px;border-radius:100px;background:var(--gold-soft);border:1px solid rgba(184,134,11,0.15)">NGN &amp; multi-currency</div>
+            <div style="font-size:0.75rem;color:var(--gold);font-weight:700;white-space:nowrap;padding:4px 14px;border-radius:100px;background:var(--gold-soft);border:1px solid rgba(212,165,74,0.2)">NGN &amp; multi-currency</div>
           </div>
         </div>
       </div>
@@ -1147,21 +1148,6 @@
       <button class="tab admin-tab" id="adminTabLink" onclick="showAdmin()">Admin</button>
     </div>
 
-    <!-- Login prompt for guests / upgrade prompt for free users -->
-    <div class="list-outer fade-up" id="loginPrompt" style="margin-bottom:16px">
-      <div class="list-inner" style="text-align:center;padding:32px">
-        <div id="promptGuest" style="display:block">
-          <div style="font-size:0.9375rem;font-weight:600;margin-bottom:4px">Sign in to manage your links</div>
-          <p style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:16px">Track clicks, view analytics, and manage all your shortened URLs.</p>
-          <button class="btn-primary" onclick="openAuthModal('login')" style="font-size:0.875rem;padding:10px 24px">Sign in <span class="btn-icon">&#8599;</span></button>
-        </div>
-        <div id="promptUpgrade" style="display:none">
-          <div style="font-size:0.9375rem;font-weight:600;margin-bottom:4px">Upgrade to manage your links</div>
-          <p style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:16px">Link management, analytics, custom codes, and more are available on Pro and Enterprise plans.</p>
-          <button class="btn-primary" onclick="document.getElementById('pricingSection').scrollIntoView({behavior:'smooth'})" style="font-size:0.875rem;padding:10px 24px">View plans <span class="btn-icon">&#8599;</span></button>
-        </div>
-      </div>
-    </div>
 
     <!-- Links View -->
     <div class="content-section" id="linksView">
@@ -1187,7 +1173,7 @@
             </select>
             <a class="filter-clear" onclick="openFolderModal()" style="font-size:0.7rem">Folders</a>
             <label style="margin-left:4px">Tag:</label>
-            <input type="text" id="filterTag" placeholder="Filter by tag" style="width:110px;padding:4px 8px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.75rem;background:var(--bg);outline:none" oninput="debouncedSearch()">
+            <input type="text" id="filterTag" placeholder="Filter by tag" style="width:110px;padding:4px 8px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.75rem;background:var(--bg);outline:none" oninput="debouncedSearch()">
             <a class="filter-clear" onclick="openTagModal()" style="font-size:0.7rem">Tags</a>
             <a class="filter-clear" onclick="clearFilters()">Clear</a>
           </div>
@@ -1255,7 +1241,7 @@
             <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px" onclick="createApiKey()">+ Create key</button>
           </div>
           <div style="padding:8px 0">
-            <input type="text" id="apiKeyName" placeholder="Key name (e.g. CI/CD)" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+            <input type="text" id="apiKeyName" placeholder="Key name (e.g. CI/CD)" style="width:100%;padding:10px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
           </div>
           <div id="apiKeyNewKey"></div>
           <ul class="url-list" id="apiKeyList"><li class="empty-state">Loading...</li></ul>
@@ -1543,7 +1529,7 @@
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
           <div class="form-group" style="margin-bottom:0"><label>Price</label><input type="number" id="planPrice" step="0.01" min="0"></div>
           <div class="form-group" style="margin-bottom:0"><label>Currency</label>
-            <select id="planCurrency" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+            <select id="planCurrency" style="width:100%;padding:10px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
               <option value="USD">USD</option>
               <option value="NGN">NGN</option>
               <option value="EUR">EUR</option>
@@ -1551,7 +1537,7 @@
             </select>
           </div>
           <div class="form-group" style="margin-bottom:0"><label>Period</label>
-            <select id="planPeriod" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+            <select id="planPeriod" style="width:100%;padding:10px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
               <option value="monthly">Monthly</option>
               <option value="yearly">Yearly</option>
             </select>
@@ -1575,7 +1561,7 @@
           </label>
         </div>
         <div class="modal-actions">
-          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closePlanModal()">Cancel</button>
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closePlanModal()">Cancel</button>
           <button class="btn-primary" id="planSubmitBtn" onclick="submitPlan()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save plan</button>
         </div>
         <div class="modal-error" id="planError"></div>
@@ -1603,13 +1589,13 @@
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
           <div class="form-group" style="margin-bottom:0"><label>Position</label>
-            <select id="bannerPosition" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+            <select id="bannerPosition" style="width:100%;padding:10px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
               <option value="top">Top</option>
               <option value="bottom">Bottom</option>
             </select>
           </div>
           <div class="form-group" style="margin-bottom:0"><label>Show to</label>
-            <select id="bannerShowTo" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+            <select id="bannerShowTo" style="width:100%;padding:10px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
               <option value="all">All</option>
               <option value="guests">Guests only</option>
               <option value="logged_in">Logged in only</option>
@@ -1625,7 +1611,7 @@
           <div class="form-group" style="margin-bottom:0"><label>End date</label><input type="datetime-local" id="bannerEndDate"></div>
         </div>
         <div class="modal-actions">
-          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeBannerModal()">Cancel</button>
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeBannerModal()">Cancel</button>
           <button class="btn-primary" id="bannerSubmitBtn" onclick="submitBanner()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save banner</button>
         </div>
         <div class="modal-error" id="bannerError"></div>
@@ -1642,7 +1628,7 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div class="form-group" style="margin-bottom:0"><label>Code</label><input type="text" id="couponCode" placeholder="SAVE20" style="text-transform:uppercase"></div>
           <div class="form-group" style="margin-bottom:0"><label>Type</label>
-            <select id="couponDiscountType" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+            <select id="couponDiscountType" style="width:100%;padding:10px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
               <option value="percentage">Percentage</option>
               <option value="fixed">Fixed amount</option>
             </select>
@@ -1655,7 +1641,7 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
           <div class="form-group" style="margin-bottom:0"><label>Min amount</label><input type="number" id="couponMinAmount" step="0.01" min="0" placeholder="Leave empty = none"></div>
           <div class="form-group" style="margin-bottom:0"><label>Plan (optional)</label>
-            <select id="couponPlanSlug" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+            <select id="couponPlanSlug" style="width:100%;padding:10px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
               <option value="">Any plan</option>
               <option value="pro">Pro</option>
               <option value="enterprise">Enterprise</option>
@@ -1669,7 +1655,7 @@
           </div>
         </div>
         <div class="modal-actions">
-          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCouponModal()">Cancel</button>
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCouponModal()">Cancel</button>
           <button class="btn-primary" id="couponSubmitBtn" onclick="submitCoupon()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save coupon</button>
         </div>
         <div class="modal-error" id="couponError"></div>
@@ -1697,7 +1683,7 @@
           </div>
         </div>
         <div class="modal-actions">
-          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeWebhookModal()">Cancel</button>
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeWebhookModal()">Cancel</button>
           <button class="btn-primary" id="whSubmitBtn" onclick="submitWebhook()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save webhook</button>
         </div>
         <div class="modal-error" id="whError"></div>
@@ -1718,13 +1704,13 @@
         <div id="domainVerificationInfo" style="display:none;margin-top:8px;padding:12px;background:#f8f6f3;border-radius:var(--radius-sm);font-size:0.8125rem;line-height:1.6">
           <strong style="display:block;margin-bottom:4px">DNS Verification</strong>
           Add this TXT record to your domain's DNS settings:<br><br>
-          <code style="display:block;padding:8px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:4px;word-break:break-all" id="domainTxtValue"></code>
+          <code style="display:block;padding:8px;background:#fff;border:1px solid rgba(255,255,255,0.08);border-radius:4px;word-break:break-all" id="domainTxtValue"></code>
           <br>
           <button class="btn-primary" onclick="verifyDomain()" style="font-size:0.75rem;padding:6px 14px">Verify now</button>
           <span id="domainVerifyResult" style="margin-left:8px;font-weight:600"></span>
         </div>
         <div class="modal-actions" style="margin-top:12px">
-          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeDomainModal()">Cancel</button>
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeDomainModal()">Cancel</button>
           <button class="btn-primary" id="domainSubmitBtn" onclick="submitDomain()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Add domain</button>
         </div>
         <div class="modal-error" id="domainError"></div>
@@ -1744,17 +1730,17 @@
           <div style="margin-bottom:8px"><strong>Response Code:</strong> <span id="ldCode"></span></div>
           <div style="margin-bottom:8px"><strong>Timestamp:</strong> <span id="ldTime"></span></div>
           <div style="margin-bottom:8px"><strong>Error:</strong> <span id="ldError"></span></div>
-          <details style="border:1px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer;margin-bottom:8px">
+          <details style="border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer;margin-bottom:8px">
             <summary style="font-weight:600">Payload</summary>
             <pre id="ldPayload" style="font-size:0.6875rem;white-space:pre-wrap;word-break:break-all;margin-top:6px;background:var(--bg);padding:8px;border-radius:6px;max-height:200px;overflow:auto"></pre>
           </details>
-          <details style="border:1px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+          <details style="border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
             <summary style="font-weight:600">Response Body</summary>
             <pre id="ldResponse" style="font-size:0.6875rem;white-space:pre-wrap;word-break:break-all;margin-top:6px;background:var(--bg);padding:8px;border-radius:6px;max-height:200px;overflow:auto"></pre>
           </details>
         </div>
         <div class="modal-actions">
-          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeLogDetail()">Close</button>
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeLogDetail()">Close</button>
         </div>
       </div>
     </div>
@@ -1785,7 +1771,7 @@
       <div class="form-group"><label>Email</label><input type="email" id="authEmail" autocomplete="email"></div>
       <div class="form-group"><label>Password</label><input type="password" id="authPassword" autocomplete="current-password"></div>
       <div class="modal-actions">
-        <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeAuthModal()">Cancel</button>
+        <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeAuthModal()">Cancel</button>
         <button class="btn-primary" id="authSubmitBtn" onclick="submitAuth()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Sign in</button>
       </div>
       <div class="modal-error" id="authError"></div>
@@ -1813,7 +1799,7 @@
         <img id="qrImage" src="" alt="QR Code">
         <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
           <button class="btn-primary" style="font-size:0.8125rem;padding:8px 16px" onclick="downloadQR()">Download PNG</button>
-          <button style="padding:8px 16px;border:1.5px solid rgba(0,0,0,0.06);border-radius:100px;background:transparent;color:var(--text-secondary);font:inherit;font-size:0.8125rem;font-weight:500;cursor:pointer" onclick="closeQRModal()">Close</button>
+          <button style="padding:8px 16px;border:1.5px solid rgba(255,255,255,0.08);border-radius:100px;background:transparent;color:var(--text-secondary);font:inherit;font-size:0.8125rem;font-weight:500;cursor:pointer" onclick="closeQRModal()">Close</button>
         </div>
       </div>
     </div>
@@ -1832,11 +1818,11 @@
       <div class="form-group"><label>Password (leave blank to remove)</label><input type="password" id="editPassword" placeholder="New password"></div>
       <div class="form-group"><label>Tags <a class="filter-clear" onclick="openTagModal()" style="font-size:0.65rem">manage</a></label><input type="text" id="editTags" placeholder="news, marketing, product"></div>
       <div class="form-group"><label>Folder</label>
-        <select id="editFolder" style="width:100%;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;background:var(--bg);outline:none">
+        <select id="editFolder" style="width:100%;padding:8px 12px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;background:var(--bg);outline:none">
           <option value="">No folder</option>
         </select>
       </div>
-      <details style="margin-top:4px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+      <details style="margin-top:4px;border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
         <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">UTM Parameters</summary>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
           <div class="form-group" style="margin-bottom:0"><label>Source</label><input type="text" id="editUtmSource"></div>
@@ -1846,7 +1832,7 @@
           <div class="form-group" style="margin-bottom:0;grid-column:1/-1"><label>Content</label><input type="text" id="editUtmContent"></div>
         </div>
       </details>
-      <details style="margin-top:4px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+      <details style="margin-top:4px;border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
         <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">Social Preview (OG Tags)</summary>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
           <div class="form-group" style="margin-bottom:0"><label>Title</label><input type="text" id="editOgTitle" maxlength="200"></div>
@@ -1855,7 +1841,7 @@
         </div>
       </details>
       <div class="modal-actions">
-        <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeEditModal()">Cancel</button>
+        <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeEditModal()">Cancel</button>
         <button class="btn-primary" id="editSubmitBtn" onclick="submitEdit()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save</button>
       </div>
       <div class="modal-error" id="editError"></div>
@@ -1870,7 +1856,7 @@
       <h2>Delete link</h2>
       <div class="sub" style="margin-bottom:16px">Are you sure you want to delete this link? This action cannot be undone.</div>
       <div class="modal-actions">
-        <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeDeleteModal()">Cancel</button>
+        <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeDeleteModal()">Cancel</button>
         <button style="flex:1;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--red);color:#fff;font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="confirmDelete()">Delete</button>
       </div>
       <div class="modal-error" id="deleteError"></div>
@@ -1889,13 +1875,13 @@
         <div class="form-group"><label>Password</label><input type="password" id="cuPassword" placeholder="Min 6 characters"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div class="form-group" style="margin-bottom:0"><label>Role</label>
-            <select id="cuRole" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+            <select id="cuRole" style="width:100%;padding:10px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
               <option value="USER">User</option>
               <option value="ADMIN">Admin</option>
             </select>
           </div>
           <div class="form-group" style="margin-bottom:0"><label>Tier</label>
-            <select id="cuTier" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
+            <select id="cuTier" style="width:100%;padding:10px 14px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
               <option value="free">Free</option>
               <option value="pro">Pro</option>
               <option value="enterprise">Enterprise</option>
@@ -1903,7 +1889,7 @@
           </div>
         </div>
         <div class="modal-actions">
-          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCreateUserModal()">Cancel</button>
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCreateUserModal()">Cancel</button>
           <button class="btn-primary" id="cuSubmitBtn" onclick="submitCreateUser()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Create</button>
         </div>
         <div class="modal-error" id="cuError"></div>
@@ -1922,7 +1908,7 @@
             <span id="checkoutPlanName" style="font-weight:700;font-size:1rem"></span>
             <span id="checkoutPlanPrice" style="font-weight:800;font-size:1.25rem;color:var(--accent)"></span>
           </div>
-          <div id="checkoutDiscountRow" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.06)">
+          <div id="checkoutDiscountRow" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">
             <div style="display:flex;justify-content:space-between;font-size:0.8125rem">
               <span style="color:var(--green)">Discount</span>
               <span id="checkoutDiscountAmount" style="color:var(--green);font-weight:600"></span>
@@ -1944,16 +1930,16 @@
         <div class="form-group" id="checkoutProviderGroup" style="display:none;margin-top:8px">
           <label>Payment method</label>
           <div style="display:flex;gap:8px;margin-top:4px">
-            <label class="provider-option" style="flex:1;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);cursor:pointer;font-size:0.8125rem">
+            <label class="provider-option" style="flex:1;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);cursor:pointer;font-size:0.8125rem">
               <input type="radio" name="checkoutProvider" value="paystack" checked> Paystack
             </label>
-            <label class="provider-option" style="flex:1;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);cursor:pointer;font-size:0.8125rem">
+            <label class="provider-option" style="flex:1;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);cursor:pointer;font-size:0.8125rem">
               <input type="radio" name="checkoutProvider" value="stripe"> Stripe
             </label>
           </div>
         </div>
         <div class="modal-actions" style="margin-top:16px">
-          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCheckoutModal()">Cancel</button>
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCheckoutModal()">Cancel</button>
           <button class="btn-primary" id="checkoutSubmitBtn" onclick="proceedToPayment()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">
             Subscribe <span class="btn-icon" style="width:18px;height:18px;font-size:0.625rem">&#8599;</span>
           </button>
@@ -2001,7 +1987,7 @@
           <li class="empty-state">Loading...</li>
         </ul>
         <div class="modal-actions" style="margin-top:12px">
-          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeMembersModal()">Close</button>
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeMembersModal()">Close</button>
         </div>
       </div>
     </div>
@@ -2038,14 +2024,14 @@
 
         <div class="bulk-preview" id="bulkPreview" style="display:none">
           <h4>Preview (<span id="bulkCount">0</span> links)</h4>
-          <div style="max-height:200px;overflow-y:auto;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm)">
+          <div style="max-height:200px;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm)">
             <table class="bulk-table">
               <thead><tr><th>#</th><th>URL</th><th>Custom Code</th><th>Expires</th></tr></thead>
               <tbody id="bulkPreviewBody"></tbody>
             </table>
           </div>
           <div class="modal-actions" style="margin-top:12px">
-            <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeBulkModal()">Cancel</button>
+            <button style="flex:1;padding:10px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeBulkModal()">Cancel</button>
             <button class="btn-primary" id="bulkSubmitBtn" onclick="submitBulk()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">
               Import all <span class="btn-icon" style="width:18px;height:18px;font-size:0.625rem">&#8593;</span>
             </button>
@@ -2054,7 +2040,7 @@
 
         <div id="bulkResult" style="display:none">
           <div class="bulk-summary" id="bulkSummary"></div>
-          <div style="max-height:240px;overflow-y:auto;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm)">
+          <div style="max-height:240px;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm)">
             <table class="bulk-table">
               <thead><tr><th>#</th><th>URL</th><th>Status</th><th>Short URL</th></tr></thead>
               <tbody id="bulkResultBody"></tbody>
@@ -2079,10 +2065,10 @@
           <p class="empty-state" style="padding:12px">No folders yet.</p>
         </div>
         <div style="display:flex;gap:8px">
-          <input type="text" id="folderNameInput" placeholder="Folder name" style="flex:1;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;outline:none" maxlength="100">
-          <select id="folderColorInput" style="padding:8px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font-size:0.75rem;background:var(--bg);outline:none">
+          <input type="text" id="folderNameInput" placeholder="Folder name" style="flex:1;padding:8px 12px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;outline:none" maxlength="100">
+          <select id="folderColorInput" style="padding:8px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font-size:0.75rem;background:var(--bg);outline:none">
             <option value="#1a1a2e">Navy</option>
-            <option value="#b8860b">Gold</option>
+            <option value="#d4a54a">Gold</option>
             <option value="#1a7d4a">Green</option>
             <option value="#c93838">Red</option>
             <option value="#7c3aed">Purple</option>
@@ -2109,10 +2095,10 @@
           <p class="empty-state" style="padding:12px">No tags yet.</p>
         </div>
         <div style="display:flex;gap:8px">
-          <input type="text" id="tagNameInput" placeholder="Tag name" style="flex:1;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;outline:none" maxlength="50">
-          <select id="tagColorInput" style="padding:8px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font-size:0.75rem;background:var(--bg);outline:none">
+          <input type="text" id="tagNameInput" placeholder="Tag name" style="flex:1;padding:8px 12px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;outline:none" maxlength="50">
+          <select id="tagColorInput" style="padding:8px;border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font-size:0.75rem;background:var(--bg);outline:none">
             <option value="#1a1a2e">Navy</option>
-            <option value="#b8860b">Gold</option>
+            <option value="#d4a54a">Gold</option>
             <option value="#1a7d4a">Green</option>
             <option value="#c93838">Red</option>
             <option value="#7c3aed">Purple</option>
@@ -2418,7 +2404,7 @@
         return;
       }
       $('folderList').innerHTML = folders.map(f =>
-        '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.03)">' +
+        '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">' +
         '<span style="width:8px;height:8px;border-radius:50%;background:' + (f.color || 'var(--accent)') + ';flex-shrink:0"></span>' +
         '<span style="flex:1;font-size:0.8125rem">' + f.name + '</span>' +
         '<button class="action-btn" onclick="renameFolder(' + f.id + ',\'' + f.name.replace(/'/g,"\\'") + '\')" title="Rename">&#x270e;</button>' +
@@ -2488,7 +2474,7 @@
         return;
       }
       $('tagList').innerHTML = tags.map(t =>
-        '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.03)">' +
+        '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">' +
         '<span class="tag-badge" style="background:' + (t.color || 'var(--accent-soft)') + '20;color:' + (t.color || 'var(--accent)') + '">' + t.name + '</span>' +
         '<span style="flex:1;font-size:0.8125rem">' + t.name + '</span>' +
         '<button class="action-btn" onclick="renameTag(' + t.id + ',\'' + t.name.replace(/'/g,"\\'") + '\')" title="Rename">&#x270e;</button>' +
@@ -2752,7 +2738,7 @@
             if (loc.lat && loc.lon) {
               const popup = (loc.city ? loc.city + ', ' : '') + loc.country;
               L.circleMarker([loc.lat, loc.lon], {
-                radius: 5, fillColor: 'var(--accent,#b8860b)', color: '#fff', weight: 1.5, fillOpacity: 0.8
+                radius: 5, fillColor: '#d4a54a', color: '#fff', weight: 1.5, fillOpacity: 0.8
               }).addTo(map).bindPopup(popup);
               bounds.push([loc.lat, loc.lon]);
             }
@@ -3202,7 +3188,7 @@
           '<span class="original" title="' + u.longUrl + '">' + u.longUrl + '</span>' +
           '</div>' +
           '<div class="meta">' +
-          '<span class="clicks" style="background:#fef2f2;color:var(--red)">' + u.clickCount + '</span>' +
+          '<span class="clicks" style="background:rgba(239,68,68,0.1);color:var(--red)">' + u.clickCount + '</span>' +
           '<span class="trash-badge">Deleted</span>' +
           '<button class="action-btn" onclick="restoreLink(\'' + u.shortCode + '\')" title="Restore">&#x21a9;</button>' +
           '<button class="action-btn danger" onclick="permanentDeleteLink(\'' + u.shortCode + '\')" title="Delete permanently">&#x2716;</button>' +
@@ -3542,7 +3528,6 @@
         if (canManage) {
           $('viewSelector').style.display = 'flex';
           $('dashHeader').style.display = 'block';
-          $('loginPrompt').style.display = 'none';
           document.querySelectorAll('.dash-link').forEach(el => el.style.display = 'inline-block');
           switchView('links');
           loadLinks();
@@ -3550,9 +3535,6 @@
         } else {
           $('viewSelector').style.display = 'none';
           $('dashHeader').style.display = 'none';
-          $('loginPrompt').style.display = 'block';
-          $('promptGuest').style.display = 'none';
-          $('promptUpgrade').style.display = 'block';
           $('linksView').classList.remove('show');
           $('analyticsView').classList.remove('show');
           $('settingsView').classList.remove('show');
@@ -3565,9 +3547,6 @@
         $('registerBtn').style.display = 'inline-block';
         $('viewSelector').style.display = 'none';
         $('dashHeader').style.display = 'none';
-        $('loginPrompt').style.display = 'block';
-        $('promptGuest').style.display = 'block';
-        $('promptUpgrade').style.display = 'none';
         document.querySelectorAll('.dash-link').forEach(el => el.style.display = 'none');
         $('adminTabLink').classList.remove('show');
         document.querySelectorAll('.pro-feature').forEach(el => el.classList.remove('show'));
@@ -4032,7 +4011,7 @@
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed');
-      $('apiKeyNewKey').innerHTML = '<div style="background:var(--green-soft);border:1px solid rgba(15,151,61,0.2);border-radius:var(--radius-sm);padding:12px;margin-top:8px"><strong style="color:var(--green)">Save this key!</strong><div style="font-family:monospace;font-size:0.8125rem;word-break:break-all;margin-top:4px">' + data.key + '</div><div style="font-size:0.75rem;color:var(--text-tertiary);margin-top:2px">It won\'t be shown again.</div></div>';
+      $('apiKeyNewKey').innerHTML = '<div style="background:var(--green-soft);border:1px solid rgba(34,197,94,0.2);border-radius:var(--radius-sm);padding:12px;margin-top:8px"><strong style="color:var(--green)">Save this key!</strong><div style="font-family:monospace;font-size:0.8125rem;word-break:break-all;margin-top:4px">' + data.key + '</div><div style="font-size:0.75rem;color:var(--text-tertiary);margin-top:2px">It won\'t be shown again.</div></div>';
       $('apiKeyNewKey').style.display = 'block';
       $('apiKeyName').value = '';
       loadApiKeys();
