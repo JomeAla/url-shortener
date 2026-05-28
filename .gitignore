@@ -11,3 +11,6 @@ data/
 app.log
 app.err
 body*.json
+cookies.txt
+browser-extension/node_modules/
+browser-extension/package-lock.json

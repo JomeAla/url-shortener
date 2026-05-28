@@ -163,33 +163,69 @@ Design elements:
 
 ## Phase G: Missing Integrations & Automation
 
-### G1. Webhooks for Click Events
-- [ ] Create Webhook entity (id, userId, url, events[], secret, active)
-- [ ] Add webhook CRUD endpoints
-- [ ] Fire webhook on click event (async, with retry)
-- [ ] Sign webhook payload with HMAC-SHA256 secret
-- [ ] Add webhook management UI
+### Implementation Priority (Recommended Order)
+```
+G0 (API Docs) → G1 (Webhooks) → G4 (n8n/Zapier) → G2 (Discord) → G3 (Slack) → G5 (OG Tags) → G6 (Browser Ext)
+```
+Webhooks (G1) are the foundation — n8n, Zapier, and Make all consume webhooks. Discord (G2) is lighter than Slack (G3) since it needs no OAuth complexity.
 
-### G2. Slack / Discord Bot Integration
-- [ ] Create Slack bot command handler (/shorten)
-- [ ] Create Discord bot command handler (/shorten)
-- [ ] Add OAuth flow for Slack/Discord install
+### G0. Pre-requisite: Public API Documentation
+- [ ] Document all existing REST API endpoints with examples
+- [ ] Publish API docs at /docs or a dedicated page
+- [ ] Add API base URL and auth instructions (X-API-Key header)
 
-### G3. Social Media Preview Customization (OG Tags)
+### G1. Webhooks (Foundation for all integrations)
+- [ ] Create Webhook entity (id, userId, url, events[], secret, active, createdAt)
+- [ ] Add WebhookRepository
+- [ ] POST /api/webhooks — create webhook
+- [ ] GET /api/webhooks — list user's webhooks
+- [ ] PUT /api/webhooks/{id} — update webhook
+- [ ] DELETE /api/webhooks/{id} — delete webhook
+- [ ] POST /api/webhooks/{id}/test — send test payload
+- [ ] Fire webhook on click event (async via @Async or task executor)
+- [ ] Implement retry with exponential backoff (3 attempts)
+- [ ] Sign webhook payload with HMAC-SHA256 (X-Webhook-Signature header)
+- [ ] Add webhook management UI in dashboard settings
+- [ ] Add webhook logs table (delivery status, response code, timestamp)
+
+### G2. Discord Bot
+- [ ] Add Discord bot dependency (JDA or Discord4J)
+- [ ] Register slash command: /shorten <url> [custom_code] [password]
+- [ ] Handle ephemeral response with short URL + stats
+- [ ] Add /mylinks command to list recent links
+- [ ] Add /analytics <code> command to show click stats
+- [ ] Bot token configuration in admin settings
+- [ ] Docker-compose bot worker
+
+### G3. Slack Bot
+- [ ] Add Slack SDK dependency (bolt)
+- [ ] Register slash command: /shorten <url>
+- [ ] Handle ephemeral response with short URL
+- [ ] Add shortcut action from message context menu
+- [ ] OAuth install flow (Add to Slack button)
+- [ ] Bot token + signing secret in admin settings
+- [ ] Docker-compose bot worker
+
+### G4. n8n / Make / Zapier Integration
+- [ ] Create webhook-triggered "Link Clicked" event (uses G1 webhooks)
+- [ ] Create "URL Shortened" action (Zapier app action / n8n node)
+- [ ] Provide webhook URL format: POST /api/webhooks/receive/{provider}
+- [ ] Add Zapier app definition (public API + webhook triggers)
+- [ ] Add platform-specific docs for connecting n8n/Make/Zapier
+- [ ] Rate-limited public API tier (free: 100/h, pro: 10k/h, ent: unlimited)
+
+### G5. Social Media Preview Customization (OG Tags)
 - [ ] Add og:title, og:description, og:image fields to Url entity
 - [ ] Serve OG meta tags on `/{shortCode}` for social crawlers
-- [ ] Add OG editor UI when creating/editing links
+- [ ] Add OG preview editor UI when creating/editing links
 
-### G4. Browser Extension
-- [ ] Build Chrome extension manifest
-- [ ] Build Firefox extension manifest
-- [ ] Right-click context menu → shorten URL
-- [ ] Popup UI with recent links
-
-### G5. Zapier / Make / n8n Integration
-- [ ] Create public API with rate-limited endpoints
-- [ ] Add Zapier app definition (webhook triggers + actions)
-- [ ] Publish to Zapier ecosystem
+### G6. Browser Extension
+- [ ] Chrome manifest V3 (manifest.json)
+- [ ] Firefox manifest V3 (manifest.json)
+- [ ] Right-click context menu → "Shorten with Shrtly"
+- [ ] Popup UI showing recent links + shorten input
+- [ ] API key auth from extension settings
+- [ ] Publish to Chrome Web Store + Firefox Add-ons
 
 ---
 

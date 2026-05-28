@@ -1,4 +1,4 @@
 package com.jomea.urlshortener.dto;
 
-public record AuthResponse(String email, String name, String role, String tier) {
+public record AuthResponse(String email, String name, String role, String tier, String authProvider) {
 }

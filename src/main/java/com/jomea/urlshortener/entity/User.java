@@ -32,6 +32,30 @@ public class User {
 
     private String tier;
 
+    @Column(name = "auth_provider")
+    private String authProvider;
+
+    @Column(name = "provider_id")
+    private String providerId;
+
+    @Column(name = "avatar_url", length = 2048)
+    private String avatarUrl;
+
+    @Column(name = "discord_id")
+    private String discordId;
+
+    @Column(name = "discord_link_code", length = 32)
+    private String discordLinkCode;
+
+    @Column(name = "slack_id")
+    private String slackId;
+
+    @Column(name = "slack_team_id")
+    private String slackTeamId;
+
+    @Column(name = "slack_link_code", length = 32)
+    private String slackLinkCode;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -88,4 +112,21 @@ public class User {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public String getAuthProvider() { return authProvider; }
+    public void setAuthProvider(String authProvider) { this.authProvider = authProvider; }
+    public String getProviderId() { return providerId; }
+    public void setProviderId(String providerId) { this.providerId = providerId; }
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+    public String getDiscordId() { return discordId; }
+    public void setDiscordId(String discordId) { this.discordId = discordId; }
+    public String getDiscordLinkCode() { return discordLinkCode; }
+    public void setDiscordLinkCode(String discordLinkCode) { this.discordLinkCode = discordLinkCode; }
+    public String getSlackId() { return slackId; }
+    public void setSlackId(String slackId) { this.slackId = slackId; }
+    public String getSlackTeamId() { return slackTeamId; }
+    public void setSlackTeamId(String slackTeamId) { this.slackTeamId = slackTeamId; }
+    public String getSlackLinkCode() { return slackLinkCode; }
+    public void setSlackLinkCode(String slackLinkCode) { this.slackLinkCode = slackLinkCode; }
 }

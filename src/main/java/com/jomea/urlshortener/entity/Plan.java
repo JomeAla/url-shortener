@@ -49,6 +49,9 @@ public class Plan {
     @Column(nullable = false)
     private boolean apiAccess;
 
+    @Column(name = "max_requests_per_minute", nullable = false)
+    private int maxRequestsPerMinute = 60;
+
     @Column(columnDefinition = "TEXT")
     private String features;
 
@@ -85,6 +88,8 @@ public class Plan {
     public void setCustomDomains(boolean customDomains) { this.customDomains = customDomains; }
     public boolean isApiAccess() { return apiAccess; }
     public void setApiAccess(boolean apiAccess) { this.apiAccess = apiAccess; }
+    public int getMaxRequestsPerMinute() { return maxRequestsPerMinute; }
+    public void setMaxRequestsPerMinute(int maxRequestsPerMinute) { this.maxRequestsPerMinute = maxRequestsPerMinute; }
     public String getFeatures() { return features; }
     public void setFeatures(String features) { this.features = features; }
     public int getSortOrder() { return sortOrder; }

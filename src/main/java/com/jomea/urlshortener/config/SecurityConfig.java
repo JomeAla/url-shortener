@@ -1,6 +1,7 @@
 package com.jomea.urlshortener.config;
 
 import com.jomea.urlshortener.repository.UserRepository;
+import com.jomea.urlshortener.security.OAuthLoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +28,8 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                    OAuthLoginSuccessHandler oauthSuccessHandler) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
@@ -38,7 +40,10 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .httpBasic(httpBasic -> httpBasic.securityContextRepository(securityContextRepository()))
             .formLogin(form -> form.disable())
-            .logout(logout -> logout.disable());
+            .logout(logout -> logout.disable())
+            .oauth2Login(oauth2 -> oauth2
+                .successHandler(oauthSuccessHandler)
+            );
         return http.build();
     }
 

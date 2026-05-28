@@ -7,24 +7,38 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f7f8fc;
+    --bg: #f7f5f0;
     --surface: #ffffff;
-    --surface-glass: rgba(255,255,255,0.72);
-    --border-subtle: rgba(0,0,0,0.06);
+    --surface-glass: rgba(255,255,255,0.82);
+    --border-subtle: rgba(0,0,0,0.05);
     --border-glass: rgba(255,255,255,0.5);
-    --text-primary: #0b0d17;
-    --text-secondary: #5b5f7a;
-    --text-tertiary: #9498b0;
-    --accent: #3563e9;
-    --accent-soft: #eef2ff;
-    --accent-glow: rgba(53,99,233,0.15);
-    --green: #0f973d;
-    --green-soft: #eafaf0;
-    --red: #dc2626;
-    --amber: #d97706;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
+    --accent: #0f172a;
+    --accent-soft: #eef2f6;
+    --accent-glow: rgba(15,23,42,0.08);
+    --accent-hover: #1e293b;
+    --gold: #b8860b;
+    --gold-soft: #fdf6e3;
+    --gold-glow: rgba(184,134,11,0.12);
+    --green: #0d7a52;
+    --green-soft: #e6f7f0;
+    --red: #b91c1c;
+    --red-soft: #fef2f2;
+    --amber: #92400e;
+    --amber-soft: #fffbeb;
+    --purple: #6d28d9;
+    --purple-soft: #f3f0ff;
+    --teal: #0f766e;
+    --teal-soft: #f0fdfa;
+    --rose: #be123c;
+    --rose-soft: #fef2f2;
     --radius-sm: 10px;
     --radius-md: 16px;
     --radius-lg: 24px;
@@ -33,6 +47,7 @@
     --shadow-card: 0 0 0 1px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04), 0 12px 32px -8px rgba(0,0,0,0.06);
     --shadow-glass: 0 0 0 1px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.06);
     --shadow-elevated: 0 0 0 1px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06), 0 24px 48px -12px rgba(0,0,0,0.1);
+    --shadow-warm: 0 0 0 1px rgba(184,134,11,0.08), 0 4px 20px rgba(184,134,11,0.06), 0 12px 40px -8px rgba(0,0,0,0.08);
     --ease-spring: cubic-bezier(0.32,0.72,0,1);
     --ease-smooth: cubic-bezier(0.22,1,0.36,1);
   }
@@ -53,19 +68,19 @@
     position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3;
   }
   .bg-decor .orb-1 {
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(53,99,233,0.35), transparent);
-    top: -200px; right: -150px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(184,134,11,0.2), rgba(184,134,11,0.05), transparent);
+    top: -250px; right: -200px;
   }
   .bg-decor .orb-2 {
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(99,153,255,0.2), transparent);
-    bottom: -150px; left: -200px;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(15,23,42,0.12), transparent);
+    bottom: -180px; left: -250px;
   }
   .bg-decor .orb-3 {
-    width: 300px; height: 300px;
-    background: radial-gradient(circle, rgba(53,99,233,0.12), transparent);
-    top: 40%; left: 60%;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(184,134,11,0.08), transparent);
+    top: 35%; left: 55%;
   }
   .app { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 24px 48px; }
 
@@ -122,33 +137,80 @@
 
   .btn-primary {
     display: inline-flex; align-items: center; gap: 8px;
-    background: var(--accent); color: #fff; border: none;
+    background: linear-gradient(135deg, var(--accent), #1e293b);
+    color: #fff; border: none;
     font: inherit; font-size: 0.8125rem; font-weight: 600;
     padding: 7px 16px 7px 20px; border-radius: 100px;
     cursor: pointer; transition: all 0.3s var(--ease-spring);
     box-shadow: 0 1px 3px var(--accent-glow);
   }
-  .btn-primary:hover { background: #2952c9; box-shadow: 0 4px 12px var(--accent-glow); transform: translateY(-1px); }
+  .btn-primary:hover { background: linear-gradient(135deg, #1e293b, var(--accent)); box-shadow: 0 4px 16px var(--accent-glow), 0 0 0 1px rgba(184,134,11,0.15); transform: translateY(-1px); }
   .btn-primary:active { transform: scale(0.97); }
 
-  /* --- Hero --- */
+  /* --- Hero Split Layout --- */
   .hero {
-    text-align: center; padding: 72px 0 48px; max-width: 720px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    align-items: center; padding: 72px 0 48px; max-width: 100%;
+  }
+  .hero-left { max-width: 540px; }
+  .hero-right {
+    display: flex; justify-content: center; align-items: center;
+    position: relative;
   }
   .hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--accent-soft); color: var(--accent);
-    font-size: 0.75rem; font-weight: 600; padding: 4px 14px; border-radius: 100px;
-    margin-bottom: 20px; letter-spacing: 0.01em;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--gold-soft), #f8f0d6);
+    color: var(--gold);
+    font-size: 0.8125rem; font-weight: 700; padding: 6px 18px; border-radius: 100px;
+    margin-bottom: 24px; letter-spacing: 0.02em;
+    border: 1px solid rgba(184,134,11,0.15);
+    box-shadow: 0 2px 8px var(--gold-glow);
   }
   .hero h1 {
-    font-size: 3rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.04em;
-    margin-bottom: 16px;
+    font-size: 3.5rem; font-weight: 800; line-height: 1.08; letter-spacing: -0.04em;
+    margin-bottom: 20px;
   }
-  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--gold), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .hero p {
-    font-size: 1.1rem; color: var(--text-secondary); line-height: 1.6;
-    max-width: 520px; margin: 0 auto 32px;
+    font-size: 1.15rem; color: var(--text-secondary); line-height: 1.65;
+    margin-bottom: 36px; max-width: 520px;
+  }
+
+  /* --- Hero Visual --- */
+  .hero-visual {
+    position: relative; width: 100%; max-width: 400px;
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  }
+  .hero-visual .vis-ring {
+    position: absolute; border-radius: 50%;
+    border: 1.5px solid rgba(184,134,11,0.1);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+  }
+  .hero-visual .vis-ring-1 { width: 100%; height: 100%; }
+  .hero-visual .vis-ring-2 { width: 76%; height: 76%; }
+  .hero-visual .vis-ring-3 { width: 52%; height: 52%; border-color: var(--gold); border-width: 2px; border-style: dashed; opacity: 0.6; }
+  .hero-visual .vis-centre {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #1e293b);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 60px rgba(184,134,11,0.15);
+    position: relative; z-index: 2;
+  }
+  .hero-visual .vis-centre svg { width: 28px; height: 28px; color: #fff; }
+  .hero-visual .vis-dot {
+    position: absolute; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--gold); z-index: 3;
+  }
+  .hero-visual .vis-dot-1 { top: 8%; left: 22%; background: var(--gold); }
+  .hero-visual .vis-dot-2 { top: 30%; right: 4%; }
+  .hero-visual .vis-dot-3 { bottom: 12%; left: 15%; }
+  .hero-visual .vis-dot-4 { bottom: 38%; right: 18%; background: var(--accent); }
+  .hero-visual .vis-dot-pulse {
+    animation: pulse-dot 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.8); opacity: 1; }
   }
 
   /* --- Shorten Card (Double-Bezel) --- */
@@ -191,7 +253,7 @@
     cursor: pointer; transition: all 0.3s var(--ease-spring);
     box-shadow: 0 2px 6px var(--accent-glow); white-space: nowrap;
   }
-  .shorten-btn:hover { background: #2952c9; box-shadow: 0 6px 16px var(--accent-glow); transform: translateY(-1px); }
+  .shorten-btn:hover { background: var(--accent-hover); box-shadow: 0 6px 16px var(--accent-glow); transform: translateY(-1px); }
   .shorten-btn:active { transform: scale(0.97); }
   .shorten-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
   .shorten-btn .btn-icon {
@@ -201,6 +263,8 @@
   }
   .shorten-btn:hover .btn-icon { transform: translateX(2px) translateY(-1px); }
 
+  .oauth-btn { display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:9px 14px;border:1.5px solid rgba(0,0,0,0.08);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-primary);font:inherit;font-size:0.8125rem;font-weight:600;cursor:pointer;transition:all 0.2s var(--ease-smooth) }
+  .oauth-btn:hover { border-color:var(--accent);background:rgba(184,134,11,0.03) }
   .shorten-status { font-size: 0.8125rem; margin-top: 10px; color: var(--text-secondary); min-height: 1.25rem; }
   .shorten-status .error { color: var(--red); }
   .result-pane {
@@ -233,70 +297,125 @@
   }
   .advanced-toggle:hover { color: var(--accent); }
   .advanced-options {
-    display: none; margin-top: 12px; gap: 8px;
-    grid-template-columns: 1fr 1fr 1fr;
+    display: none; margin-top: 12px;
   }
-  .advanced-options.open { display: grid; }
+  .advanced-options.open { display: block; }
+  .advanced-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .advanced-field label {
+    display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-tertiary);
+    margin-bottom: 3px;
+  }
   .advanced-options input {
-    padding: 10px 14px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm);
+    width: 100%; padding: 10px 14px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm);
     font: inherit; font-size: 0.8125rem; color: var(--text-primary);
     background: var(--bg); outline: none; transition: all 0.2s var(--ease-smooth);
   }
   .advanced-options input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
 
-  /* --- Feature Grid --- */
-  .features {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
-    margin-bottom: 48px;
+  /* --- Bento Feature Grid --- */
+  .features { margin-bottom: 48px; }
+  .features-header { text-align: center; margin-bottom: 36px; }
+  .features-header h2 {
+    font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; margin-top: 8px;
   }
+  .bento-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
+  }
+  .bento-item-wide { grid-column: span 2; }
+  .bento-item-full { grid-column: 1 / -1; }
   .feature-outer {
     background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg);
     box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
-    transition: all 0.4s var(--ease-smooth);
+    transition: all 0.5s var(--ease-smooth);
+    position: relative; overflow: hidden;
   }
-  .feature-outer:hover { box-shadow: var(--shadow-card); transform: translateY(-2px); }
+  .feature-outer::before {
+    content: ''; position: absolute; inset: -2px; border-radius: inherit;
+    background: linear-gradient(135deg, transparent 40%, rgba(53,99,233,0.04) 100%);
+    opacity: 0; transition: opacity 0.5s var(--ease-smooth); pointer-events: none;
+  }
+  .feature-outer:hover::before { opacity: 1; }
+  .feature-outer:hover { box-shadow: var(--shadow-card); transform: translateY(-3px); }
   .feature-inner {
     background: var(--surface); border-radius: calc(var(--radius-lg) - 1.5px);
     padding: 20px; text-align: center;
     box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+    position: relative; z-index: 1;
+  }
+  .feature-inner.horizontal {
+    display: flex; text-align: left; gap: 16px; align-items: center;
   }
   .feature-icon {
     width: 44px; height: 44px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     margin: 0 auto 12px; font-size: 1.25rem;
+    flex-shrink: 0;
   }
-  .feature-icon.blue { background: var(--accent-soft); color: var(--accent); }
+  .feature-icon.navy { background: var(--accent-soft); color: var(--accent); }
+  .feature-icon.gold { background: var(--gold-soft); color: var(--gold); }
   .feature-icon.green { background: var(--green-soft); color: var(--green); }
-  .feature-icon.amber { background: #fffbeb; color: var(--amber); }
-  .feature-icon.purple { background: #f3f0ff; color: #7c3aed; }
+  .feature-icon.amber { background: var(--amber-soft); color: var(--amber); }
+  .feature-icon.purple { background: var(--purple-soft); color: var(--purple); }
+  .feature-icon.rose { background: var(--rose-soft); color: var(--rose); }
+  .feature-icon.teal { background: var(--teal-soft); color: var(--teal); }
   .feature-inner h3 { font-size: 0.9375rem; font-weight: 700; margin-bottom: 4px; }
   .feature-inner p { font-size: 0.8125rem; color: var(--text-tertiary); line-height: 1.5; }
+  .feature-inner.horizontal h3 { margin-bottom: 2px; }
+  .feature-inner.horizontal p { margin: 0; }
+  .feature-inner .feature-preview {
+    width: 100%; height: 48px; margin-top: 10px;
+    border-radius: var(--radius-sm); background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6875rem; color: var(--text-tertiary);
+    gap: 4px; overflow: hidden;
+  }
+  .feature-inner .feature-preview .bar {
+    flex: 1; height: 16px; border-radius: 4px; background: var(--accent-soft);
+  }
+  .feature-inner .feature-preview .bar:nth-child(2) { background: rgba(53,99,233,0.3); }
+  .feature-inner .feature-preview .bar:nth-child(3) { background: rgba(53,99,233,0.5); }
+  .feature-inner .feature-preview .bar:nth-child(4) { background: var(--accent); }
+  .feature-inner .feat-label {
+    font-size: 0.6875rem; color: var(--text-tertiary); margin-top: 6px;
+    font-weight: 500;
+  }
 
   /* --- Pricing Section --- */
   .pricing { margin-bottom: 48px; }
-  .pricing-header { text-align: center; margin-bottom: 32px; }
+  .pricing-header { text-align: center; margin-bottom: 36px; }
   .pricing-header h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
   .pricing-header p { font-size: 0.9375rem; color: var(--text-secondary); }
   .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .pricing-outer { background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(0,0,0,0.03); transition: all 0.4s var(--ease-smooth); position: relative; }
-  .pricing-outer:hover { box-shadow: var(--shadow-card); transform: translateY(-3px); }
-  .pricing-outer.featured { background: linear-gradient(135deg, var(--accent), #7c3aed); padding: 2px; }
+  .pricing-outer { background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(0,0,0,0.03); transition: all 0.5s var(--ease-smooth); position: relative; }
+  .pricing-outer:hover { box-shadow: var(--shadow-card); transform: translateY(-4px); }
+  .pricing-outer.featured { background: linear-gradient(135deg, var(--gold), var(--accent)); padding: 2px; }
   .pricing-outer.featured .pricing-inner { background: var(--surface); border-radius: calc(var(--radius-lg) - 2px); }
-  .pricing-outer.featured .pricing-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; font-size: 0.6875rem; font-weight: 700; padding: 3px 14px; border-radius: 100px; letter-spacing: 0.02em; z-index: 2; }
+  .pricing-outer.featured .pricing-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), #a0750a); color: #fff; font-size: 0.6875rem; font-weight: 700; padding: 3px 14px; border-radius: 100px; letter-spacing: 0.02em; z-index: 2; box-shadow: 0 2px 8px var(--gold-glow); }
   .pricing-inner { background: var(--surface); border-radius: calc(var(--radius-lg) - 1.5px); padding: 28px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6); }
-  .pricing-inner h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
+  .pricing-inner h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 2px; }
   .pricing-inner .pricing-sub { font-size: 0.8125rem; color: var(--text-tertiary); margin-bottom: 16px; }
   .pricing-inner .pricing-amount { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; }
   .pricing-inner .pricing-amount .currency { font-size: 1.25rem; font-weight: 600; color: var(--text-secondary); vertical-align: super; }
   .pricing-inner .pricing-amount .period { font-size: 0.875rem; font-weight: 500; color: var(--text-tertiary); }
   .pricing-inner .pricing-desc { font-size: 0.8125rem; color: var(--text-secondary); margin: 12px 0 16px; line-height: 1.5; }
-  .pricing-features { list-style: none; margin-bottom: 20px; }
-  .pricing-features li { font-size: 0.8125rem; color: var(--text-secondary); padding: 6px 0; display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(0,0,0,0.04); }
+  .pricing-features { list-style: none; margin-bottom: 24px; }
+  .pricing-features li { font-size: 0.8125rem; color: var(--text-secondary); padding: 7px 0; display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(0,0,0,0.04); }
   .pricing-features li:first-child { border-top: none; }
   .pricing-features li .check { color: var(--green); font-weight: 700; }
   .pricing-features li .cross { color: var(--text-tertiary); }
-  .pricing-cta { width: 100%; justify-content: center; font-size: 0.875rem; padding: 10px; }
-  .pricing-free-text { text-align: center; font-size: 0.8125rem; color: var(--text-tertiary); margin-top: 8px; }
+  .pricing-cta { width: 100%; justify-content: center; font-size: 0.875rem; padding: 10px 16px; position: relative; }
+  .pricing-cta .btn-trail {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(255,255,255,0.18); margin-left: 6px;
+    font-size: 0.6875rem; transition: transform 0.3s var(--ease-spring);
+  }
+  .pricing-cta:hover .btn-trail { transform: translateX(2px); }
+  .pricing-cta-sub {
+    display: inline-flex; align-items: center; gap: 6px;
+    position: relative; z-index: 1;
+  }
+  .pricing-free-text { text-align: center; font-size: 0.75rem; color: var(--text-tertiary); margin-top: 10px; }
 
   @media (max-width: 768px) {
     .pricing-grid { grid-template-columns: 1fr; }
@@ -313,8 +432,12 @@
   .view-selector .tab.active { background: var(--surface); color: var(--text-primary); box-shadow: var(--shadow-card); }
   .view-selector .tab:hover:not(.active) { color: var(--text-primary); }
   .view-selector .tab.admin-tab { display: none; }
+
   .view-selector .tab.admin-tab.show { display: inline-block; }
 
+  .view-selector .tab.pro-feature { display: none; }
+
+  .view-selector .tab.pro-feature.show { display: inline-block; }
   /* --- Content Sections --- */
   .content-section { display: none; }
   .content-section.show { display: block; }
@@ -342,6 +465,42 @@
     transition: all 0.2s var(--ease-smooth);
   }
   .list-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .filter-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  .filter-row label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; }
+  .filter-row input { padding: 8px 12px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm); font: inherit; font-size: 0.75rem; background: var(--bg); outline: none; transition: all 0.2s var(--ease-smooth); }
+  .filter-row input:focus { border-color: var(--accent); }
+  .filter-clear { font-size: 0.75rem; color: var(--text-tertiary); cursor: pointer; text-decoration: none; }
+  .filter-clear:hover { color: var(--accent); }
+  .trash-badge { font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: 100px; background: #fef2f2; color: var(--red); }
+  .tag-badge { display: inline-block; padding: 1px 8px; border-radius: 100px; font-size: 0.625rem; font-weight: 600; margin: 1px 2px; line-height: 1.6; }
+  .tag-badge-sm { padding: 0 6px; font-size: 0.5625rem; }
+  .folder-select { padding: 8px 12px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm); font: inherit; font-size: 0.75rem; background: var(--bg); outline: none; cursor: pointer; }
+  .folder-select:focus { border-color: var(--accent); }
+  .color-picker { display: flex; gap: 4px; flex-wrap: wrap; }
+  .color-swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+  .color-swatch.selected { border-color: var(--text-primary); }
+  .geo-map { height: 260px; border-radius: var(--radius-sm); overflow: hidden; margin-top: 8px; }
+
+  .tab-bar { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 2px solid var(--bg); }
+  .tab-btn { padding: 8px 18px; font-size: 0.8125rem; font-weight: 600; color: var(--text-tertiary); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s var(--ease-smooth); font-family: var(--font); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-btn:hover { color: var(--text-secondary); }
+  .bulk-textarea { width: 100%; min-height: 160px; padding: 12px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: var(--radius-sm); font-family: var(--mono); font-size: 0.75rem; background: var(--bg); outline: none; resize: vertical; color: var(--text-primary); }
+  .bulk-textarea:focus { border-color: var(--accent); }
+  .bulk-file-wrap { display: flex; align-items: center; gap: 10px; padding: 20px; border: 2px dashed rgba(0,0,0,0.08); border-radius: var(--radius-md); background: var(--bg); cursor: pointer; }
+  .bulk-file-wrap:hover { border-color: var(--accent); }
+  .bulk-preview { margin-top: 16px; }
+  .bulk-preview h4 { font-size: 0.8125rem; font-weight: 600; margin-bottom: 8px; }
+  .bulk-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 8px; }
+  .bulk-table th { text-align: left; padding: 6px 8px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.03em; background: var(--bg); }
+  .bulk-table td { padding: 6px 8px; border-bottom: 1px solid rgba(0,0,0,0.03); vertical-align: middle; }
+  .bulk-table td:first-child { font-family: var(--mono); font-size: 0.6875rem; color: var(--text-primary); }
+  .bulk-table .row-success td { color: var(--green); }
+  .bulk-table .row-error td { color: var(--red); }
+  .bulk-table .truncate { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+  .bulk-summary { font-size: 0.875rem; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 12px; font-weight: 600; }
+  .bulk-summary.success { background: var(--green-soft); color: var(--green); }
+  .bulk-summary.partial { background: #fffbeb; color: var(--amber); }
   .list-search-wrap { position: relative; }
   .list-search-wrap .search-icon {
     position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
@@ -554,6 +713,58 @@
     opacity: 1; transform: translateY(0);
   }
 
+  /* --- All Features --- */
+  .all-features { margin-bottom: 48px; }
+  .all-features-header { text-align: center; margin-bottom: 32px; }
+  .all-features-header h2 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .all-features-header p { font-size: 0.9375rem; color: var(--text-secondary); }
+  .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .feat-group-outer {
+    background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+    transition: all 0.4s var(--ease-smooth);
+    position: relative; overflow: hidden;
+  }
+  .feat-group-outer:hover {
+    box-shadow: var(--shadow-warm);
+    transform: translateY(-2px);
+  }
+  .feat-group-inner {
+    background: var(--surface); border-radius: calc(var(--radius-md) - 1.5px);
+    padding: 22px 20px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+  }
+  .feat-group-title {
+    font-size: 0.9rem; font-weight: 700; margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 1.5px solid var(--gold-soft);
+    letter-spacing: 0.01em; color: var(--accent);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .feat-group-title::before {
+    content: ''; width: 3px; height: 16px; border-radius: 2px;
+    background: linear-gradient(180deg, var(--gold), var(--accent));
+  }
+  .feat-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 0; font-size: 0.8125rem; border-top: 1px solid rgba(0,0,0,0.03);
+  }
+  .feat-row:first-of-type { border-top: none; }
+  .feat-row .feat-name { color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
+  .feat-row .feat-name .dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+  .feat-row .feat-name .dot.free { background: var(--green); }
+  .feat-row .feat-name .dot.pro { background: var(--accent); }
+  .feat-row .feat-name .dot.ent { background: var(--amber); }
+  .feat-row .feat-tier {
+    font-size: 0.625rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .feat-row .feat-tier.t-free { background: var(--green-soft); color: var(--green); }
+  .feat-row .feat-tier.t-pro { background: var(--accent-soft); color: var(--accent); }
+  .feat-row .feat-tier.t-ent { background: #fffbeb; color: var(--amber); }
+
+  @media (max-width: 768px) {
+    .feat-grid { grid-template-columns: 1fr; }
+  }
+
   /* --- Footer --- */
   .footer {
     margin-top: 64px; padding-top: 24px;
@@ -566,13 +777,20 @@
   .footer-links { display: flex; gap: 16px; }
 
   /* --- Responsive --- */
+  @media (max-width: 1024px) {
+    .hero { grid-template-columns: 1fr; gap: 32px; }
+    .hero-right { display: none; }
+    .hero-left { max-width: 100%; }
+  }
   @media (max-width: 768px) {
     .nav-island { max-width: 100%; border-radius: var(--radius-lg); padding: 8px 12px; top: 12px; }
     .nav-links { display: none; }
     .hero { padding: 40px 0 32px; }
     .hero h1 { font-size: 2rem; }
     .hero p { font-size: 0.9375rem; }
-    .features { grid-template-columns: 1fr 1fr; }
+    .bento-grid { grid-template-columns: 1fr 1fr; }
+    .bento-item-wide { grid-column: span 1; }
+    .bento-item-full { grid-column: 1 / -1; }
     .shorten-input-row { flex-direction: column; }
     .shorten-input-row .btn { width: 100%; justify-content: center; }
     .advanced-options { grid-template-columns: 1fr; }
@@ -583,7 +801,7 @@
     .footer { flex-direction: column; gap: 8px; text-align: center; }
   }
   @media (max-width: 480px) {
-    .features { grid-template-columns: 1fr; }
+    .bento-grid { grid-template-columns: 1fr; }
     .app { padding: 0 16px 32px; }
     .hero h1 { font-size: 1.65rem; }
   }
@@ -606,7 +824,7 @@
   <nav class="nav-island" id="navIsland">
     <a class="nav-brand" href="/">
       <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="24" height="24" rx="8" fill="#3563e9"/>
+        <rect x="2" y="2" width="24" height="24" rx="8" fill="#1a1a2e"/>
         <path d="M9 14h10M14 9v10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
       <span><em>shrt</em>ly</span>
@@ -616,6 +834,13 @@
       <a href="#" onclick="document.getElementById('pricingSection').scrollIntoView({behavior:'smooth'});return false">Pricing</a>
       <a class="dash-link" href="#" onclick="switchView('links');return false">My Links</a>
       <a class="dash-link" href="#" onclick="switchView('analytics');return false">Analytics</a>
+      <a class="dash-link" href="#" onclick="switchView('webhooks');return false">Webhooks</a>
+      <span class="dash-link" id="workspaceSwitcherWrap" style="display:none;font-size:0.75rem">
+        <select id="workspaceSwitcher" onchange="switchWorkspace()" style="padding:3px 8px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.75rem;background:var(--surface);outline:none;cursor:pointer">
+          <option value="">Workspace</option>
+        </select>
+        <a class="filter-clear" onclick="openWorkspaceModal()" style="font-size:0.7rem;margin-left:4px">Manage</a>
+      </span>
     </div>
     <div class="nav-auth" id="authActions">
       <div class="user-badge" id="userBadge" style="display:none">
@@ -652,95 +877,156 @@
 
     <!-- Hero -->
     <section class="hero">
-      <div class="hero-badge fade-up">Free &bull; No sign-up required</div>
-      <h1 class="fade-up">Short links with <em>superpowers</em></h1>
-      <p class="fade-up">Shorten, brand, and track your links with analytics, QR codes, and custom domains. All in one place.</p>
+      <div class="hero-left">
+        <div class="hero-badge fade-up">&#127758; Africa's #1 URL Shortener</div>
+        <h1 class="fade-up">Enterprise-grade short links,<br><em>built for Africa</em></h1>
+        <p class="fade-up">Shorten, brand, and track your links with powerful analytics, QR codes, custom domains, and webhook integrations. Trusted by thousands across the continent.</p>
 
-      <!-- Shorten Card -->
-      <div class="shorten-outer fade-up">
-        <div class="shorten-inner">
-          <div class="shorten-input-row">
-            <div class="input-wrap">
-              <span class="icon">&#x1f517;</span>
-              <input type="url" id="urlInput" placeholder="https://example.com/your/very/long/url/path" autocomplete="off" autofocus spellcheck="false">
+        <!-- Shorten Card -->
+        <div class="shorten-outer fade-up">
+          <div class="shorten-inner">
+            <div class="shorten-input-row">
+              <div class="input-wrap">
+                <span class="icon">&#x1f517;</span>
+                <input type="url" id="urlInput" placeholder="https://example.com/your/very/long/url/path" autocomplete="off" autofocus spellcheck="false">
+              </div>
+              <button class="shorten-btn" id="shortenBtn">
+                Shorten
+                <span class="btn-icon">&#8599;</span>
+              </button>
             </div>
-            <button class="shorten-btn" id="shortenBtn">
-              Shorten
-              <span class="btn-icon">&#8599;</span>
-            </button>
-          </div>
-          <div class="advanced-row">
-            <span class="advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">+ Advanced options</span>
-          </div>
-        <div class="advanced-options" id="advancedOptions">
-          <div class="advanced-grid">
-            <div class="advanced-field"><label>Custom code</label><input type="text" id="customCodeInput" maxlength="20" placeholder="e.g. my-link"></div>
-            <div class="advanced-field"><label>Expires at</label><input type="datetime-local" id="expiryInput"></div>
-            <div class="advanced-field"><label>Password protect</label><input type="password" id="passwordInput" placeholder="Leave blank for public"></div>
-          </div>
-          <div class="advanced-grid" style="margin-top:8px">
-            <div class="advanced-field"><label>Tags</label><input type="text" id="tagsInput" placeholder="news, marketing, product"></div>
-          </div>
-          <details style="margin-top:8px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
-            <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">UTM Parameters</summary>
+            <div class="advanced-row">
+              <span class="advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">+ Advanced options</span>
+            </div>
+          <div class="advanced-options" id="advancedOptions">
+            <div class="advanced-grid">
+              <div class="advanced-field"><label>Custom code</label><input type="text" id="customCodeInput" maxlength="20" placeholder="e.g. my-link"></div>
+              <div class="advanced-field"><label>Expires at</label><input type="datetime-local" id="expiryInput"></div>
+              <div class="advanced-field"><label>Password protect</label><input type="password" id="passwordInput" placeholder="Leave blank for public"></div>
+            </div>
             <div class="advanced-grid" style="margin-top:8px">
-              <div class="advanced-field"><label>Source</label><input type="text" id="utmSource" placeholder="e.g. twitter"></div>
-              <div class="advanced-field"><label>Medium</label><input type="text" id="utmMedium" placeholder="e.g. social"></div>
-              <div class="advanced-field"><label>Campaign</label><input type="text" id="utmCampaign" placeholder="e.g. spring_sale"></div>
-              <div class="advanced-field"><label>Term</label><input type="text" id="utmTerm" placeholder="e.g. running+shoes"></div>
-              <div class="advanced-field"><label>Content</label><input type="text" id="utmContent" placeholder="e.g. hero_banner"></div>
+              <div class="advanced-field"><label>Tags <a class="filter-clear" onclick="openTagModal()" style="font-size:0.65rem">manage</a></label><input type="text" id="tagsInput" placeholder="news, marketing, product"></div>
+              <div class="advanced-field"><label>Folder</label>
+                <select id="folderInput" style="width:100%;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;background:var(--bg);outline:none">
+                  <option value="">No folder</option>
+                </select>
+              </div>
             </div>
-          </details>
+            <details style="margin-top:8px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+              <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">UTM Parameters</summary>
+              <div class="advanced-grid" style="margin-top:8px">
+                <div class="advanced-field"><label>Source</label><input type="text" id="utmSource" placeholder="e.g. twitter"></div>
+                <div class="advanced-field"><label>Medium</label><input type="text" id="utmMedium" placeholder="e.g. social"></div>
+                <div class="advanced-field"><label>Campaign</label><input type="text" id="utmCampaign" placeholder="e.g. spring_sale"></div>
+                <div class="advanced-field"><label>Term</label><input type="text" id="utmTerm" placeholder="e.g. running+shoes"></div>
+                <div class="advanced-field"><label>Content</label><input type="text" id="utmContent" placeholder="e.g. hero_banner"></div>
+              </div>
+            </details>
+            <details style="margin-top:6px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+              <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">Social Preview (OG Tags)</summary>
+              <div class="advanced-grid" style="margin-top:8px">
+                <div class="advanced-field"><label>Title</label><input type="text" id="ogTitle" maxlength="200" placeholder="e.g. Check out this deal!"></div>
+                <div class="advanced-field"><label>Image URL</label><input type="url" id="ogImage" placeholder="https://example.com/image.jpg"></div>
+                <div class="advanced-field" style="grid-column:1/-1"><label>Description</label><input type="text" id="ogDescription" maxlength="500" placeholder="Social preview description when shared on Twitter, WhatsApp, etc."></div>
+              </div>
+            </details>
+          </div>
+            <div class="shorten-status" id="shortenStatus"></div>
+            <div class="result-pane" id="resultPane">
+              <a class="short-url" id="shortUrlDisplay" target="_blank" rel="noopener"></a>
+              <button class="copy-btn" id="copyBtn">Copy</button>
+            </div>
+          </div>
         </div>
-          <div class="shorten-status" id="shortenStatus"></div>
-          <div class="result-pane" id="resultPane">
-            <a class="short-url" id="shortUrlDisplay" target="_blank" rel="noopener"></a>
-            <button class="copy-btn" id="copyBtn">Copy</button>
+      </div>
+
+      <div class="hero-right fade-up">
+        <div class="hero-visual">
+          <div class="vis-ring vis-ring-1"></div>
+          <div class="vis-ring vis-ring-2"></div>
+          <div class="vis-ring vis-ring-3"></div>
+          <div class="vis-dot vis-dot-1 vis-dot-pulse"></div>
+          <div class="vis-dot vis-dot-2 vis-dot-pulse" style="animation-delay:0.6s"></div>
+          <div class="vis-dot vis-dot-3 vis-dot-pulse" style="animation-delay:1.2s"></div>
+          <div class="vis-dot vis-dot-4 vis-dot-pulse" style="animation-delay:0.3s"></div>
+          <div class="vis-centre">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Feature Grid -->
+    <!-- Bento Feature Grid -->
     <section class="features" id="featuresSection">
-      <div style="grid-column:1/-1;text-align:center;margin-bottom:8px">
+      <div class="features-header fade-up">
         <span class="hero-badge" style="display:inline-flex">Everything you need</span>
-        <h2 style="font-size:1.75rem;font-weight:800;letter-spacing:-0.03em;margin-top:8px">Powerful features, simple tools</h2>
+        <h2>Powerful features, simple tools</h2>
       </div>
-      <div class="feature-outer fade-up">
-        <div class="feature-inner">
-          <div class="feature-icon blue" style="font-size:1.5rem">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      <div class="bento-grid">
+        <div class="feature-outer fade-up">
+          <div class="feature-inner">
+            <div class="feature-icon gold" style="font-size:1.5rem">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <h3>Branded Links</h3>
+            <p>Custom short codes that match your brand identity</p>
           </div>
-          <h3>Branded Links</h3>
-          <p>Custom short codes that match your brand identity</p>
         </div>
-      </div>
-      <div class="feature-outer fade-up">
-        <div class="feature-inner">
-          <div class="feature-icon purple" style="font-size:1.5rem">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <div class="feature-outer bento-item-wide fade-up">
+          <div class="feature-inner horizontal">
+            <div class="feature-icon purple" style="font-size:1.5rem;margin:0">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <div style="flex:1">
+              <h3>Real-time Analytics</h3>
+              <p>Track clicks, referrers, devices, and browser data</p>
+              <div class="feature-preview">
+                <div class="bar" style="height:24px"></div>
+                <div class="bar" style="height:36px"></div>
+                <div class="bar" style="height:28px"></div>
+                <div class="bar" style="height:42px"></div>
+                <div class="bar" style="height:32px"></div>
+                <div class="bar" style="height:20px"></div>
+                <div class="bar" style="height:38px"></div>
+              </div>
+            </div>
           </div>
-          <h3>Analytics</h3>
-          <p>Track clicks, referrers, devices, and browser data</p>
         </div>
-      </div>
-      <div class="feature-outer fade-up">
-        <div class="feature-inner">
-          <div class="feature-icon green" style="font-size:1.5rem">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><rect x="14" y="14" width="3" height="3"/></svg>
+        <div class="feature-outer bento-item-wide fade-up">
+          <div class="feature-inner horizontal">
+            <div class="feature-icon green" style="font-size:1.5rem;margin:0">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><rect x="14" y="14" width="3" height="3"/></svg>
+            </div>
+            <div style="flex:1">
+              <h3>QR Codes</h3>
+              <p>Generate scannable QR codes for every short link</p>
+              <div class="feat-label">PNG &bull; SVG &bull; High-res</div>
+            </div>
           </div>
-          <h3>QR Codes</h3>
-          <p>Generate scannable QR codes for every short link</p>
         </div>
-      </div>
-      <div class="feature-outer fade-up">
-        <div class="feature-inner">
-          <div class="feature-icon amber" style="font-size:1.5rem">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+        <div class="feature-outer fade-up">
+          <div class="feature-inner">
+            <div class="feature-icon amber" style="font-size:1.5rem">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+            </div>
+            <h3>API Access</h3>
+            <p>Build powerful integrations with our REST API</p>
           </div>
-          <h3>API Access</h3>
-          <p>Build powerful integrations with our REST API</p>
+        </div>
+        <div class="feature-outer bento-item-full fade-up">
+          <div class="feature-inner horizontal" style="padding:16px 24px">
+            <div class="feature-icon teal" style="font-size:1.5rem;margin:0">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div style="flex:1">
+              <h3>Built for Africa</h3>
+              <p>Fast redirects, local CDN, and reliable infrastructure optimized for African traffic with NGN &amp; multi-currency pricing.</p>
+            </div>
+            <div style="font-size:0.75rem;color:var(--gold);font-weight:700;white-space:nowrap;padding:4px 14px;border-radius:100px;background:var(--gold-soft);border:1px solid rgba(184,134,11,0.15)">NGN &amp; multi-currency</div>
+          </div>
         </div>
       </div>
     </section>
@@ -756,6 +1042,95 @@
       </div>
     </section>
 
+    <!-- All Features -->
+    <section class="all-features fade-up" id="featuresSection">
+      <div class="all-features-header">
+        <h2>Everything you get</h2>
+        <p>Every feature, every tier. No surprises.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-group-outer">
+          <div class="feat-group-inner">
+            <div class="feat-group-title">Link Shortening</div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>URL shortening</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Custom short codes</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Link expiry dates</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Password protection</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Tags &amp; folders</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>UTM parameter builder</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Bulk URL import</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Link editing &amp; deletion</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Link search &amp; filter</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Trash / soft delete</span><span class="feat-tier t-pro">Pro</span></div>
+          </div>
+        </div>
+        <div class="feat-group-outer">
+          <div class="feat-group-inner">
+            <div class="feat-group-title">Analytics &amp; Insights</div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>Click counting</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>Referrer tracking</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>Device tracking</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>Browser tracking</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Time-series charts</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>GeoIP click maps</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>CSV data export</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Real-time analytics API</span><span class="feat-tier t-ent">Enterprise</span></div>
+          </div>
+        </div>
+        <div class="feat-group-outer">
+          <div class="feat-group-inner">
+            <div class="feat-group-title">QR Codes &amp; API</div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>QR code generation</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>QR download (PNG / SVG)</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>REST API access</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>API key management</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Custom domains</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Webhook integrations</span><span class="feat-tier t-ent">Enterprise</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Webhook delivery logs</span><span class="feat-tier t-ent">Enterprise</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>HMAC payload signing</span><span class="feat-tier t-ent">Enterprise</span></div>
+          </div>
+        </div>
+        <div class="feat-group-outer">
+          <div class="feat-group-inner">
+            <div class="feat-group-title">Security &amp; Authentication</div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>Session-based auth</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Password-protected links</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>API key auth</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Role-based access (Admin)</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>Rate limiting</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>SSO / OAuth (coming soon)</span><span class="feat-tier t-ent">Enterprise</span></div>
+          </div>
+        </div>
+        <div class="feat-group-outer">
+          <div class="feat-group-inner">
+            <div class="feat-group-title">Support &amp; Account</div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>Multi-currency pricing (NGN, USD, EUR, GBP)</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Link management dashboard</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Email notifications</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Subscription management</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Coupon &amp; discount codes</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Team workspaces</span><span class="feat-tier t-ent">Enterprise</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot pro"></span>Priority support</span><span class="feat-tier t-pro">Pro</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Dedicated support</span><span class="feat-tier t-ent">Enterprise</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>No credit-card required</span><span class="feat-tier t-free">Free</span></div>
+          </div>
+        </div>
+        <div class="feat-group-outer">
+          <div class="feat-group-inner">
+            <div class="feat-group-title">Integrations &amp; Automation</div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>Public API documentation</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot free"></span>Health check endpoint</span><span class="feat-tier t-free">Free</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Webhook events (link.clicked)</span><span class="feat-tier t-ent">Enterprise</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>n8n / Zapier / Make ready</span><span class="feat-tier t-ent">Enterprise</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Discord bot integration</span><span class="feat-tier t-ent">Enterprise</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Slack bot integration</span><span class="feat-tier t-ent">Enterprise</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Social preview (OG tags)</span><span class="feat-tier t-ent">Enterprise</span></div>
+            <div class="feat-row"><span class="feat-name"><span class="dot ent"></span>Browser extension</span><span class="feat-tier t-ent">Enterprise</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Dashboard header (shown when logged in) -->
     <div class="dash-header fade-up" id="dashHeader" style="display:none">
       <h2 style="font-size:1.35rem;font-weight:700;letter-spacing:-0.02em">Your dashboard</h2>
@@ -767,29 +1142,54 @@
       <button class="tab active" onclick="switchView('links')">Links</button>
       <button class="tab" onclick="switchView('analytics')">Analytics</button>
       <button class="tab" onclick="switchView('settings')">Settings</button>
+      <button class="tab" onclick="switchView('webhooks')">Webhooks</button>
+      <button class="tab pro-feature" onclick="switchView('domains')">Domains</button>
       <button class="tab admin-tab" id="adminTabLink" onclick="showAdmin()">Admin</button>
     </div>
 
-    <!-- Login prompt for guests -->
+    <!-- Login prompt for guests / upgrade prompt for free users -->
     <div class="list-outer fade-up" id="loginPrompt" style="margin-bottom:16px">
       <div class="list-inner" style="text-align:center;padding:32px">
-        <div style="font-size:0.9375rem;font-weight:600;margin-bottom:4px">Sign in to manage your links</div>
-        <p style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:16px">Track clicks, view analytics, and manage all your shortened URLs.</p>
-        <button class="btn-primary" onclick="openAuthModal('login')" style="font-size:0.875rem;padding:10px 24px">Sign in <span class="btn-icon">&#8599;</span></button>
+        <div id="promptGuest" style="display:block">
+          <div style="font-size:0.9375rem;font-weight:600;margin-bottom:4px">Sign in to manage your links</div>
+          <p style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:16px">Track clicks, view analytics, and manage all your shortened URLs.</p>
+          <button class="btn-primary" onclick="openAuthModal('login')" style="font-size:0.875rem;padding:10px 24px">Sign in <span class="btn-icon">&#8599;</span></button>
+        </div>
+        <div id="promptUpgrade" style="display:none">
+          <div style="font-size:0.9375rem;font-weight:600;margin-bottom:4px">Upgrade to manage your links</div>
+          <p style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:16px">Link management, analytics, custom codes, and more are available on Pro and Enterprise plans.</p>
+          <button class="btn-primary" onclick="document.getElementById('pricingSection').scrollIntoView({behavior:'smooth'})" style="font-size:0.875rem;padding:10px 24px">View plans <span class="btn-icon">&#8599;</span></button>
+        </div>
       </div>
     </div>
 
     <!-- Links View -->
-    <div class="content-section show" id="linksView">
+    <div class="content-section" id="linksView">
       <div class="list-outer">
         <div class="list-inner">
           <div class="list-header">
             <span class="list-title">All links</span>
             <span class="count" id="linkCount"></span>
+            <button class="btn-ghost" id="trashToggleBtn" onclick="toggleTrash()" style="font-size:0.75rem;padding:6px 12px;white-space:nowrap">Trash</button>
+            <button class="btn-ghost" onclick="openBulkModal()" style="font-size:0.75rem;padding:6px 12px;margin-left:4px;white-space:nowrap">Bulk import</button>
           </div>
           <div class="list-search-wrap">
             <span class="search-icon">&#x1f50d;</span>
             <input class="list-search" id="searchInput" placeholder="Search by URL or short code..." oninput="debouncedSearch()">
+          </div>
+          <div class="filter-row">
+            <label>From:</label>
+            <input type="date" id="filterDateFrom" onchange="debouncedSearch()">
+            <label>To:</label>
+            <input type="date" id="filterDateTo" onchange="debouncedSearch()">
+            <select class="folder-select" id="filterFolder" onchange="debouncedSearch()">
+              <option value="">All folders</option>
+            </select>
+            <a class="filter-clear" onclick="openFolderModal()" style="font-size:0.7rem">Folders</a>
+            <label style="margin-left:4px">Tag:</label>
+            <input type="text" id="filterTag" placeholder="Filter by tag" style="width:110px;padding:4px 8px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.75rem;background:var(--bg);outline:none" oninput="debouncedSearch()">
+            <a class="filter-clear" onclick="openTagModal()" style="font-size:0.7rem">Tags</a>
+            <a class="filter-clear" onclick="clearFilters()">Clear</a>
           </div>
           <ul class="url-list" id="urlList">
             <li class="empty-state">No links yet. Shorten your first URL above.</li>
@@ -861,9 +1261,89 @@
           <ul class="url-list" id="apiKeyList"><li class="empty-state">Loading...</li></ul>
         </div>
       </div>
+
+      <div class="list-outer" style="margin-top:16px">
+        <div class="list-inner">
+          <div class="list-header">
+            <span class="list-title">Discord Bot</span>
+          </div>
+          <div style="padding:8px 0;font-size:0.8125rem;color:var(--text-tertiary);line-height:1.6">
+            Link your Discord account to use <code>/shorten</code>, <code>/mylinks</code>, and <code>/analytics</code> commands.
+          </div>
+          <div id="discordLinkStatus" style="padding:8px 0;font-size:0.875rem;display:flex;align-items:center;gap:10px">
+            Checking...
+          </div>
+        </div>
+      </div>
+
+      <div class="list-outer" style="margin-top:16px">
+        <div class="list-inner">
+          <div class="list-header">
+            <span class="list-title">Slack Bot</span>
+          </div>
+          <div style="padding:8px 0;font-size:0.8125rem;color:var(--text-tertiary);line-height:1.6">
+            Link your Slack account to use <code>/shorten</code> and <code>/link</code> commands.
+          </div>
+          <div id="slackLinkStatus" style="padding:8px 0;font-size:0.875rem;display:flex;align-items:center;gap:10px">
+            Checking...
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
+
+    <!-- Webhooks View -->
+    <div class="content-section" id="webhooksView">
+      <div class="list-outer">
+        <div class="list-inner">
+          <div class="list-header">
+            <span class="list-title">Webhooks</span>
+            <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px;white-space:nowrap" onclick="openWebhookModal()">+ Add webhook</button>
+          </div>
+          <div style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:12px;line-height:1.5">
+            Webhooks send HTTP POST requests to your endpoints when events occur (e.g., link clicked).
+            <a href="https://developer.shrtly.com/webhooks" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600">Learn more &rarr;</a>
+          </div>
+          <ul class="url-list" id="webhookList">
+            <li class="empty-state">No webhooks yet. Create one above.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Per-webhook log viewer -->
+      <div id="webhookLogViewer" style="display:none">
+        <div class="list-outer" style="margin-top:12px">
+          <div class="list-inner">
+            <div class="list-header">
+              <span class="list-title" id="webhookLogTitle">Delivery Logs</span>
+              <button class="btn-ghost" style="font-size:0.8125rem;padding:4px 12px" onclick="closeWebhookLogs()">&larr; Back</button>
+            </div>
+            <ul class="url-list" id="webhookLogList">
+              <li class="empty-state">No deliveries yet.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Domains View -->
+    <div class="content-section" id="domainsView">
+      <div class="list-outer">
+        <div class="list-inner">
+          <div class="list-header">
+            <span class="list-title">Custom Domains</span>
+            <button class="btn-primary" style="font-size:0.75rem;padding:5px 12px;white-space:nowrap" onclick="openDomainModal()">+ Add domain</button>
+          </div>
+          <div style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:12px;line-height:1.5">
+            Point your domain's DNS to our server and add a TXT record to verify ownership. Once verified, your short links will work on your custom domain.
+          </div>
+          <ul class="url-list" id="domainList">
+            <li class="empty-state">No custom domains yet. Add one above.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
   <!-- Admin Panel -->
   <div class="admin-panel" id="adminPanel">
@@ -909,18 +1389,27 @@
           <details class="settings-group" open>
             <summary class="settings-summary">Payment</summary>
             <div class="settings-body">
-              <div class="form-group"><label>Provider</label>
-                <select id="setPaymentProvider" style="width:100%;padding:10px 14px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.875rem;background:var(--bg);outline:none">
-                  <option value="">None</option>
-                  <option value="paystack">Paystack</option>
-                  <option value="stripe">Stripe</option>
-                </select>
-              </div>
+              <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Paystack — Test Keys</div>
               <div class="settings-row">
-                <div class="form-group"><label>Public key</label><input type="text" id="setPaymentPublicKey" placeholder="pk_..."></div>
-                <div class="form-group"><label>Secret key</label><input type="password" id="setPaymentSecretKey" placeholder="sk_..."></div>
+                <div class="form-group"><label>Test public key</label><input type="text" id="setPaystackPublicKey" placeholder="pk_test_..."></div>
+                <div class="form-group"><label>Test secret key</label><input type="password" id="setPaystackSecretKey" placeholder="sk_test_..."></div>
               </div>
-              <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer;margin-top:6px">
+              <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin:10px 0 6px">Paystack — Live Keys</div>
+              <div class="settings-row">
+                <div class="form-group"><label>Live public key</label><input type="text" id="setPaystackLivePublicKey" placeholder="pk_live_..."></div>
+                <div class="form-group"><label>Live secret key</label><input type="password" id="setPaystackLiveSecretKey" placeholder="sk_live_..."></div>
+              </div>
+              <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin:10px 0 6px">Stripe — Test Keys</div>
+              <div class="settings-row">
+                <div class="form-group"><label>Test public key</label><input type="text" id="setStripePublicKey" placeholder="pk_test_..."></div>
+                <div class="form-group"><label>Test secret key</label><input type="password" id="setStripeSecretKey" placeholder="sk_test_..."></div>
+              </div>
+              <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin:10px 0 6px">Stripe — Live Keys</div>
+              <div class="settings-row">
+                <div class="form-group"><label>Live public key</label><input type="text" id="setStripeLivePublicKey" placeholder="pk_live_..."></div>
+                <div class="form-group"><label>Live secret key</label><input type="password" id="setStripeLiveSecretKey" placeholder="sk_live_..."></div>
+              </div>
+              <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer;margin-top:8px">
                 <input type="checkbox" id="setSandboxMode" checked> Sandbox / Test mode
               </label>
             </div>
@@ -945,6 +1434,66 @@
               <label style="display:flex;align-items:center;gap:6px;font-size:0.8125rem;cursor:pointer;margin-top:6px">
                 <input type="checkbox" id="setSmtpUseTls" checked> Use TLS
               </label>
+            </div>
+          </details>
+
+          <!-- Discord Bot -->
+          <details class="settings-group" open>
+            <summary class="settings-summary">Discord Bot</summary>
+            <div class="settings-body">
+              <div class="settings-row">
+                <div class="form-group" style="flex:2">
+                  <label>Bot token</label>
+                  <input type="password" id="setDiscordBotToken" placeholder="MTE4...">
+                </div>
+                <div class="form-group" style="flex:1;min-width:100px">
+                  <label>Status</label>
+                  <div style="display:flex;align-items:center;gap:8px;padding-top:4px">
+                    <span id="discordBotStatus" style="font-size:0.8125rem;font-weight:600">Unknown</span>
+                    <span id="discordBotStatusDot" style="width:8px;height:8px;border-radius:50%;background:#a1a1aa;display:inline-block"></span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:6px">
+                <button class="btn-primary" style="font-size:0.75rem;padding:6px 16px" onclick="startDiscordBot()">Start</button>
+                <button class="btn-ghost" style="font-size:0.75rem;padding:6px 16px" onclick="stopDiscordBot()">Stop</button>
+                <span id="discordBotError" style="font-size:0.75rem;color:#dc2626;margin-left:8px;align-self:center"></span>
+              </div>
+            </div>
+          </details>
+
+          <!-- Slack Bot -->
+          <details class="settings-group" open>
+            <summary class="settings-summary">Slack Bot</summary>
+            <div class="settings-body">
+              <div class="settings-row">
+                <div class="form-group" style="flex:1">
+                  <label>Bot token (<code>xoxb-...</code>)</label>
+                  <input type="password" id="setSlackBotToken" placeholder="xoxb-...">
+                </div>
+                <div class="form-group" style="flex:1">
+                  <label>App-Level token (<code>xapp-...</code>)</label>
+                  <input type="password" id="setSlackAppToken" placeholder="xapp-...">
+                </div>
+              </div>
+              <div class="settings-row">
+                <div class="form-group" style="flex:2">
+                  <label>Signing secret</label>
+                  <input type="password" id="setSlackSigningSecret" placeholder="abc123...">
+                </div>
+                <div class="form-group" style="flex:1;min-width:100px">
+                  <label>Status</label>
+                  <div style="display:flex;align-items:center;gap:8px;padding-top:4px">
+                    <span id="slackBotStatus" style="font-size:0.8125rem;font-weight:600">Unknown</span>
+                    <span id="slackBotStatusDot" style="width:8px;height:8px;border-radius:50%;background:#a1a1aa;display:inline-block"></span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:6px">
+                <button class="btn-primary" style="font-size:0.75rem;padding:6px 16px" onclick="startSlackBot()">Start</button>
+                <button class="btn-ghost" style="font-size:0.75rem;padding:6px 16px" onclick="stopSlackBot()">Stop</button>
+                <span id="slackBotError" style="font-size:0.75rem;color:#dc2626;margin-left:8px;align-self:center"></span>
+              </div>
             </div>
           </details>
 
@@ -1128,13 +1677,96 @@
     </div>
   </div>
 
+  <!-- Webhook Modal -->
+  <div class="modal-overlay" id="webhookModal">
+    <div class="modal-outer" style="max-width:520px">
+      <div class="modal-inner">
+        <h2 id="webhookModalTitle">Add webhook</h2>
+        <div class="sub" id="webhookModalSub">Receive HTTP POST notifications for link events.</div>
+        <div class="form-group"><label>Endpoint URL</label><input type="url" id="whUrl" placeholder="https://your-server.com/webhook"></div>
+        <div class="form-group"><label>Events</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+            <label style="display:flex;align-items:center;gap:4px;font-size:0.8125rem;cursor:pointer"><input type="checkbox" class="wh-event" value="link.clicked" checked> link.clicked</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:0.8125rem;cursor:pointer"><input type="checkbox" class="wh-event" value="*"> * (all events)</label>
+          </div>
+        </div>
+        <div class="form-group"><label>Secret (for HMAC-SHA256 signing, optional)</label>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="whSecret" placeholder="Leave blank for unsigned" style="flex:1">
+            <button class="btn-ghost" style="font-size:0.75rem;padding:6px 12px;white-space:nowrap" onclick="generateSecret()">Generate</button>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeWebhookModal()">Cancel</button>
+          <button class="btn-primary" id="whSubmitBtn" onclick="submitWebhook()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Save webhook</button>
+        </div>
+        <div class="modal-error" id="whError"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Domain Modal -->
+  <div class="modal-overlay" id="domainModal">
+    <div class="modal-outer" style="max-width:520px">
+      <div class="modal-inner">
+        <h2>Add Custom Domain</h2>
+        <div class="sub">Enter your domain name to link it to your short URLs.</div>
+        <div class="form-group">
+          <label>Domain</label>
+          <input type="text" id="domainName" placeholder="links.yourdomain.com" style="width:100%">
+        </div>
+        <div id="domainVerificationInfo" style="display:none;margin-top:8px;padding:12px;background:#f8f6f3;border-radius:var(--radius-sm);font-size:0.8125rem;line-height:1.6">
+          <strong style="display:block;margin-bottom:4px">DNS Verification</strong>
+          Add this TXT record to your domain's DNS settings:<br><br>
+          <code style="display:block;padding:8px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:4px;word-break:break-all" id="domainTxtValue"></code>
+          <br>
+          <button class="btn-primary" onclick="verifyDomain()" style="font-size:0.75rem;padding:6px 14px">Verify now</button>
+          <span id="domainVerifyResult" style="margin-left:8px;font-weight:600"></span>
+        </div>
+        <div class="modal-actions" style="margin-top:12px">
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeDomainModal()">Cancel</button>
+          <button class="btn-primary" id="domainSubmitBtn" onclick="submitDomain()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Add domain</button>
+        </div>
+        <div class="modal-error" id="domainError"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log Detail Modal -->
+  <div class="modal-overlay" id="logDetailModal">
+    <div class="modal-outer" style="max-width:600px">
+      <div class="modal-inner">
+        <h2>Webhook Delivery Detail</h2>
+        <div class="sub" id="logDetailSub">Event details and response.</div>
+        <div style="font-size:0.8125rem">
+          <div style="margin-bottom:8px"><strong>Event:</strong> <span id="ldEvent"></span></div>
+          <div style="margin-bottom:8px"><strong>Status:</strong> <span id="ldStatus"></span></div>
+          <div style="margin-bottom:8px"><strong>Response Code:</strong> <span id="ldCode"></span></div>
+          <div style="margin-bottom:8px"><strong>Timestamp:</strong> <span id="ldTime"></span></div>
+          <div style="margin-bottom:8px"><strong>Error:</strong> <span id="ldError"></span></div>
+          <details style="border:1px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer;margin-bottom:8px">
+            <summary style="font-weight:600">Payload</summary>
+            <pre id="ldPayload" style="font-size:0.6875rem;white-space:pre-wrap;word-break:break-all;margin-top:6px;background:var(--bg);padding:8px;border-radius:6px;max-height:200px;overflow:auto"></pre>
+          </details>
+          <details style="border:1px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+            <summary style="font-weight:600">Response Body</summary>
+            <pre id="ldResponse" style="font-size:0.6875rem;white-space:pre-wrap;word-break:break-all;margin-top:6px;background:var(--bg);padding:8px;border-radius:6px;max-height:200px;overflow:auto"></pre>
+          </details>
+        </div>
+        <div class="modal-actions">
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeLogDetail()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer fade-up">
     <span>&copy; 2026 Shrtly</span>
     <div class="footer-links">
       <a href="#">Privacy</a>
       <a href="#">Terms</a>
-      <a href="#">API</a>
+      <a href="/docs.html">API</a>
       <a href="https://github.com/JomeAla/url-shortener" target="_blank" rel="noopener">GitHub</a>
     </div>
   </footer>
@@ -1157,6 +1789,16 @@
         <button class="btn-primary" id="authSubmitBtn" onclick="submitAuth()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Sign in</button>
       </div>
       <div class="modal-error" id="authError"></div>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+        <button class="oauth-btn google-btn" onclick="window.location.href='/oauth2/authorization/google'">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.87 7.35 2.56 10.57l7.97-5.98z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.98C6.51 42.62 14.62 48 24 48z"/></svg>
+          Sign in with Google
+        </button>
+        <button class="oauth-btn github-btn" onclick="window.location.href='/oauth2/authorization/github'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          Sign in with GitHub
+        </button>
+      </div>
       <div class="modal-toggle"><span id="authToggle" onclick="toggleAuthMode()">Create an account</span> <span style="margin-left:12px;font-size:0.75rem;color:var(--accent);cursor:pointer" onclick="showForgotPassword()">Forgot password?</span></div>
     </div>
   </div>
@@ -1188,7 +1830,12 @@
       <div class="form-group"><label>Custom code</label><input type="text" id="editCustomCode" maxlength="20" placeholder="Leave blank for auto-generated"></div>
       <div class="form-group"><label>Expires at</label><input type="datetime-local" id="editExpiry"></div>
       <div class="form-group"><label>Password (leave blank to remove)</label><input type="password" id="editPassword" placeholder="New password"></div>
-      <div class="form-group"><label>Tags</label><input type="text" id="editTags" placeholder="news, marketing, product"></div>
+      <div class="form-group"><label>Tags <a class="filter-clear" onclick="openTagModal()" style="font-size:0.65rem">manage</a></label><input type="text" id="editTags" placeholder="news, marketing, product"></div>
+      <div class="form-group"><label>Folder</label>
+        <select id="editFolder" style="width:100%;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;background:var(--bg);outline:none">
+          <option value="">No folder</option>
+        </select>
+      </div>
       <details style="margin-top:4px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
         <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">UTM Parameters</summary>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
@@ -1197,6 +1844,14 @@
           <div class="form-group" style="margin-bottom:0"><label>Campaign</label><input type="text" id="editUtmCampaign"></div>
           <div class="form-group" style="margin-bottom:0"><label>Term</label><input type="text" id="editUtmTerm"></div>
           <div class="form-group" style="margin-bottom:0;grid-column:1/-1"><label>Content</label><input type="text" id="editUtmContent"></div>
+        </div>
+      </details>
+      <details style="margin-top:4px;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm);padding:8px 10px;cursor:pointer">
+        <summary style="font-size:0.75rem;font-weight:600;color:var(--text-tertiary)">Social Preview (OG Tags)</summary>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+          <div class="form-group" style="margin-bottom:0"><label>Title</label><input type="text" id="editOgTitle" maxlength="200"></div>
+          <div class="form-group" style="margin-bottom:0"><label>Image URL</label><input type="url" id="editOgImage"></div>
+          <div class="form-group" style="margin-bottom:0;grid-column:1/-1"><label>Description</label><input type="text" id="editOgDescription" maxlength="500"></div>
         </div>
       </details>
       <div class="modal-actions">
@@ -1286,6 +1941,17 @@
           </div>
           <div id="checkoutCouponFeedback" style="font-size:0.75rem;margin-top:4px;min-height:1rem"></div>
         </div>
+        <div class="form-group" id="checkoutProviderGroup" style="display:none;margin-top:8px">
+          <label>Payment method</label>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <label class="provider-option" style="flex:1;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);cursor:pointer;font-size:0.8125rem">
+              <input type="radio" name="checkoutProvider" value="paystack" checked> Paystack
+            </label>
+            <label class="provider-option" style="flex:1;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);cursor:pointer;font-size:0.8125rem">
+              <input type="radio" name="checkoutProvider" value="stripe"> Stripe
+            </label>
+          </div>
+        </div>
         <div class="modal-actions" style="margin-top:16px">
           <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeCheckoutModal()">Cancel</button>
           <button class="btn-primary" id="checkoutSubmitBtn" onclick="proceedToPayment()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">
@@ -1293,6 +1959,173 @@
           </button>
         </div>
         <div class="modal-error" id="checkoutError"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workspace Modal -->
+  <div class="modal-overlay" id="workspaceModal">
+    <div class="modal-outer" style="max-width:480px">
+      <div class="modal-inner">
+        <h2>Workspaces</h2>
+        <div class="sub">Collaborate with your team. Create workspaces and invite members.</div>
+        <div class="form-group" style="margin-top:12px">
+          <label>New workspace</label>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="wsNameInput" placeholder="My Team" style="flex:1" onkeydown="if(event.key==='Enter')createWorkspace()">
+            <button class="btn-primary" onclick="createWorkspace()" style="font-size:0.75rem;padding:8px 14px;white-space:nowrap">Create</button>
+          </div>
+        </div>
+        <div id="wsError" style="font-size:0.75rem;color:var(--red);margin-top:4px;min-height:1rem"></div>
+        <ul class="url-list" id="wsList" style="margin-top:8px">
+          <li class="empty-state">Loading...</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workspace Members Modal -->
+  <div class="modal-overlay" id="wsMembersModal">
+    <div class="modal-outer" style="max-width:420px">
+      <div class="modal-inner">
+        <h2 id="wsMembersTitle">Members</h2>
+        <div class="form-group" style="margin-top:8px">
+          <label>Add member by email</label>
+          <div style="display:flex;gap:6px">
+            <input type="email" id="wsMemberEmail" placeholder="colleague@example.com" style="flex:1" onkeydown="if(event.key==='Enter')addMember()">
+            <button class="btn-primary" onclick="addMember()" style="font-size:0.75rem;padding:8px 14px;white-space:nowrap">Add</button>
+          </div>
+          <div id="wsMembersError" style="font-size:0.75rem;color:var(--red);margin-top:4px;min-height:1rem"></div>
+        </div>
+        <ul class="url-list" id="wsMembersList" style="margin-top:8px">
+          <li class="empty-state">Loading...</li>
+        </ul>
+        <div class="modal-actions" style="margin-top:12px">
+          <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeMembersModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="bulkModal">
+    <div class="modal-outer" style="max-width:600px">
+      <div class="modal-inner">
+        <h2>Bulk Import</h2>
+        <div class="sub">Create multiple short links at once. The free tier is limited to 10 per batch.</div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" id="bulkJsonTab" onclick="switchBulkTab('json')">JSON Array</button>
+          <button class="tab-btn" id="bulkCsvTab" onclick="switchBulkTab('csv')">CSV File</button>
+        </div>
+
+        <div id="bulkJsonPane">
+          <label style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Paste a JSON array of URLs</label>
+          <textarea class="bulk-textarea" id="bulkJsonInput" placeholder='[
+  {"url": "https://example.com/page1", "customCode": "pg1"},
+  {"url": "https://example.com/page2"}
+]'></textarea>
+          <button class="btn-primary" onclick="parseBulkJson()" style="font-size:0.8125rem;padding:8px 18px;margin-top:8px">Parse</button>
+        </div>
+
+        <div id="bulkCsvPane" style="display:none">
+          <label style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Upload a CSV file</label>
+          <div class="bulk-file-wrap" onclick="document.getElementById('bulkCsvInput').click()">
+            <span style="font-size:2rem;color:var(--text-tertiary)">&#x1f4c4;</span>
+            <span style="font-size:0.8125rem;color:var(--text-secondary)" id="bulkCsvLabel">Click to select CSV file (columns: url, customCode, expiresAt, password)</span>
+          </div>
+          <input type="file" id="bulkCsvInput" accept=".csv" style="display:none" onchange="parseBulkCsv(event)">
+        </div>
+
+        <div class="bulk-preview" id="bulkPreview" style="display:none">
+          <h4>Preview (<span id="bulkCount">0</span> links)</h4>
+          <div style="max-height:200px;overflow-y:auto;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm)">
+            <table class="bulk-table">
+              <thead><tr><th>#</th><th>URL</th><th>Custom Code</th><th>Expires</th></tr></thead>
+              <tbody id="bulkPreviewBody"></tbody>
+            </table>
+          </div>
+          <div class="modal-actions" style="margin-top:12px">
+            <button style="flex:1;padding:10px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-secondary);font:inherit;font-size:0.875rem;font-weight:600;cursor:pointer" onclick="closeBulkModal()">Cancel</button>
+            <button class="btn-primary" id="bulkSubmitBtn" onclick="submitBulk()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">
+              Import all <span class="btn-icon" style="width:18px;height:18px;font-size:0.625rem">&#8593;</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="bulkResult" style="display:none">
+          <div class="bulk-summary" id="bulkSummary"></div>
+          <div style="max-height:240px;overflow-y:auto;border:1px solid rgba(0,0,0,0.04);border-radius:var(--radius-sm)">
+            <table class="bulk-table">
+              <thead><tr><th>#</th><th>URL</th><th>Status</th><th>Short URL</th></tr></thead>
+              <tbody id="bulkResultBody"></tbody>
+            </table>
+          </div>
+          <div class="modal-actions" style="margin-top:12px">
+            <button class="btn-primary" onclick="closeBulkModal();loadLinks()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Done</button>
+          </div>
+        </div>
+
+        <div class="modal-error" id="bulkError"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="folderModal">
+    <div class="modal-outer" style="max-width:440px">
+      <div class="modal-inner">
+        <h2>Manage Folders</h2>
+        <div class="sub">Organize your links into folders.</div>
+        <div id="folderList" style="margin-bottom:12px;max-height:240px;overflow-y:auto">
+          <p class="empty-state" style="padding:12px">No folders yet.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="folderNameInput" placeholder="Folder name" style="flex:1;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;outline:none" maxlength="100">
+          <select id="folderColorInput" style="padding:8px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font-size:0.75rem;background:var(--bg);outline:none">
+            <option value="#1a1a2e">Navy</option>
+            <option value="#b8860b">Gold</option>
+            <option value="#1a7d4a">Green</option>
+            <option value="#c93838">Red</option>
+            <option value="#7c3aed">Purple</option>
+            <option value="#0891b2">Teal</option>
+            <option value="#d97706">Amber</option>
+            <option value="#be185d">Rose</option>
+          </select>
+          <button class="btn-primary" id="folderCreateBtn" onclick="createFolder()" style="font-size:0.75rem;padding:8px 14px;white-space:nowrap">Add</button>
+        </div>
+        <div class="modal-error" id="folderError"></div>
+        <div class="modal-actions" style="margin-top:12px">
+          <button class="btn-primary" onclick="closeFolderModal();loadFolderSelect();loadFolderInputs()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="tagModal">
+    <div class="modal-outer" style="max-width:440px">
+      <div class="modal-inner">
+        <h2>Manage Tags</h2>
+        <div class="sub">Create and manage tags for your links.</div>
+        <div id="tagList" style="margin-bottom:12px;max-height:240px;overflow-y:auto">
+          <p class="empty-state" style="padding:12px">No tags yet.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="tagNameInput" placeholder="Tag name" style="flex:1;padding:8px 12px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font:inherit;font-size:0.8125rem;outline:none" maxlength="50">
+          <select id="tagColorInput" style="padding:8px;border:1.5px solid rgba(0,0,0,0.06);border-radius:var(--radius-sm);font-size:0.75rem;background:var(--bg);outline:none">
+            <option value="#1a1a2e">Navy</option>
+            <option value="#b8860b">Gold</option>
+            <option value="#1a7d4a">Green</option>
+            <option value="#c93838">Red</option>
+            <option value="#7c3aed">Purple</option>
+            <option value="#0891b2">Teal</option>
+            <option value="#d97706">Amber</option>
+            <option value="#be185d">Rose</option>
+          </select>
+          <button class="btn-primary" id="tagCreateBtn" onclick="createTag()" style="font-size:0.75rem;padding:8px 14px;white-space:nowrap">Add</button>
+        </div>
+        <div class="modal-error" id="tagError"></div>
+        <div class="modal-actions" style="margin-top:12px">
+          <button class="btn-primary" onclick="closeTagModal()" style="flex:1;justify-content:center;font-size:0.875rem;padding:10px">Done</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1333,10 +2166,14 @@
     $('navIsland').classList.toggle('scrolled', window.scrollY > 20);
   });
 
-  // --- Advanced toggle ---
+  // --- Advanced toggle with tier gating ---
   function toggleAdvanced() {
     const opts = $('advancedOptions');
     const toggle = $('advancedToggle');
+    if (!opts.classList.contains('open') && (!currentUser || currentUser.tier === 'free')) {
+      $('shortenStatus').innerHTML = '<span style="color:var(--amber);font-size:0.8125rem">Upgrade to <strong>Pro</strong> or <strong>Enterprise</strong> to unlock custom codes, expiry, passwords, tags, and UTM builder. <a href="#" onclick="document.getElementById(\'pricingSection\').scrollIntoView({behavior:\'smooth\'});return false" style="color:var(--accent);font-weight:600">View plans &rarr;</a></span>';
+      return;
+    }
     opts.classList.toggle('open');
     toggle.textContent = opts.classList.contains('open') ? '- Hide options' : '+ Advanced options';
   }
@@ -1350,15 +2187,28 @@
     if (!url) { $('shortenStatus').textContent = ''; $('urlInput').focus(); return; }
     if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
-    const customCode = $('customCodeInput').value.trim() || null;
-    const expiresAt = $('expiryInput').value ? new Date($('expiryInput').value).toISOString().replace('Z','') : null;
-    const password = $('passwordInput').value || null;
-    const tags = $('tagsInput').value.trim() || null;
-    const utmSource = $('utmSource').value.trim() || null;
-    const utmMedium = $('utmMedium').value.trim() || null;
-    const utmCampaign = $('utmCampaign').value.trim() || null;
-    const utmTerm = $('utmTerm').value.trim() || null;
-    const utmContent = $('utmContent').value.trim() || null;
+    const isPro = currentUser && (currentUser.tier === 'pro' || currentUser.tier === 'enterprise');
+    if (!isPro) {
+      $('customCodeInput').value = '';
+      $('expiryInput').value = '';
+      $('passwordInput').value = '';
+      $('tagsInput').value = '';
+      $('utmSource').value = ''; $('utmMedium').value = ''; $('utmCampaign').value = '';
+      $('utmTerm').value = ''; $('utmContent').value = '';
+    }
+    const customCode = isPro ? ($('customCodeInput').value.trim() || null) : null;
+    const expiresAt = isPro && $('expiryInput').value ? new Date($('expiryInput').value).toISOString().replace('Z','') : null;
+    const password = isPro ? ($('passwordInput').value || null) : null;
+    const tags = isPro ? ($('tagsInput').value.trim() || null) : null;
+    const utmSource = isPro ? ($('utmSource').value.trim() || null) : null;
+    const utmMedium = isPro ? ($('utmMedium').value.trim() || null) : null;
+    const utmCampaign = isPro ? ($('utmCampaign').value.trim() || null) : null;
+    const utmTerm = isPro ? ($('utmTerm').value.trim() || null) : null;
+    const utmContent = isPro ? ($('utmContent').value.trim() || null) : null;
+    const ogTitle = isPro ? ($('ogTitle').value.trim() || null) : null;
+    const ogDescription = isPro ? ($('ogDescription').value.trim() || null) : null;
+    const ogImage = isPro ? ($('ogImage').value.trim() || null) : null;
+    const folderId = isPro ? ($('folderInput').value || null) : null;
 
     $('shortenBtn').disabled = true;
     $('shortenStatus').textContent = 'Shortening...';
@@ -1375,6 +2225,11 @@
       if (utmCampaign) body.utmCampaign = utmCampaign;
       if (utmTerm) body.utmTerm = utmTerm;
       if (utmContent) body.utmContent = utmContent;
+      if (ogTitle) body.ogTitle = ogTitle;
+      if (ogDescription) body.ogDescription = ogDescription;
+      if (ogImage) body.ogImage = ogImage;
+      if (folderId) body.folderId = parseInt(folderId);
+      if (currentWorkspaceId) body.workspaceId = currentWorkspaceId;
 
       const res = await fetch('/api/shorten', {
         method: 'POST',
@@ -1396,10 +2251,12 @@
       $('tagsInput').value = '';
       $('utmSource').value = ''; $('utmMedium').value = ''; $('utmCampaign').value = '';
       $('utmTerm').value = ''; $('utmContent').value = '';
+      $('ogTitle').value = ''; $('ogDescription').value = ''; $('ogImage').value = '';
       $('advancedOptions').classList.remove('open');
       $('advancedToggle').textContent = '+ Advanced options';
       $('urlInput').focus();
-      loadLinks();
+      const canManage = currentUser && (currentUser.role === 'ADMIN' || currentUser.tier === 'pro' || currentUser.tier === 'enterprise');
+      if (canManage) loadLinks();
       if (data.hasPassword) notify('Link is password protected');
       if (data.expiresAt) notify('Link expires on ' + new Date(data.expiresAt).toLocaleString());
     } catch (err) {
@@ -1430,22 +2287,32 @@
   function switchView(view) {
     document.querySelectorAll('.view-selector .tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.view-selector .tab').forEach(t => {
-      if (t.textContent.trim().toLowerCase() === view || (view === 'links' && t.textContent.trim() === 'Links') || (view === 'analytics' && t.textContent.trim() === 'Analytics')) {
-        t.classList.add('active');
-      }
+      if (t.textContent.trim().toLowerCase() === view) t.classList.add('active');
     });
     $('linksView').classList.toggle('show', view === 'links');
     $('analyticsView').classList.toggle('show', view === 'analytics');
     $('settingsView').classList.toggle('show', view === 'settings');
+    $('webhooksView').classList.toggle('show', view === 'webhooks');
+    $('domainsView').classList.toggle('show', view === 'domains');
+    if (view === 'links') { showingTrash = false; $('trashToggleBtn').textContent = 'Trash'; loadFolderSelect(); loadFolderInputs(); }
     if (view === 'analytics') loadAnalyticsLinkSelect();
-    if (view === 'settings') loadApiKeys();
+    if (view === 'settings') { loadApiKeys(); loadDiscordLinkStatus(); }
+    if (view === 'webhooks') { loadWebhooks(); closeWebhookLogs(); }
+    if (view === 'domains') loadDomains();
   }
 
   // --- Load Links ---
-  async function loadLinks(query) {
+  async function loadLinks(query, dateFrom, dateTo, folderId, tag) {
     try {
       let url = '/api/urls';
-      if (query) url += '?q=' + encodeURIComponent(query);
+      const params = [];
+      if (query) params.push('q=' + encodeURIComponent(query));
+      if (dateFrom) params.push('dateFrom=' + encodeURIComponent(dateFrom));
+      if (dateTo) params.push('dateTo=' + encodeURIComponent(dateTo));
+      if (folderId) params.push('folderId=' + encodeURIComponent(folderId));
+      if (tag) params.push('tag=' + encodeURIComponent(tag));
+      if (currentWorkspaceId) params.push('workspaceId=' + currentWorkspaceId);
+      if (params.length) url += '?' + params.join('&');
       const res = await fetch(url);
       if (!res.ok) throw new Error();
       allUrls = await res.json();
@@ -1462,10 +2329,12 @@
         const badge = u.passwordHash ? '<span class="badge-icon" title="Password protected">&#x1f512;</span>' : '';
         const expiredIcon = isExpired ? '<span class="badge-icon" title="Expired">&#x26a0;</span>' : '';
         const displayCode = u.customCode || u.shortCode;
+        const tags = u.tags ? u.tags.split(',').filter(Boolean).map(t => '<span class="tag-badge tag-badge-sm" style="background:var(--accent-soft);color:var(--accent)">' + t.trim() + '</span>').join('') : '';
         return '<li class="url-item">' +
           '<div class="info">' +
           '<a class="code" href="' + clickUrl + '" target="_blank" rel="noopener">' + badge + expiredIcon + displayCode + '</a>' +
           '<span class="original" title="' + u.longUrl + '">' + u.longUrl + '</span>' +
+          (tags ? '<span style="margin-top:4px">' + tags + '</span>' : '') +
           '</div>' +
           '<div class="meta">' +
           '<span class="clicks">' + u.clickCount + '</span>' +
@@ -1499,8 +2368,187 @@
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
       const q = $('searchInput').value.trim();
-      loadLinks(q || null);
+      const dateFrom = $('filterDateFrom').value || null;
+      const dateTo = $('filterDateTo').value || null;
+      const folderId = $('filterFolder').value || null;
+      const tag = $('filterTag').value.trim() || null;
+      loadLinks(q || null, dateFrom, dateTo, folderId, tag);
     }, 300);
+  }
+
+  function clearFilters() {
+    $('searchInput').value = '';
+    $('filterDateFrom').value = '';
+    $('filterDateTo').value = '';
+    $('filterFolder').value = '';
+    $('filterTag').value = '';
+    loadLinks(null, null, null, null, null);
+  }
+
+  async function loadFolderInputs() {
+    try {
+      const res = await fetch('/api/folders');
+      if (!res.ok) return;
+      const folders = await res.json();
+      const opts = '<option value="">No folder</option>' +
+        folders.map(f => '<option value="' + f.id + '">' + f.name + '</option>').join('');
+      const sel1 = $('folderInput');
+      const sel2 = $('editFolder');
+      if (sel1) { const v = sel1.value; sel1.innerHTML = opts; if (v) sel1.value = v; }
+      if (sel2) { const v = sel2.value; sel2.innerHTML = opts; if (v) sel2.value = v; }
+    } catch {}
+  }
+
+  async function openFolderModal() {
+    $('folderError').textContent = '';
+    $('folderNameInput').value = '';
+    await renderFolderList();
+    $('folderModal').classList.add('open');
+  }
+
+  function closeFolderModal() { $('folderModal').classList.remove('open'); }
+
+  async function renderFolderList() {
+    try {
+      const res = await fetch('/api/folders');
+      if (!res.ok) throw new Error();
+      const folders = await res.json();
+      if (!folders.length) {
+        $('folderList').innerHTML = '<p class="empty-state" style="padding:12px">No folders yet.</p>';
+        return;
+      }
+      $('folderList').innerHTML = folders.map(f =>
+        '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.03)">' +
+        '<span style="width:8px;height:8px;border-radius:50%;background:' + (f.color || 'var(--accent)') + ';flex-shrink:0"></span>' +
+        '<span style="flex:1;font-size:0.8125rem">' + f.name + '</span>' +
+        '<button class="action-btn" onclick="renameFolder(' + f.id + ',\'' + f.name.replace(/'/g,"\\'") + '\')" title="Rename">&#x270e;</button>' +
+        '<button class="action-btn danger" onclick="deleteFolder(' + f.id + ')" title="Delete">&#x2716;</button>' +
+        '</div>'
+      ).join('');
+    } catch { $('folderList').innerHTML = '<p class="empty-state" style="padding:12px">Could not load folders.</p>'; }
+  }
+
+  async function createFolder() {
+    const name = $('folderNameInput').value.trim();
+    if (!name) { $('folderError').textContent = 'Enter a folder name.'; return; }
+    const color = $('folderColorInput').value;
+    $('folderError').textContent = '';
+    $('folderCreateBtn').disabled = true;
+    try {
+      const res = await fetch('/api/folders', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, color })
+      });
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Failed'); }
+      $('folderNameInput').value = '';
+      await renderFolderList();
+    } catch (err) { $('folderError').textContent = err.message; }
+    finally { $('folderCreateBtn').disabled = false; }
+  }
+
+  async function renameFolder(id, currentName) {
+    const name = prompt('Folder name:', currentName);
+    if (!name || name.trim() === currentName) return;
+    try {
+      const res = await fetch('/api/folders/' + id, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim() })
+      });
+      if (!res.ok) throw new Error();
+      await renderFolderList();
+    } catch { notify('Failed to rename folder'); }
+  }
+
+  async function deleteFolder(id) {
+    if (!confirm('Delete this folder? Links in it will not be deleted.')) return;
+    try {
+      const res = await fetch('/api/folders/' + id, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      await renderFolderList();
+    } catch { notify('Failed to delete folder'); }
+  }
+
+  // --- Tag Management ---
+  async function openTagModal() {
+    $('tagError').textContent = '';
+    $('tagNameInput').value = '';
+    await renderTagList();
+    $('tagModal').classList.add('open');
+  }
+
+  function closeTagModal() { $('tagModal').classList.remove('open'); }
+
+  async function renderTagList() {
+    try {
+      const res = await fetch('/api/tags');
+      if (!res.ok) throw new Error();
+      const tags = await res.json();
+      if (!tags.length) {
+        $('tagList').innerHTML = '<p class="empty-state" style="padding:12px">No tags yet.</p>';
+        return;
+      }
+      $('tagList').innerHTML = tags.map(t =>
+        '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.03)">' +
+        '<span class="tag-badge" style="background:' + (t.color || 'var(--accent-soft)') + '20;color:' + (t.color || 'var(--accent)') + '">' + t.name + '</span>' +
+        '<span style="flex:1;font-size:0.8125rem">' + t.name + '</span>' +
+        '<button class="action-btn" onclick="renameTag(' + t.id + ',\'' + t.name.replace(/'/g,"\\'") + '\')" title="Rename">&#x270e;</button>' +
+        '<button class="action-btn danger" onclick="deleteTag(' + t.id + ')" title="Delete">&#x2716;</button>' +
+        '</div>'
+      ).join('');
+    } catch { $('tagList').innerHTML = '<p class="empty-state" style="padding:12px">Could not load tags.'; }
+  }
+
+  async function createTag() {
+    const name = $('tagNameInput').value.trim();
+    if (!name) { $('tagError').textContent = 'Enter a tag name.'; return; }
+    const color = $('tagColorInput').value;
+    $('tagError').textContent = '';
+    $('tagCreateBtn').disabled = true;
+    try {
+      const res = await fetch('/api/tags', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, color })
+      });
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Failed'); }
+      $('tagNameInput').value = '';
+      await renderTagList();
+    } catch (err) { $('tagError').textContent = err.message; }
+    finally { $('tagCreateBtn').disabled = false; }
+  }
+
+  async function renameTag(id, currentName) {
+    const name = prompt('Tag name:', currentName);
+    if (!name || name.trim() === currentName) return;
+    try {
+      const res = await fetch('/api/tags/' + id, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim() })
+      });
+      if (!res.ok) throw new Error();
+      await renderTagList();
+    } catch { notify('Failed to rename tag'); }
+  }
+
+  async function deleteTag(id) {
+    if (!confirm('Delete this tag?')) return;
+    try {
+      const res = await fetch('/api/tags/' + id, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      await renderTagList();
+    } catch { notify('Failed to delete tag'); }
+  }
+
+  async function loadFolderSelect() {
+    try {
+      const res = await fetch('/api/folders');
+      if (!res.ok) return;
+      const folders = await res.json();
+      const sel = $('filterFolder');
+      const current = sel.value;
+      sel.innerHTML = '<option value="">All folders</option>' +
+        folders.map(f => '<option value="' + f.id + '"' + (f.color ? ' style="border-left:3px solid ' + f.color + '"' : '') + '>' + f.name + '</option>').join('');
+      if (current) sel.value = current;
+    } catch {}
   }
 
   // --- Edit Link ---
@@ -1518,6 +2566,10 @@
     $('editUtmCampaign').value = url.utmCampaign || '';
     $('editUtmTerm').value = url.utmTerm || '';
     $('editUtmContent').value = url.utmContent || '';
+    $('editOgTitle').value = url.ogTitle || '';
+    $('editOgDescription').value = url.ogDescription || '';
+    $('editOgImage').value = url.ogImage || '';
+    $('editFolder').value = url.folderId || '';
     $('editError').textContent = '';
     $('editModal').classList.add('open');
   }
@@ -1544,7 +2596,11 @@
           utmMedium: $('editUtmMedium').value.trim() || '',
           utmCampaign: $('editUtmCampaign').value.trim() || '',
           utmTerm: $('editUtmTerm').value.trim() || '',
-          utmContent: $('editUtmContent').value.trim() || ''
+          utmContent: $('editUtmContent').value.trim() || '',
+          ogTitle: $('editOgTitle').value.trim() || '',
+          ogDescription: $('editOgDescription').value.trim() || '',
+          ogImage: $('editOgImage').value.trim() || '',
+          folderId: $('editFolder').value ? parseInt($('editFolder').value) : null
         })
       });
       const data = await res.json();
@@ -1614,18 +2670,21 @@
     const code = $('analyticsLinkSelect').value;
     if (!code) { $('analyticsContent').innerHTML = '<p class="empty-state">Select a link to view analytics.</p>'; return; }
     try {
-      const [analyticsRes, timeRes] = await Promise.all([
+      const [analyticsRes, timeRes, geoRes] = await Promise.all([
         fetch('/api/analytics/' + code),
-        fetch('/api/analytics/' + code + '/timeseries?interval=' + $('analyticsInterval').value)
+        fetch('/api/analytics/' + code + '/timeseries?interval=' + $('analyticsInterval').value),
+        fetch('/api/analytics/' + code + '/geo')
       ]);
       if (!analyticsRes.ok) throw new Error();
       const data = await analyticsRes.json();
       const timeData = timeRes.ok ? await timeRes.json() : null;
+      const geoData = geoRes.ok ? await geoRes.json() : null;
       analyticsLinkData = data;
 
       const maxRef = Math.max(1, ...Object.values(data.referrers || {}));
       const maxBrowser = Math.max(1, ...Object.values(data.browsers || {}));
       const maxDevice = Math.max(1, ...Object.values(data.devices || {}));
+      const maxCountry = Math.max(1, ...Object.values(geoData?.countries || {}));
 
       let chartHtml = '';
       if (timeData && timeData.dataPoints) {
@@ -1638,6 +2697,8 @@
           }).join('') +
           '</div>';
       }
+
+      const mapId = 'geoMap_' + code.replace(/[^a-zA-Z0-9]/g, '_');
 
       $('analyticsContent').innerHTML =
         '<div class="analytics-grid">' +
@@ -1657,6 +2718,19 @@
         ).join('') : '<p class="empty-state" style="padding:8px 0">No data</p>') +
         '</div></div>' +
         '</div>' +
+        '<div class="analytics-grid">' +
+        '<div class="analytics-card-outer"><div class="analytics-card-inner"><h4>Browsers</h4>' +
+        (Object.keys(data.browsers || {}).length ? Object.entries(data.browsers).map(([k,v]) =>
+          '<div class="bar-item"><span class="bar-label">' + k + '</span><div class="bar-track"><div class="bar-fill" style="width:' + (v/maxBrowser*100) + '%"></div></div><span class="bar-count">' + v + '</span></div>'
+        ).join('') : '<p class="empty-state" style="padding:8px 0">No data</p>') +
+        '</div></div>' +
+        (geoData?.countries && Object.keys(geoData.countries).length ? '<div class="analytics-card-outer"><div class="analytics-card-inner"><h4>Countries</h4>' +
+          Object.entries(geoData.countries).map(([k,v]) =>
+            '<div class="bar-item"><span class="bar-label">' + k + '</span><div class="bar-track"><div class="bar-fill" style="width:' + (v/maxCountry*100) + '%"></div></div><span class="bar-count">' + v + '</span></div>'
+          ).join('') +
+        '</div></div>' : '') +
+        '</div>' +
+        (geoData?.locations && geoData.locations.length ? '<div class="analytics-card-outer" style="margin-bottom:12px"><div class="analytics-card-inner"><h4>Geo Map</h4><div id="' + mapId + '" class="geo-map"></div></div></div>' : '') +
         '<div class="analytics-card-outer"><div class="analytics-card-inner"><h4>Recent clicks</h4>' +
         (data.recentClicks && data.recentClicks.length ?
           '<div class="click-log">' + data.recentClicks.map(c =>
@@ -1664,6 +2738,30 @@
           ).join('') + '</div>' :
           '<p class="empty-state" style="padding:8px 0">No clicks yet</p>') +
         '</div></div>';
+
+      if (geoData?.locations && geoData.locations.length) {
+        requestAnimationFrame(() => {
+          const container = $(mapId);
+          if (!container) return;
+          const map = L.map(mapId, { zoomControl: true }).setView([0, 20], 2);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18, attribution: '&copy; <a href="https://openstreetmap.org/copyright">OSM</a>'
+          }).addTo(map);
+          const bounds = [];
+          geoData.locations.forEach(loc => {
+            if (loc.lat && loc.lon) {
+              const popup = (loc.city ? loc.city + ', ' : '') + loc.country;
+              L.circleMarker([loc.lat, loc.lon], {
+                radius: 5, fillColor: 'var(--accent,#b8860b)', color: '#fff', weight: 1.5, fillOpacity: 0.8
+              }).addTo(map).bindPopup(popup);
+              bounds.push([loc.lat, loc.lon]);
+            }
+          });
+          if (bounds.length > 1) map.fitBounds(bounds, { padding: [30, 30] });
+          else if (bounds.length === 1) map.setView(bounds[0], 10);
+          setTimeout(() => map.invalidateSize(), 100);
+        });
+      }
     } catch {
       $('analyticsContent').innerHTML = '<p class="empty-state">Failed to load analytics.</p>';
     }
@@ -1734,7 +2832,7 @@
           '<div class="pricing-sub">' + (p.description || '') + '</div>' +
           '<div class="pricing-amount">' +
           '<span class="currency">' + getCurrencySymbol(p.currency) + '</span>' +
-          (isFree ? '0' : price.toFixed(2)) +
+          (isFree ? '0' : price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})) +
           '<span class="period">/' + p.billingPeriod + '</span>' +
           '</div>' +
           '<div class="pricing-desc">' + (isFree ? 'Get started for free' : (p.maxUrls >= 10000 ? 'For large teams' : 'Everything you need')) + '</div>' +
@@ -1742,8 +2840,7 @@
           features.map(f => '<li><span class="check">&#10003;</span> ' + f + '</li>').join('') +
           '</ul>' +
           '<button class="btn-primary pricing-cta" onclick="pricingCTA(\'' + p.slug + '\')">' +
-          (isFree ? 'Get started' : 'Subscribe') +
-          ' <span class="btn-icon" style="width:20px;height:20px;font-size:0.625rem">&#8599;</span></button>' +
+          '<span class="pricing-cta-sub">' + (isFree ? 'Get started' : 'Subscribe') + ' <span class="btn-trail">&#8599;</span></span></button>' +
           (isFree ? '<div class="pricing-free-text">No credit card required</div>' : '') +
           '</div></div>';
       }).join('');
@@ -1753,6 +2850,12 @@
   function getCurrencySymbol(code) {
     const symbols = { USD: '$', NGN: '\u20A6', EUR: '\u20AC', GBP: '\u00A3' };
     return symbols[code] || code + ' ';
+  }
+  function fmtPrice(price, currency) {
+    const sym = getCurrencySymbol(currency);
+    const n = parseFloat(price);
+    if (n === 0) return sym + '0';
+    return sym + n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
   }
 
   function safeParseJSON(str, fallback) {
@@ -1780,7 +2883,7 @@
       checkoutAppliedCoupon = null;
       checkoutDiscount = null;
       $('checkoutPlanName').textContent = plan.name;
-      $('checkoutPlanPrice').textContent = getCurrencySymbol(plan.currency) + parseFloat(plan.price).toFixed(2) + '/' + plan.billingPeriod;
+      $('checkoutPlanPrice').textContent = fmtPrice(plan.price, plan.currency) + '/' + plan.billingPeriod;
       $('checkoutPlanInfo').textContent = plan.description || 'Subscribe to ' + plan.name;
       $('checkoutDiscountRow').style.display = 'none';
       $('checkoutCouponInput').value = '';
@@ -1789,6 +2892,7 @@
       $('checkoutError').textContent = '';
       $('checkoutSubmitBtn').disabled = false;
       $('checkoutSubmitBtn').innerHTML = 'Subscribe <span class="btn-icon" style="width:18px;height:18px;font-size:0.625rem">&#8599;</span>';
+      loadPaymentProviders();
       $('checkoutModal').classList.add('open');
     } catch { notify('Failed to load plan details'); }
   }
@@ -1799,6 +2903,23 @@
     checkoutPlanData = null;
     checkoutAppliedCoupon = null;
     checkoutDiscount = null;
+  }
+
+  async function loadPaymentProviders() {
+    const group = $('checkoutProviderGroup');
+    try {
+      const res = await fetch('/api/subscriptions/providers');
+      if (!res.ok) { group.style.display = 'none'; return; }
+      const providers = await res.json();
+      const paystackRadio = document.querySelector('input[name="checkoutProvider"][value="paystack"]');
+      const stripeRadio = document.querySelector('input[name="checkoutProvider"][value="stripe"]');
+      if (paystackRadio) paystackRadio.closest('label').style.display = providers.paystack ? 'flex' : 'none';
+      if (stripeRadio) stripeRadio.closest('label').style.display = providers.stripe ? 'flex' : 'none';
+      const visible = (providers.paystack && providers.stripe);
+      group.style.display = visible ? 'block' : 'none';
+      if (providers.stripe && !providers.paystack && stripeRadio) stripeRadio.checked = true;
+      if (providers.paystack && !providers.stripe && paystackRadio) paystackRadio.checked = true;
+    } catch { group.style.display = 'none'; }
   }
 
   async function validateCouponInput() {
@@ -1824,8 +2945,8 @@
         const discAmount = data.discountType === 'percentage' ? price * (discVal / 100) : discVal;
         const finalPrice = Math.max(0, price - discAmount);
         $('checkoutDiscountRow').style.display = 'block';
-        $('checkoutDiscountAmount').textContent = '-' + getCurrencySymbol(p.currency) + discAmount.toFixed(2);
-        $('checkoutTotalAmount').textContent = getCurrencySymbol(p.currency) + (finalPrice === 0 ? 'FREE' : finalPrice.toFixed(2));
+        $('checkoutDiscountAmount').textContent = '-' + fmtPrice(discAmount, p.currency);
+        $('checkoutTotalAmount').textContent = finalPrice === 0 ? 'FREE' : fmtPrice(finalPrice, p.currency);
         feedback.textContent = data.description + ' discount applied!';
         feedback.style.color = 'var(--green)';
       } else {
@@ -1847,7 +2968,8 @@
     $('checkoutSubmitBtn').disabled = true;
     $('checkoutSubmitBtn').textContent = 'Processing...';
     try {
-      const body = {};
+      const providerEl = document.querySelector('input[name="checkoutProvider"]:checked');
+      const body = { provider: providerEl ? providerEl.value : 'paystack' };
       if (checkoutAppliedCoupon) body.coupon = checkoutAppliedCoupon;
       const res = await fetch('/api/subscriptions/initialize/' + checkoutPlanSlug, {
         method: 'POST',
@@ -1856,7 +2978,11 @@
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed');
-      if (data.authorization_url) {
+      if (data.checkout_url) {
+        $('checkoutSubmitBtn').textContent = 'Opened Stripe...';
+        window.open(data.checkout_url, '_blank');
+        notify('Redirecting to Stripe checkout...');
+      } else if (data.authorization_url) {
         window.open(data.authorization_url, '_blank');
         notify('Redirecting to payment...');
       } else if (data.status === 'activated') {
@@ -1872,6 +2998,367 @@
     finally { $('checkoutSubmitBtn').disabled = false; $('checkoutSubmitBtn').innerHTML = 'Subscribe <span class="btn-icon" style="width:18px;height:18px;font-size:0.625rem">&#8599;</span>'; }
   }
 
+  // --- Workspaces ---
+  let currentWorkspaceId = null;
+
+  async function loadWorkspaces() {
+    try {
+      const res = await fetch('/api/workspaces');
+      if (!res.ok) return;
+      const workspaces = await res.json();
+      const sel = $('workspaceSwitcher');
+      const curVal = sel.value;
+      sel.innerHTML = '<option value="">All links</option>' + workspaces.map(w =>
+        '<option value="' + w.id + '"' + (w.id == curVal ? ' selected' : '') + '>' + escapeHtml(w.name) + '</option>'
+      ).join('');
+      $('workspaceSwitcherWrap').style.display = workspaces.length ? 'inline-block' : 'none';
+      if (curVal && !workspaces.find(w => w.id == curVal)) currentWorkspaceId = null;
+    } catch {}
+  }
+
+  function switchWorkspace() {
+    const val = $('workspaceSwitcher').value;
+    currentWorkspaceId = val ? parseInt(val) : null;
+    loadLinks();
+  }
+
+  function openWorkspaceModal() {
+    $('wsError').textContent = '';
+    $('wsNameInput').value = '';
+    $('workspaceModal').classList.add('open');
+    renderWorkspaceList();
+  }
+
+  function closeWorkspaceModal() { $('workspaceModal').classList.remove('open'); }
+
+  async function createWorkspace() {
+    const name = $('wsNameInput').value.trim();
+    if (!name) { $('wsError').textContent = 'Name is required'; return; }
+    $('wsError').textContent = '';
+    try {
+      const res = await fetch('/api/workspaces', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      $('wsNameInput').value = '';
+      notify('Workspace created');
+      renderWorkspaceList();
+      loadWorkspaces();
+    } catch (err) { $('wsError').textContent = err.message; }
+  }
+
+  async function renderWorkspaceList() {
+    try {
+      const res = await fetch('/api/workspaces');
+      if (!res.ok) { $('wsList').innerHTML = '<li class="empty-state">Failed to load</li>'; return; }
+      const workspaces = await res.json();
+      if (!workspaces.length) {
+        $('wsList').innerHTML = '<li class="empty-state">No workspaces yet.</li>';
+        return;
+      }
+      $('wsList').innerHTML = workspaces.map(w => {
+        const isOwner = w.isOwner;
+        return '<li class="url-item" style="flex-wrap:wrap">' +
+          '<div class="info"><strong>' + escapeHtml(w.name) + '</strong>' +
+          '<span class="original">' + (isOwner ? 'Owner' : 'Member') + ' &middot; ' + w.slug + '</span></div>' +
+          '<div class="meta">' +
+          (isOwner ? '<button class="action-btn" onclick="renameWorkspace(' + w.id + ',\'' + escapeHtml(w.name).replace(/'/g, "\\'") + '\')" title="Rename">&#x270e;</button>' : '') +
+          (isOwner ? '<button class="action-btn" onclick="openMembersModal(' + w.id + ',\'' + escapeHtml(w.name).replace(/'/g, "\\'") + '\')" title="Members">👥</button>' : '') +
+          (isOwner ? '<button class="action-btn danger" onclick="deleteWorkspace(' + w.id + ')" title="Delete">&#x2716;</button>' : '') +
+          '</div></li>';
+      }).join('');
+    } catch { $('wsList').innerHTML = '<li class="empty-state">Failed to load</li>'; }
+  }
+
+  async function renameWorkspace(id, currentName) {
+    const name = prompt('Rename workspace:', currentName);
+    if (!name || name.trim() === currentName) return;
+    try {
+      const res = await fetch('/api/workspaces/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      notify('Workspace renamed');
+      renderWorkspaceList();
+      loadWorkspaces();
+    } catch (err) { notify('Error: ' + err.message); }
+  }
+
+  async function deleteWorkspace(id) {
+    if (!confirm('Delete this workspace and all its links?')) return;
+    try {
+      const res = await fetch('/api/workspaces/' + id, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      notify('Workspace deleted');
+      renderWorkspaceList();
+      loadWorkspaces();
+      if (currentWorkspaceId === id) { currentWorkspaceId = null; $('workspaceSwitcher').value = ''; loadLinks(); }
+    } catch (err) { notify('Error: ' + err.message); }
+  }
+
+  function openMembersModal(workspaceId, workspaceName) {
+    $('wsMembersList').innerHTML = '<li class="empty-state">Loading...</li>';
+    $('wsMembersTitle').textContent = 'Members: ' + workspaceName;
+    $('wsMembersError').textContent = '';
+    $('wsMemberEmail').value = '';
+    window._wsMembersId = workspaceId;
+    $('wsMembersModal').classList.add('open');
+    renderMembers(workspaceId);
+  }
+
+  function closeMembersModal() { $('wsMembersModal').classList.remove('open'); }
+
+  async function renderMembers(workspaceId) {
+    try {
+      const res = await fetch('/api/workspaces/' + workspaceId + '/members');
+      if (!res.ok) { $('wsMembersList').innerHTML = '<li class="empty-state">Failed to load</li>'; return; }
+      const members = await res.json();
+      $('wsMembersList').innerHTML = members.length
+        ? members.map(m =>
+            '<li class="url-item" style="flex-wrap:wrap"><div class="info"><strong>' + escapeHtml(m.name) + '</strong>' +
+            '<span class="original">' + escapeHtml(m.email) + ' &middot; ' + m.role + '</span></div>' +
+            '<div class="meta"><button class="action-btn danger" onclick="removeMember(' + workspaceId + ',' + m.userId + ')" title="Remove">&#x2716;</button></div></li>'
+          ).join('')
+        : '<li class="empty-state">No members yet. Add members below.</li>';
+    } catch { $('wsMembersList').innerHTML = '<li class="empty-state">Failed to load</li>'; }
+  }
+
+  async function addMember() {
+    const wsId = window._wsMembersId;
+    const email = $('wsMemberEmail').value.trim();
+    if (!email) { $('wsMembersError').textContent = 'Email is required'; return; }
+    $('wsMembersError').textContent = '';
+    try {
+      const res = await fetch('/api/workspaces/' + wsId + '/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      $('wsMemberEmail').value = '';
+      notify('Member added');
+      renderMembers(wsId);
+    } catch (err) { $('wsMembersError').textContent = err.message; }
+  }
+
+  async function removeMember(workspaceId, userId) {
+    if (!confirm('Remove this member?')) return;
+    try {
+      const res = await fetch('/api/workspaces/' + workspaceId + '/members/' + userId, { method: 'DELETE' });
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Failed'); }
+      notify('Member removed');
+      renderMembers(workspaceId);
+    } catch (err) { notify('Error: ' + err.message); }
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  // --- Trash ---
+  let showingTrash = false;
+
+  async function toggleTrash() {
+    showingTrash = !showingTrash;
+    if (showingTrash) {
+      $('trashToggleBtn').textContent = 'Active links';
+      $('searchInput').value = '';
+      $('filterDateFrom').value = '';
+      $('filterDateTo').value = '';
+      $('filterFolder').value = '';
+      $('linkCount').textContent = '';
+      await loadTrash();
+    } else {
+      $('trashToggleBtn').textContent = 'Trash';
+      loadLinks();
+    }
+  }
+
+  async function loadTrash() {
+    try {
+      const res = await fetch('/api/urls/trash');
+      if (!res.ok) throw new Error();
+      const items = await res.json();
+      $('linkCount').textContent = items.length + ' trashed';
+      if (!items.length) {
+        $('urlList').innerHTML = '<li class="empty-state">Trash is empty.</li>';
+        return;
+      }
+      $('urlList').innerHTML = items.map(u => {
+        const time = formatTime(u.deletedAt);
+        return '<li class="url-item" style="opacity:0.7">' +
+          '<div class="info">' +
+          '<span class="code" style="text-decoration:line-through">' + (u.customCode || u.shortCode) + '</span>' +
+          '<span class="original" title="' + u.longUrl + '">' + u.longUrl + '</span>' +
+          '</div>' +
+          '<div class="meta">' +
+          '<span class="clicks" style="background:#fef2f2;color:var(--red)">' + u.clickCount + '</span>' +
+          '<span class="trash-badge">Deleted</span>' +
+          '<button class="action-btn" onclick="restoreLink(\'' + u.shortCode + '\')" title="Restore">&#x21a9;</button>' +
+          '<button class="action-btn danger" onclick="permanentDeleteLink(\'' + u.shortCode + '\')" title="Delete permanently">&#x2716;</button>' +
+          '<span class="time">' + time + '</span>' +
+          '</div>' +
+          '</li>';
+      }).join('');
+    } catch {
+      $('urlList').innerHTML = '<li class="empty-state">Could not load trash.</li>';
+    }
+  }
+
+  async function restoreLink(shortCode) {
+    try {
+      const res = await fetch('/api/urls/' + shortCode + '/restore', { method: 'POST' });
+      if (!res.ok) throw new Error();
+      notify('Link restored');
+      if (showingTrash) loadTrash(); else loadLinks();
+    } catch { notify('Failed to restore link'); }
+  }
+
+  async function permanentDeleteLink(shortCode) {
+    if (!confirm('Permanently delete this link? This cannot be undone.')) return;
+    try {
+      const res = await fetch('/api/urls/trash/' + shortCode, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      notify('Link permanently deleted');
+      loadTrash();
+    } catch { notify('Failed to delete link'); }
+  }
+
+  // --- Bulk Import ---
+  let bulkItems = [];
+  let bulkTab = 'json';
+
+  function openBulkModal() {
+    bulkItems = [];
+    bulkTab = 'json';
+    $('bulkJsonInput').value = '';
+    $('bulkCsvInput').value = '';
+    $('bulkPreview').style.display = 'none';
+    $('bulkResult').style.display = 'none';
+    $('bulkError').textContent = '';
+    $('bulkJsonPane').style.display = 'block';
+    $('bulkCsvPane').style.display = 'none';
+    $('bulkJsonTab').className = 'tab-btn active';
+    $('bulkCsvTab').className = 'tab-btn';
+    $('bulkModal').classList.add('open');
+  }
+
+  function closeBulkModal() {
+    $('bulkModal').classList.remove('open');
+  }
+
+  function switchBulkTab(tab) {
+    bulkTab = tab;
+    $('bulkJsonTab').className = 'tab-btn' + (tab === 'json' ? ' active' : '');
+    $('bulkCsvTab').className = 'tab-btn' + (tab === 'csv' ? ' active' : '');
+    $('bulkJsonPane').style.display = tab === 'json' ? 'block' : 'none';
+    $('bulkCsvPane').style.display = tab === 'csv' ? 'block' : 'none';
+    $('bulkPreview').style.display = 'none';
+    $('bulkResult').style.display = 'none';
+    $('bulkError').textContent = '';
+  }
+
+  function parseBulkJson() {
+    $('bulkError').textContent = '';
+    try {
+      const raw = $('bulkJsonInput').value.trim();
+      if (!raw) { $('bulkError').textContent = 'Paste a JSON array first.'; return; }
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) { $('bulkError').textContent = 'Must be a JSON array.'; return; }
+      bulkItems = parsed.map(item => ({
+        url: item.url || '',
+        customCode: item.customCode || '',
+        expiresAt: item.expiresAt || '',
+        password: item.password || ''
+      }));
+      if (!bulkItems.length) { $('bulkError').textContent = 'Array is empty.'; return; }
+      showBulkPreview();
+    } catch (e) { $('bulkError').textContent = 'Invalid JSON: ' + e.message; }
+  }
+
+  function parseBulkCsv(event) {
+    $('bulkError').textContent = '';
+    const file = event.target.files[0];
+    if (!file) return;
+    $('bulkCsvLabel').textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const lines = e.target.result.split('\n').filter(l => l.trim());
+        if (lines.length < 2) { $('bulkError').textContent = 'CSV must have a header row and at least one data row.'; return; }
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        const urlIdx = headers.indexOf('url');
+        if (urlIdx === -1) { $('bulkError').textContent = 'CSV must have a "url" column.'; return; }
+        const codeIdx = headers.indexOf('customcode');
+        const expIdx = headers.indexOf('expiresat');
+        const pwdIdx = headers.indexOf('password');
+        bulkItems = lines.slice(1).map(line => {
+          const cols = line.split(',').map(c => c.trim());
+          return {
+            url: cols[urlIdx] || '',
+            customCode: codeIdx >= 0 ? (cols[codeIdx] || '') : '',
+            expiresAt: expIdx >= 0 ? (cols[expIdx] || '') : '',
+            password: pwdIdx >= 0 ? (cols[pwdIdx] || '') : ''
+          };
+        }).filter(item => item.url);
+        if (!bulkItems.length) { $('bulkError').textContent = 'No valid URLs found in CSV.'; return; }
+        showBulkPreview();
+      } catch (err) { $('bulkError').textContent = 'Failed to parse CSV: ' + err.message; }
+    };
+    reader.readAsText(file);
+  }
+
+  function showBulkPreview() {
+    $('bulkCount').textContent = bulkItems.length;
+    $('bulkPreviewBody').innerHTML = bulkItems.map((item, i) =>
+      '<tr><td>' + (i + 1) + '</td><td><span class="truncate" title="' + item.url + '">' + item.url + '</span></td><td>' + (item.customCode || '-') + '</td><td>' + (item.expiresAt || '-') + '</td></tr>'
+    ).join('');
+    $('bulkResult').style.display = 'none';
+    $('bulkPreview').style.display = 'block';
+    $('bulkSubmitBtn').textContent = 'Import all ' + bulkItems.length + ' links ' + String.fromCharCode(8593);
+    $('bulkError').textContent = '';
+  }
+
+  async function submitBulk() {
+    if (!bulkItems.length) return;
+    $('bulkError').textContent = '';
+    $('bulkSubmitBtn').disabled = true;
+    $('bulkSubmitBtn').textContent = 'Importing...';
+    try {
+      const res = await fetch('/api/shorten/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bulkItems)
+      });
+      const results = await res.json();
+      let success = 0, failed = 0;
+      $('bulkResultBody').innerHTML = results.map(r => {
+        if (r.status === 'success') { success++; return '<tr class="row-success"><td>' + (r.index + 1) + '</td><td><span class="truncate" title="' + r.longUrl + '">' + r.longUrl + '</span></td><td>' + r.status + '</td><td><a href="' + r.shortUrl + '" target="_blank">' + r.shortUrl + '</a></td></tr>'; }
+        else { failed++; return '<tr class="row-error"><td>' + (r.index + 1) + '</td><td><span class="truncate" title="' + r.longUrl + '">' + r.longUrl + '</span></td><td>' + r.status + '</td><td>' + (r.error || '') + '</td></tr>'; }
+      }).join('');
+      const total = results.length;
+      const cls = failed === 0 ? 'success' : (success > 0 ? 'partial' : '');
+      $('bulkSummary').className = 'bulk-summary' + (cls ? ' ' + cls : '');
+      $('bulkSummary').textContent = success + ' of ' + total + ' imported successfully' + (failed ? ' (' + failed + ' failed)' : '');
+      $('bulkPreview').style.display = 'none';
+      $('bulkResult').style.display = 'block';
+    } catch (err) {
+      $('bulkError').textContent = 'Import failed: ' + err.message;
+    } finally {
+      $('bulkSubmitBtn').disabled = false;
+    }
+  }
+
   // --- Admin Plans ---
   let editPlanId = null;
 
@@ -1884,7 +3371,7 @@
         ? plans.map(p => {
             const features = safeParseJSON(p.features, []);
             return '<li class="url-item">' +
-              '<div class="info"><strong>' + p.name + '</strong><span class="original">' + p.slug + ' &middot; ' + getCurrencySymbol(p.currency) + parseFloat(p.price).toFixed(2) + '/' + p.billingPeriod + (p.active ? '' : ' &middot; <span style="color:var(--red)">inactive</span>') + '</span></div>' +
+              '<div class="info"><strong>' + p.name + '</strong><span class="original">' + p.slug + ' &middot; ' + fmtPrice(p.price, p.currency) + '/' + p.billingPeriod + (p.active ? '' : ' &middot; <span style="color:var(--red)">inactive</span>') + '</span></div>' +
               '<div class="meta">' +
               '<span class="clicks" style="background:' + (p.active ? 'var(--green-soft)' : 'var(--bg)') + ';color:' + (p.active ? 'var(--green)' : 'var(--text-tertiary)') + '">' + (p.active ? 'Active' : 'Inactive') + '</span>' +
               '<button class="action-btn" onclick="editPlan(' + p.id + ')" title="Edit">&#x270e;</button>' +
@@ -2043,13 +3530,33 @@
         $('userRole').textContent = data.user.role;
         $('loginBtn').style.display = 'none';
         $('registerBtn').style.display = 'none';
-        $('viewSelector').style.display = 'flex';
-        $('dashHeader').style.display = 'block';
-        $('loginPrompt').style.display = 'none';
-        document.querySelectorAll('.dash-link').forEach(el => el.style.display = 'inline-block');
+        document.querySelectorAll('.dash-link').forEach(el => el.style.display = 'none');
         if (data.user.role === 'ADMIN') {
           $('adminLink').style.display = 'inline';
           $('adminTabLink').classList.add('show');
+        }
+        if (data.user.tier === 'pro' || data.user.tier === 'enterprise') {
+          document.querySelectorAll('.pro-feature').forEach(el => el.classList.add('show'));
+        }
+        const canManage = data.user.role === 'ADMIN' || data.user.tier === 'pro' || data.user.tier === 'enterprise';
+        if (canManage) {
+          $('viewSelector').style.display = 'flex';
+          $('dashHeader').style.display = 'block';
+          $('loginPrompt').style.display = 'none';
+          document.querySelectorAll('.dash-link').forEach(el => el.style.display = 'inline-block');
+          switchView('links');
+          loadLinks();
+          loadWorkspaces();
+        } else {
+          $('viewSelector').style.display = 'none';
+          $('dashHeader').style.display = 'none';
+          $('loginPrompt').style.display = 'block';
+          $('promptGuest').style.display = 'none';
+          $('promptUpgrade').style.display = 'block';
+          $('linksView').classList.remove('show');
+          $('analyticsView').classList.remove('show');
+          $('settingsView').classList.remove('show');
+          $('domainsView').classList.remove('show');
         }
       } else {
         currentUser = null;
@@ -2059,9 +3566,15 @@
         $('viewSelector').style.display = 'none';
         $('dashHeader').style.display = 'none';
         $('loginPrompt').style.display = 'block';
+        $('promptGuest').style.display = 'block';
+        $('promptUpgrade').style.display = 'none';
         document.querySelectorAll('.dash-link').forEach(el => el.style.display = 'none');
         $('adminTabLink').classList.remove('show');
-        switchView('links');
+        document.querySelectorAll('.pro-feature').forEach(el => el.classList.remove('show'));
+        $('linksView').classList.remove('show');
+        $('analyticsView').classList.remove('show');
+        $('settingsView').classList.remove('show');
+        $('domainsView').classList.remove('show');
       }
     } catch {}
   }
@@ -2142,16 +3655,114 @@
     } catch {}
   }
 
+  // --- Custom Domains ---
+  let editingDomainId = null;
+
+  async function loadDomains() {
+    try {
+      const res = await fetch('/api/custom-domains');
+      if (!res.ok) return;
+      const domains = await res.json();
+      const list = $('domainList');
+      if (!domains.length) {
+        list.innerHTML = '<li class="empty-state">No custom domains yet. Add one above.</li>';
+        return;
+      }
+      list.innerHTML = domains.map(d => {
+        const status = d.verified
+          ? '<span style="color:#15803d;font-weight:600">Verified</span>'
+          : '<span style="color:#b45309;font-weight:600">Pending</span>';
+        return '<li style="display:flex;justify-content:space-between;align-items:center;padding:12px 0">' +
+          '<div><strong>' + d.domain + '</strong><br><span style="font-size:0.75rem;color:var(--text-tertiary)">' + status + '</span></div>' +
+          '<div style="display:flex;gap:6px">' +
+          (d.verified ? '' : '<button class="btn-ghost" style="font-size:0.7rem;padding:4px 10px" onclick="openDomainVerify(' + d.id + ')">Verify</button>') +
+          '<button class="btn-ghost" style="font-size:0.7rem;padding:4px 10px;color:#dc2626" onclick="deleteDomain(' + d.id + ')">Remove</button>' +
+          '</div></li>';
+      }).join('');
+    } catch {}
+  }
+
+  function openDomainModal() {
+    editingDomainId = null;
+    $('domainName').value = '';
+    $('domainVerificationInfo').style.display = 'none';
+    $('domainTxtValue').textContent = '';
+    $('domainVerifyResult').textContent = '';
+    $('domainError').textContent = '';
+    $('domainSubmitBtn').textContent = 'Add domain';
+    $('domainModal').classList.add('open');
+  }
+
+  function closeDomainModal() { $('domainModal').classList.remove('open'); editingDomainId = null; }
+
+  async function submitDomain() {
+    const domain = $('domainName').value.trim();
+    if (!domain) { $('domainError').textContent = 'Enter a domain name'; return; }
+    $('domainError').textContent = '';
+    $('domainSubmitBtn').disabled = true;
+    try {
+      const res = await fetch('/api/custom-domains', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      $('domainTxtValue').textContent = data.verificationToken;
+      $('domainVerificationInfo').style.display = 'block';
+      $('domainSubmitBtn').textContent = 'Added';
+      $('domainSubmitBtn').disabled = true;
+      editingDomainId = data.id;
+      await loadDomains();
+    } catch (err) { $('domainError').textContent = err.message; }
+    finally { if (!editingDomainId) { $('domainSubmitBtn').disabled = false; } }
+  }
+
+  async function openDomainVerify(domainId) {
+    editingDomainId = domainId;
+    try {
+      const res = await fetch('/api/custom-domains/' + domainId + '/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      $('domainVerifyResult').textContent = data.message || 'Verification attempted';
+      await loadDomains();
+    } catch (err) { $('domainVerifyResult').textContent = 'Error: ' + err.message; }
+  }
+
+  function verifyDomain() {
+    if (editingDomainId) openDomainVerify(editingDomainId);
+  }
+
+  async function deleteDomain(id) {
+    if (!confirm('Remove this custom domain?')) return;
+    try {
+      const res = await fetch('/api/custom-domains/' + id, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed');
+      await loadDomains();
+    } catch { notify('Failed to remove domain'); }
+  }
+
   // --- Admin Settings ---
   async function loadSettings() {
     try {
       const res = await fetch('/api/admin/settings');
       if (!res.ok) return;
       const s = await res.json();
-      $('setPaymentProvider').value = s.paymentProvider || '';
-      $('setPaymentPublicKey').value = s.paymentPublicKey || '';
-      $('setPaymentSecretKey').value = s.paymentSecretKey || '';
+      $('setPaystackPublicKey').value = s.paystackPublicKey || '';
+      $('setPaystackSecretKey').value = s.paystackSecretKey || '';
+      $('setStripePublicKey').value = s.stripePublicKey || '';
+      $('setStripeSecretKey').value = s.stripeSecretKey || '';
       $('setSandboxMode').checked = s.sandboxMode;
+      $('setPaystackLivePublicKey').value = s.paystackLivePublicKey || '';
+      $('setPaystackLiveSecretKey').value = s.paystackLiveSecretKey || '';
+      $('setStripeLivePublicKey').value = s.stripeLivePublicKey || '';
+      $('setStripeLiveSecretKey').value = s.stripeLiveSecretKey || '';
+      $('setDiscordBotToken').value = s.discordBotToken || '';
+      $('setSlackBotToken').value = s.slackBotToken || '';
+      $('setSlackAppToken').value = s.slackAppToken || '';
+      $('setSlackSigningSecret').value = s.slackSigningSecret || '';
       $('setSmtpHost').value = s.smtpHost || '';
       $('setSmtpPort').value = s.smtpPort || '';
       $('setSmtpUsername').value = s.smtpUsername || '';
@@ -2175,10 +3786,15 @@
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          paymentProvider: $('setPaymentProvider').value,
-          paymentPublicKey: $('setPaymentPublicKey').value,
-          paymentSecretKey: $('setPaymentSecretKey').value,
+          paystackPublicKey: $('setPaystackPublicKey').value,
+          paystackSecretKey: $('setPaystackSecretKey').value,
+          stripePublicKey: $('setStripePublicKey').value,
+          stripeSecretKey: $('setStripeSecretKey').value,
           sandboxMode: $('setSandboxMode').checked,
+          paystackLivePublicKey: $('setPaystackLivePublicKey').value,
+          paystackLiveSecretKey: $('setPaystackLiveSecretKey').value,
+          stripeLivePublicKey: $('setStripeLivePublicKey').value,
+          stripeLiveSecretKey: $('setStripeLiveSecretKey').value,
           smtpHost: $('setSmtpHost').value,
           smtpPort: parseInt($('setSmtpPort').value) || null,
           smtpUsername: $('setSmtpUsername').value,
@@ -2186,6 +3802,10 @@
           smtpFromEmail: $('setSmtpFromEmail').value,
           smtpFromName: $('setSmtpFromName').value,
           smtpUseTls: $('setSmtpUseTls').checked,
+          discordBotToken: $('setDiscordBotToken').value,
+          slackBotToken: $('setSlackBotToken').value,
+          slackAppToken: $('setSlackAppToken').value,
+          slackSigningSecret: $('setSlackSigningSecret').value,
           siteName: $('setSiteName').value,
           siteDescription: $('setSiteDescription').value
         })
@@ -2214,6 +3834,112 @@
       notify(type.charAt(0).toUpperCase() + type.slice(1) + ' uploaded');
       fileInput.value = '';
     } catch (err) { notify('Error: ' + err.message); }
+  }
+
+  // --- Discord Bot ---
+  async function loadDiscordBotStatus() {
+    try {
+      const res = await fetch('/api/discord/status');
+      if (!res.ok) return;
+      const data = await res.json();
+      const dot = $('discordBotStatusDot');
+      const label = $('discordBotStatus');
+      const errEl = $('discordBotError');
+      if (data.running) {
+        dot.style.background = '#22c55e';
+        label.textContent = 'Running';
+        errEl.textContent = '';
+      } else {
+        dot.style.background = '#ef4444';
+        label.textContent = 'Stopped';
+        errEl.textContent = data.error || '';
+      }
+    } catch {}
+  }
+
+  async function startDiscordBot() {
+    try {
+      const res = await fetch('/api/discord/start', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      notify('Bot started');
+      loadDiscordBotStatus();
+    } catch (err) { notify('Error: ' + err.message); }
+  }
+
+  async function stopDiscordBot() {
+    try {
+      const res = await fetch('/api/discord/stop', { method: 'POST' });
+      if (!res.ok) throw new Error();
+      notify('Bot stopped');
+      loadDiscordBotStatus();
+    } catch { notify('Failed to stop bot'); }
+  }
+
+  async function loadDiscordLinkStatus() {
+    try {
+      const res = await fetch('/api/discord/link-status');
+      if (!res.ok) { $('discordLinkStatus').innerHTML = '<span style="color:var(--text-tertiary)">Login to link Discord</span>'; return; }
+      const data = await res.json();
+      if (data.linked) {
+        $('discordLinkStatus').innerHTML = '<span style="color:#15803d;font-weight:600">Linked</span><span style="font-size:0.75rem;color:var(--text-tertiary)">Discord ID: ' + data.discordId + '</span>';
+      } else {
+        $('discordLinkStatus').innerHTML = '<span style="color:#b45309;font-weight:600">Not linked</span><span style="font-size:0.8125rem;color:var(--text-tertiary)"> Use the <code>/link</code> command in Discord with your email and password.</span>';
+      }
+    } catch { $('discordLinkStatus').innerHTML = '<span style="color:var(--text-tertiary)">Could not check status</span>'; }
+  }
+
+  async function loadSlackLinkStatus() {
+    try {
+      const res = await fetch('/api/slack/link-status');
+      if (!res.ok) { $('slackLinkStatus').innerHTML = '<span style="color:var(--text-tertiary)">Login to link Slack</span>'; return; }
+      const data = await res.json();
+      if (data.linked) {
+        $('slackLinkStatus').innerHTML = '<span style="color:#15803d;font-weight:600">Linked</span><span style="font-size:0.75rem;color:var(--text-tertiary)">Slack ID: ' + data.slackId + '</span>';
+      } else {
+        $('slackLinkStatus').innerHTML = '<span style="color:#b45309;font-weight:600">Not linked</span><span style="font-size:0.8125rem;color:var(--text-tertiary)"> Use the <code>/link</code> command in Slack with your email and password.</span>';
+      }
+    } catch { $('slackLinkStatus').innerHTML = '<span style="color:var(--text-tertiary)">Could not check status</span>'; }
+  }
+
+  // --- Slack Bot ---
+  async function loadSlackBotStatus() {
+    try {
+      const res = await fetch('/api/slack/status');
+      if (!res.ok) return;
+      const data = await res.json();
+      const dot = $('slackBotStatusDot');
+      const label = $('slackBotStatus');
+      const errEl = $('slackBotError');
+      if (data.running) {
+        dot.style.background = '#22c55e';
+        label.textContent = 'Running';
+        errEl.textContent = '';
+      } else {
+        dot.style.background = '#ef4444';
+        label.textContent = 'Stopped';
+        errEl.textContent = data.error || '';
+      }
+    } catch {}
+  }
+
+  async function startSlackBot() {
+    try {
+      const res = await fetch('/api/slack/start', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      notify('Slack bot started');
+      loadSlackBotStatus();
+    } catch (err) { notify('Error: ' + err.message); }
+  }
+
+  async function stopSlackBot() {
+    try {
+      const res = await fetch('/api/slack/stop', { method: 'POST' });
+      if (!res.ok) throw new Error();
+      notify('Slack bot stopped');
+      loadSlackBotStatus();
+    } catch { notify('Failed to stop bot'); }
   }
 
   // --- Admin ---
@@ -2246,6 +3972,7 @@
       loadAdminBanners();
       loadAdminCoupons();
       loadSettings();
+      loadDiscordBotStatus();
     } catch { notify('Failed to load admin data'); }
   }
 
@@ -2581,17 +4308,222 @@
     openAuthModal('reset');
   }
 
+  // --- OAuth callback handler ---
+  function checkOAuthCallback() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('oauth')) {
+      window.history.replaceState({}, '', window.location.pathname);
+      if (params.get('oauth') === 'success') {
+        checkAuth();
+        loadPublicBanners();
+        notify('Signed in successfully');
+      } else if (params.get('oauth') === 'error') {
+        notify('OAuth sign in failed. Please try again.');
+      }
+    }
+  }
+
+  // --- Stripe callback handler ---
+  function checkStripeCallback() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('stripe_success')) {
+      const planSlug = params.get('stripe_success');
+      window.history.replaceState({}, '', window.location.pathname);
+      notify('Payment completed! Activating subscription...');
+      closeCheckoutModal();
+      checkAuth();
+      loadPlans();
+    } else if (params.has('stripe_cancel')) {
+      window.history.replaceState({}, '', window.location.pathname);
+      notify('Payment cancelled.');
+    }
+  }
+
+  // --- Webhooks ---
+  let editWebhookId = null;
+  let viewingWebhookLogsFor = null;
+
+  async function loadWebhooks() {
+    try {
+      const res = await fetch('/api/webhooks');
+      if (!res.ok) { $('webhookList').innerHTML = '<li class="empty-state">Failed to load webhooks.</li>'; return; }
+      const webhooks = await res.json();
+      $('webhookList').innerHTML = webhooks.length
+        ? webhooks.map(w => {
+            const events = w.events ? w.events.split(',').map(e => '<span style="display:inline-block;background:var(--accent-soft);color:var(--accent);padding:1px 8px;border-radius:100px;font-size:0.6875rem;font-weight:600;margin-right:4px">' + e + '</span>').join('') : '';
+            const status = w.active
+              ? '<span style="color:var(--green);font-weight:600">Active</span>'
+              : '<span style="color:var(--text-tertiary)">Inactive</span>';
+            return '<li class="url-item">' +
+              '<div class="info">' +
+              '<strong>' + w.url.substring(0, 60) + (w.url.length > 60 ? '...' : '') + '</strong>' +
+              '<span class="original">' + events + ' ' + status + '</span>' +
+              '</div>' +
+              '<div class="meta">' +
+              '<button class="action-btn" onclick="viewWebhookLogs(' + w.id + ',\'' + w.url.replace(/'/g, "\\'") + '\')" title="View logs">Logs</button>' +
+              '<button class="action-btn" onclick="editWebhook(' + w.id + ')" title="Edit">&#x270e;</button>' +
+              '<button class="action-btn danger" onclick="deleteWebhook(' + w.id + ')" title="Delete">&#x2716;</button>' +
+              '<button class="action-btn" onclick="testWebhook(' + w.id + ')" title="Send test">Test</button>' +
+              '</div></li>';
+          }).join('')
+        : '<li class="empty-state">No webhooks yet. Create one above.</li>';
+    } catch { $('webhookList').innerHTML = '<li class="empty-state">Failed to load webhooks.</li>'; }
+  }
+
+  function openWebhookModal() {
+    editWebhookId = null;
+    $('webhookModalTitle').textContent = 'Add webhook';
+    $('webhookModalSub').textContent = 'Receive HTTP POST notifications for link events.';
+    $('whSubmitBtn').textContent = 'Save webhook';
+    $('whUrl').value = '';
+    $('whSecret').value = '';
+    document.querySelectorAll('.wh-event').forEach(cb => cb.checked = cb.value === 'link.clicked');
+    $('whError').textContent = '';
+    $('webhookModal').classList.add('open');
+  }
+
+  function closeWebhookModal() { $('webhookModal').classList.remove('open'); editWebhookId = null; }
+
+  function generateSecret() {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let secret = '';
+    for (let i = 0; i < 32; i++) secret += chars.charAt(Math.floor(Math.random() * chars.length));
+    $('whSecret').value = secret;
+  }
+
+  async function editWebhook(id) {
+    try {
+      const res = await fetch('/api/webhooks/' + id);
+      if (!res.ok) return;
+      const w = await res.json();
+      editWebhookId = id;
+      $('webhookModalTitle').textContent = 'Edit webhook';
+      $('webhookModalSub').textContent = 'Update webhook configuration.';
+      $('whSubmitBtn').textContent = 'Update webhook';
+      $('whUrl').value = w.url || '';
+      $('whSecret').value = '';
+      const events = w.events ? w.events.split(',') : [];
+      document.querySelectorAll('.wh-event').forEach(cb => cb.checked = events.includes(cb.value));
+      $('whError').textContent = '';
+      $('webhookModal').classList.add('open');
+    } catch { notify('Failed to load webhook details'); }
+  }
+
+  async function submitWebhook() {
+    const url = $('whUrl').value.trim();
+    if (!url) { $('whError').textContent = 'Endpoint URL is required'; return; }
+    const events = Array.from(document.querySelectorAll('.wh-event:checked')).map(cb => cb.value).join(',');
+    if (!events) { $('whError').textContent = 'Select at least one event'; return; }
+    const secret = $('whSecret').value.trim() || '';
+    $('whError').textContent = '';
+    $('whSubmitBtn').disabled = true;
+
+    const body = { url, events };
+    if (secret) body.secret = secret;
+
+    try {
+      const res = editWebhookId
+        ? await fetch('/api/webhooks/' + editWebhookId, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        : await fetch('/api/webhooks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save webhook');
+      closeWebhookModal();
+      notify(editWebhookId ? 'Webhook updated' : 'Webhook created');
+      loadWebhooks();
+    } catch (err) { $('whError').textContent = err.message; }
+    finally { $('whSubmitBtn').disabled = false; }
+  }
+
+  async function deleteWebhook(id) {
+    if (!confirm('Delete this webhook?')) return;
+    try {
+      const res = await fetch('/api/webhooks/' + id, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      notify('Webhook deleted');
+      if (viewingWebhookLogsFor === id) closeWebhookLogs();
+      loadWebhooks();
+    } catch { notify('Failed to delete webhook'); }
+  }
+
+  async function testWebhook(id) {
+    try {
+      const res = await fetch('/api/webhooks/' + id + '/test', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Test failed');
+      notify('Test webhook dispatched');
+    } catch (err) { notify('Error: ' + err.message); }
+  }
+
+  async function viewWebhookLogs(id, urlLabel) {
+    viewingWebhookLogsFor = id;
+    $('webhookLogTitle').textContent = 'Delivery Logs — ' + (urlLabel ? urlLabel.substring(0, 40) + '...' : '');
+    $('webhookLogViewer').style.display = 'block';
+    $('webhookLogList').innerHTML = '<li class="empty-state">Loading...</li>';
+
+    try {
+      const res = await fetch('/api/webhooks/' + id + '/logs');
+      if (!res.ok) throw new Error();
+      const logs = await res.json();
+      $('webhookLogList').innerHTML = logs.length
+        ? logs.map(l => {
+            const statusIcon = l.success ? '<span style="color:var(--green)">&#10003;</span>' : '<span style="color:var(--red)">&#10007;</span>';
+            const code = l.responseCode || '-';
+            const errMsg = l.errorMessage ? '<span style="color:var(--red);font-size:0.6875rem">' + l.errorMessage.substring(0, 60) + '</span>' : '';
+            return '<li class="url-item">' +
+              '<div class="info">' +
+              '<span>' + statusIcon + ' <strong>' + l.event + '</strong> &middot; HTTP ' + code + '</span>' +
+              '<span class="original">' + formatTime(l.createdAt) + ' ' + errMsg + '</span>' +
+              '</div>' +
+              '<div class="meta">' +
+              '<button class="action-btn" onclick="viewLogDetail(' + id + ',' + l.id + ')" title="View details">Detail</button>' +
+              '</div></li>';
+          }).join('')
+        : '<li class="empty-state">No deliveries yet.</li>';
+    } catch { $('webhookLogList').innerHTML = '<li class="empty-state">Failed to load logs.</li>'; }
+  }
+
+  function closeWebhookLogs() {
+    viewingWebhookLogsFor = null;
+    $('webhookLogViewer').style.display = 'none';
+  }
+
+  async function viewLogDetail(webhookId, logId) {
+    try {
+      const res = await fetch('/api/webhooks/' + webhookId + '/logs/' + logId);
+      if (!res.ok) throw new Error();
+      const l = await res.json();
+      $('ldEvent').textContent = l.event;
+      $('ldStatus').innerHTML = l.success
+        ? '<span style="color:var(--green);font-weight:600">Success</span>'
+        : '<span style="color:var(--red);font-weight:600">Failed</span>';
+      $('ldCode').textContent = l.responseCode || '-';
+      $('ldTime').textContent = l.createdAt ? new Date(l.createdAt).toLocaleString() : '-';
+      $('ldError').textContent = l.errorMessage || '-';
+      try { $('ldPayload').textContent = JSON.stringify(JSON.parse(l.payload), null, 2); }
+      catch { $('ldPayload').textContent = l.payload || '-'; }
+      $('ldResponse').textContent = l.responseBody || '-';
+      $('logDetailModal').classList.add('open');
+    } catch { notify('Failed to load log details'); }
+  }
+
+  function closeLogDetail() { $('logDetailModal').classList.remove('open'); }
+
   // --- Init ---
   checkAuth();
   loadPublicBanners();
   loadBranding();
   checkResetToken();
-  loadLinks();
+  checkOAuthCallback();
+  checkStripeCallback();
   loadPlans();
-  setInterval(() => { if ($('viewSelector').style.display !== 'none' && !$('searchInput').value) loadLinks(); }, 15000);
+  loadWorkspaces();
+  setInterval(() => { if (currentUser && $('viewSelector').style.display !== 'none' && !showingTrash && !$('searchInput').value && !$('filterDateFrom').value && !$('filterDateTo').value) loadLinks(); }, 15000);
   setInterval(loadPlans, 60000);
 
-  // Password link interceptor
+  // Overlay close handlers
+  $('workspaceModal').addEventListener('click', function(e) { if (e.target === this) closeWorkspaceModal(); });
+  $('wsMembersModal').addEventListener('click', function(e) { if (e.target === this) closeMembersModal(); });
+
   document.addEventListener('click', async function(e) {
     const link = e.target.closest('a');
     if (!link) return;

@@ -62,6 +62,7 @@ public class DataSeeder implements CommandLineRunner {
         free.setMaxClicksPerUrl(1000);
         free.setCustomDomains(false);
         free.setApiAccess(true);
+        free.setMaxRequestsPerMinute(30);
         free.setFeatures("[\"25 shortened URLs\",\"1,000 clicks per link\",\"Basic analytics\",\"QR codes\",\"API access\"]");
         free.setSortOrder(1);
         free.setActive(true);
@@ -79,6 +80,7 @@ public class DataSeeder implements CommandLineRunner {
         pro.setMaxClicksPerUrl(50000);
         pro.setCustomDomains(true);
         pro.setApiAccess(true);
+        pro.setMaxRequestsPerMinute(200);
         pro.setFeatures("[\"500 shortened URLs\",\"50,000 clicks per link\",\"Advanced analytics\",\"Custom domains\",\"Priority support\",\"CSV export\"]");
         pro.setSortOrder(2);
         pro.setActive(true);
@@ -96,6 +98,7 @@ public class DataSeeder implements CommandLineRunner {
         enterprise.setMaxClicksPerUrl(0);
         enterprise.setCustomDomains(true);
         enterprise.setApiAccess(true);
+        enterprise.setMaxRequestsPerMinute(1000);
         enterprise.setFeatures("[\"Unlimited URLs\",\"Unlimited clicks\",\"Full analytics suite\",\"Custom domains\",\"Team workspaces\",\"API key management\",\"Dedicated support\",\"Webhooks\"]");
         enterprise.setSortOrder(3);
         enterprise.setActive(true);

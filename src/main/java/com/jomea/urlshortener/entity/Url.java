@@ -60,6 +60,24 @@ public class Url {
     @Column(name = "utm_content")
     private String utmContent;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "folder_id")
+    private Long folderId;
+
+    @Column(name = "workspace_id")
+    private Long workspaceId;
+
+    @Column(name = "og_title", length = 200)
+    private String ogTitle;
+
+    @Column(name = "og_description", length = 500)
+    private String ogDescription;
+
+    @Column(name = "og_image", length = 2048)
+    private String ogImage;
+
     public Url() {
     }
 
@@ -93,4 +111,16 @@ public class Url {
     public void setUtmTerm(String utmTerm) { this.utmTerm = utmTerm; }
     public String getUtmContent() { return utmContent; }
     public void setUtmContent(String utmContent) { this.utmContent = utmContent; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
+    public Long getFolderId() { return folderId; }
+    public void setFolderId(Long folderId) { this.folderId = folderId; }
+    public Long getWorkspaceId() { return workspaceId; }
+    public void setWorkspaceId(Long workspaceId) { this.workspaceId = workspaceId; }
+    public String getOgTitle() { return ogTitle; }
+    public void setOgTitle(String ogTitle) { this.ogTitle = ogTitle; }
+    public String getOgDescription() { return ogDescription; }
+    public void setOgDescription(String ogDescription) { this.ogDescription = ogDescription; }
+    public String getOgImage() { return ogImage; }
+    public void setOgImage(String ogImage) { this.ogImage = ogImage; }
 }

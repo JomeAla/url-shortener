@@ -131,6 +131,28 @@ public class AnalyticsController {
         return ResponseEntity.ok(new TimeSeriesResponse(interval, dataPoints));
     }
 
+
+    @GetMapping("/{shortCode}/geo")
+    public ResponseEntity<?> geo(@PathVariable String shortCode) {
+        List<ClickEvent> clicks = clickEventRepository.findByShortCodeOrderByTimestampDesc(shortCode);
+        Map<String, Long> countries = new java.util.LinkedHashMap<>();
+        List<Map<String, Object>> locations = new java.util.ArrayList<>();
+        for (ClickEvent c : clicks) {
+            if (c.getCountry() != null) {
+                countries.merge(c.getCountry(), 1L, Long::sum);
+                if (c.getLatitude() != null && c.getLongitude() != null) {
+                    locations.add(Map.of(
+                        "country", c.getCountry(),
+                        "city", c.getCity() != null ? c.getCity() : "",
+                        "lat", c.getLatitude(),
+                        "lon", c.getLongitude()
+                    ));
+                }
+            }
+        }
+        return ResponseEntity.ok(Map.of("countries", countries, "locations", locations));
+    }
+
     @GetMapping("/{shortCode}/export/csv")
     public ResponseEntity<byte[]> exportCsv(@PathVariable String shortCode) {
         if (urlRepository.findByShortCode(shortCode).isEmpty()) {

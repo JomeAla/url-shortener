@@ -3,9 +3,18 @@ package com.jomea.urlshortener.dto;
 import java.time.LocalDateTime;
 
 public class AppSettingsDto {
-    private String paymentProvider;
-    private String paymentPublicKey;
-    private String paymentSecretKey;
+    private String paystackPublicKey;
+    private String paystackSecretKey;
+    private String stripePublicKey;
+    private String stripeSecretKey;
+    private String paystackLivePublicKey;
+    private String paystackLiveSecretKey;
+    private String stripeLivePublicKey;
+    private String stripeLiveSecretKey;
+    private String discordBotToken;
+    private String slackBotToken;
+    private String slackAppToken;
+    private String slackSigningSecret;
     private boolean sandboxMode;
 
     private String smtpHost;
@@ -26,12 +35,30 @@ public class AppSettingsDto {
 
     public AppSettingsDto() {}
 
-    public String getPaymentProvider() { return paymentProvider; }
-    public void setPaymentProvider(String paymentProvider) { this.paymentProvider = paymentProvider; }
-    public String getPaymentPublicKey() { return paymentPublicKey; }
-    public void setPaymentPublicKey(String paymentPublicKey) { this.paymentPublicKey = paymentPublicKey; }
-    public String getPaymentSecretKey() { return paymentSecretKey; }
-    public void setPaymentSecretKey(String paymentSecretKey) { this.paymentSecretKey = paymentSecretKey; }
+    public String getPaystackPublicKey() { return paystackPublicKey; }
+    public void setPaystackPublicKey(String paystackPublicKey) { this.paystackPublicKey = paystackPublicKey; }
+    public String getPaystackSecretKey() { return paystackSecretKey; }
+    public void setPaystackSecretKey(String paystackSecretKey) { this.paystackSecretKey = paystackSecretKey; }
+    public String getStripePublicKey() { return stripePublicKey; }
+    public void setStripePublicKey(String stripePublicKey) { this.stripePublicKey = stripePublicKey; }
+    public String getStripeSecretKey() { return stripeSecretKey; }
+    public void setStripeSecretKey(String stripeSecretKey) { this.stripeSecretKey = stripeSecretKey; }
+    public String getPaystackLivePublicKey() { return paystackLivePublicKey; }
+    public void setPaystackLivePublicKey(String paystackLivePublicKey) { this.paystackLivePublicKey = paystackLivePublicKey; }
+    public String getPaystackLiveSecretKey() { return paystackLiveSecretKey; }
+    public void setPaystackLiveSecretKey(String paystackLiveSecretKey) { this.paystackLiveSecretKey = paystackLiveSecretKey; }
+    public String getStripeLivePublicKey() { return stripeLivePublicKey; }
+    public void setStripeLivePublicKey(String stripeLivePublicKey) { this.stripeLivePublicKey = stripeLivePublicKey; }
+    public String getStripeLiveSecretKey() { return stripeLiveSecretKey; }
+    public void setStripeLiveSecretKey(String stripeLiveSecretKey) { this.stripeLiveSecretKey = stripeLiveSecretKey; }
+    public String getDiscordBotToken() { return discordBotToken; }
+    public void setDiscordBotToken(String discordBotToken) { this.discordBotToken = discordBotToken; }
+    public String getSlackBotToken() { return slackBotToken; }
+    public void setSlackBotToken(String slackBotToken) { this.slackBotToken = slackBotToken; }
+    public String getSlackAppToken() { return slackAppToken; }
+    public void setSlackAppToken(String slackAppToken) { this.slackAppToken = slackAppToken; }
+    public String getSlackSigningSecret() { return slackSigningSecret; }
+    public void setSlackSigningSecret(String slackSigningSecret) { this.slackSigningSecret = slackSigningSecret; }
     public boolean isSandboxMode() { return sandboxMode; }
     public void setSandboxMode(boolean sandboxMode) { this.sandboxMode = sandboxMode; }
     public String getSmtpHost() { return smtpHost; }

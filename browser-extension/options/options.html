@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shrtly Extension Settings</title>
+<link rel="stylesheet" href="../popup/popup.css">
+<style>
+  body { width: 500px; padding: 24px; }
+  h1 { font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.02em; }
+  .desc { font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 20px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-secondary); margin-bottom: 4px; }
+  .field input { width: 100%; padding: 8px 12px; border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius); font-size: 0.8125rem; font-family: var(--font); outline: none; background: var(--surface); color: var(--text); transition: border-color 0.2s; }
+  .field input:focus { border-color: var(--accent); }
+  .field .hint { font-size: 0.6875rem; color: var(--text-tertiary); margin-top: 3px; }
+  .actions { display: flex; gap: 8px; margin-top: 20px; }
+  .actions button { padding: 8px 20px; border-radius: var(--radius); font-size: 0.8125rem; font-weight: 600; cursor: pointer; border: none; transition: opacity 0.2s; }
+  .actions .save { background: var(--accent); color: white; }
+  .actions .save:hover { opacity: 0.85; }
+  .actions .save:disabled { opacity: 0.4; cursor: not-allowed; }
+  .actions .test { background: var(--surface); color: var(--text); border: 1px solid rgba(0,0,0,0.08); }
+  .actions .test:hover { background: var(--accent-soft); }
+  #saveStatus { margin-top: 12px; font-size: 0.75rem; }
+  #testStatus { margin-top: 8px; font-size: 0.75rem; }
+  .success { color: var(--green); }
+  .error { color: var(--red); }
+</style>
+</head>
+<body>
+  <h1>Shrtly Settings</h1>
+  <p class="desc">Configure your Shrtly instance connection.</p>
+
+  <div class="field">
+    <label for="baseUrl">Shrtly Base URL</label>
+    <input type="url" id="baseUrl" placeholder="http://localhost:8081">
+    <div class="hint">The URL of your Shrtly instance (e.g. https://shrtly.app)</div>
+  </div>
+
+  <div class="field">
+    <label for="apiKey">API Key</label>
+    <input type="password" id="apiKey" placeholder="sk_live_...">
+    <div class="hint">Create an API key in Shrtly Dashboard &rarr; API Keys. Leave blank for session-based (web) auth.</div>
+  </div>
+
+  <div class="actions">
+    <button class="save" id="saveBtn">Save</button>
+    <button class="test" id="testBtn">Test Connection</button>
+  </div>
+  <div id="saveStatus"></div>
+  <div id="testStatus"></div>
+
+<script src="options.js"></script>
+</body>
+</html>

@@ -59,7 +59,8 @@ public class ShortenController {
             ShortenResponse response = urlService.shortenUrl(request.url(), request.customCode(),
                 request.expiresAt(), request.password(), request.tags(),
                 request.utmSource(), request.utmMedium(), request.utmCampaign(),
-                request.utmTerm(), request.utmContent());
+                request.utmTerm(), request.utmContent(), request.folderId(), request.workspaceId(),
+                request.ogTitle(), request.ogDescription(), request.ogImage());
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -87,8 +88,11 @@ public class ShortenController {
     @GetMapping("/urls")
     public ResponseEntity<List<Url>> listUrls(@RequestParam(required = false) String q,
                                                @RequestParam(required = false) String dateFrom,
-                                               @RequestParam(required = false) String dateTo) {
-        return ResponseEntity.ok(urlService.searchUrls(q, dateFrom, dateTo));
+                                               @RequestParam(required = false) String dateTo,
+                                               @RequestParam(required = false) Long folderId,
+                                               @RequestParam(required = false) String tag,
+                                               @RequestParam(required = false) Long workspaceId) {
+        return ResponseEntity.ok(urlService.searchUrls(q, dateFrom, dateTo, folderId, tag, workspaceId));
     }
 
     @PutMapping("/urls/{shortCode}")
@@ -104,8 +108,13 @@ public class ShortenController {
             String utmCampaign = (String) body.get("utmCampaign");
             String utmTerm = (String) body.get("utmTerm");
             String utmContent = (String) body.get("utmContent");
+            String ogTitle = (String) body.get("ogTitle");
+            String ogDescription = (String) body.get("ogDescription");
+            String ogImage = (String) body.get("ogImage");
+            Long folderId = body.containsKey("folderId") ? ((Number) body.get("folderId")).longValue() : null;
             Url updated = urlService.updateLink(shortCode, url, customCode, expiresAt, password,
-                tags, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
+                tags, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, folderId,
+                ogTitle, ogDescription, ogImage);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -116,7 +125,32 @@ public class ShortenController {
     public ResponseEntity<?> deleteUrl(@PathVariable String shortCode) {
         try {
             urlService.deleteLink(shortCode);
-            return ResponseEntity.ok(Map.of("message", "Link deleted"));
+            return ResponseEntity.ok(Map.of("message", "Link moved to trash"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/urls/{shortCode}/restore")
+    public ResponseEntity<?> restoreUrl(@PathVariable String shortCode) {
+        try {
+            urlService.restoreLink(shortCode);
+            return ResponseEntity.ok(Map.of("message", "Link restored"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/urls/trash")
+    public ResponseEntity<List<Url>> listTrash() {
+        return ResponseEntity.ok(urlService.getTrashedUrls());
+    }
+
+    @DeleteMapping("/urls/trash/{shortCode}")
+    public ResponseEntity<?> permanentDeleteUrl(@PathVariable String shortCode) {
+        try {
+            urlService.permanentDelete(shortCode);
+            return ResponseEntity.ok(Map.of("message", "Link permanently deleted"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -134,7 +168,8 @@ public class ShortenController {
         List<PlanDto> dtos = planRepository.findByActiveTrueOrderBySortOrderAsc().stream()
             .map(p -> new PlanDto(p.getId(), p.getName(), p.getSlug(), p.getDescription(),
                 p.getPrice(), p.getCurrency(), p.getBillingPeriod(), p.getMaxUrls(),
-                p.getMaxClicksPerUrl(), p.isCustomDomains(), p.isApiAccess(), p.getFeatures(),
+                p.getMaxClicksPerUrl(), p.isCustomDomains(), p.isApiAccess(),
+                p.getMaxRequestsPerMinute(), p.getFeatures(),
                 p.getSortOrder(), p.isActive(), p.getCreatedAt()))
             .toList();
         return ResponseEntity.ok(dtos);

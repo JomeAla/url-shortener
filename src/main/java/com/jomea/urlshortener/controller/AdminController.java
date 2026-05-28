@@ -95,7 +95,8 @@ public class AdminController {
         List<PlanDto> dtos = planRepository.findAll().stream()
             .map(p -> new PlanDto(p.getId(), p.getName(), p.getSlug(), p.getDescription(),
                 p.getPrice(), p.getCurrency(), p.getBillingPeriod(), p.getMaxUrls(),
-                p.getMaxClicksPerUrl(), p.isCustomDomains(), p.isApiAccess(), p.getFeatures(),
+                p.getMaxClicksPerUrl(), p.isCustomDomains(), p.isApiAccess(),
+                p.getMaxRequestsPerMinute(), p.getFeatures(),
                 p.getSortOrder(), p.isActive(), p.getCreatedAt()))
             .toList();
         return ResponseEntity.ok(dtos);
@@ -333,10 +334,19 @@ public class AdminController {
     public ResponseEntity<AppSettingsDto> getSettings() {
         AppSettings s = appSettingsRepository.findById(1L).orElse(new AppSettings());
         AppSettingsDto dto = new AppSettingsDto();
-        dto.setPaymentProvider(s.getPaymentProvider());
-        dto.setPaymentPublicKey(mask(s.getPaymentPublicKey()));
-        dto.setPaymentSecretKey(mask(s.getPaymentSecretKey()));
+        dto.setPaystackPublicKey(mask(s.getPaystackPublicKey()));
+        dto.setPaystackSecretKey(mask(s.getPaystackSecretKey()));
+        dto.setStripePublicKey(mask(s.getStripePublicKey()));
+        dto.setStripeSecretKey(mask(s.getStripeSecretKey()));
         dto.setSandboxMode(s.isSandboxMode());
+        dto.setPaystackLivePublicKey(mask(s.getPaystackLivePublicKey()));
+        dto.setPaystackLiveSecretKey(mask(s.getPaystackLiveSecretKey()));
+        dto.setStripeLivePublicKey(mask(s.getStripeLivePublicKey()));
+        dto.setStripeLiveSecretKey(mask(s.getStripeLiveSecretKey()));
+        dto.setDiscordBotToken(mask(s.getDiscordBotToken()));
+        dto.setSlackBotToken(mask(s.getSlackBotToken()));
+        dto.setSlackAppToken(mask(s.getSlackAppToken()));
+        dto.setSlackSigningSecret(mask(s.getSlackSigningSecret()));
         dto.setSmtpHost(s.getSmtpHost());
         dto.setSmtpPort(s.getSmtpPort());
         dto.setSmtpUsername(mask(s.getSmtpUsername()));
@@ -362,21 +372,79 @@ public class AdminController {
                 return ns;
             });
 
-            if (body.containsKey("paymentProvider"))
-                s.setPaymentProvider((String) body.get("paymentProvider"));
             if (body.containsKey("sandboxMode"))
                 s.setSandboxMode(Boolean.parseBoolean(body.get("sandboxMode").toString()));
 
-            // Payment keys — only update if not masked
-            if (body.containsKey("paymentPublicKey")) {
-                String v = (String) body.get("paymentPublicKey");
+            // Paystack keys — only update if not masked
+            if (body.containsKey("paystackPublicKey")) {
+                String v = (String) body.get("paystackPublicKey");
                 if (v != null && !v.contains("*****"))
-                    s.setPaymentPublicKey(aesEncryption.encrypt(v));
+                    s.setPaystackPublicKey(aesEncryption.encrypt(v));
             }
-            if (body.containsKey("paymentSecretKey")) {
-                String v = (String) body.get("paymentSecretKey");
+            if (body.containsKey("paystackSecretKey")) {
+                String v = (String) body.get("paystackSecretKey");
                 if (v != null && !v.contains("*****"))
-                    s.setPaymentSecretKey(aesEncryption.encrypt(v));
+                    s.setPaystackSecretKey(aesEncryption.encrypt(v));
+            }
+
+            // Stripe keys — only update if not masked
+            if (body.containsKey("stripePublicKey")) {
+                String v = (String) body.get("stripePublicKey");
+                if (v != null && !v.contains("*****"))
+                    s.setStripePublicKey(aesEncryption.encrypt(v));
+            }
+            if (body.containsKey("stripeSecretKey")) {
+                String v = (String) body.get("stripeSecretKey");
+                if (v != null && !v.contains("*****"))
+                    s.setStripeSecretKey(aesEncryption.encrypt(v));
+            }
+
+            // Paystack live keys
+            if (body.containsKey("paystackLivePublicKey")) {
+                String v = (String) body.get("paystackLivePublicKey");
+                if (v != null && !v.contains("*****"))
+                    s.setPaystackLivePublicKey(aesEncryption.encrypt(v));
+            }
+            if (body.containsKey("paystackLiveSecretKey")) {
+                String v = (String) body.get("paystackLiveSecretKey");
+                if (v != null && !v.contains("*****"))
+                    s.setPaystackLiveSecretKey(aesEncryption.encrypt(v));
+            }
+
+            // Stripe live keys
+            if (body.containsKey("stripeLivePublicKey")) {
+                String v = (String) body.get("stripeLivePublicKey");
+                if (v != null && !v.contains("*****"))
+                    s.setStripeLivePublicKey(aesEncryption.encrypt(v));
+            }
+            if (body.containsKey("stripeLiveSecretKey")) {
+                String v = (String) body.get("stripeLiveSecretKey");
+                if (v != null && !v.contains("*****"))
+                    s.setStripeLiveSecretKey(aesEncryption.encrypt(v));
+            }
+
+            // Discord bot token
+            if (body.containsKey("discordBotToken")) {
+                String v = (String) body.get("discordBotToken");
+                if (v != null && !v.contains("*****"))
+                    s.setDiscordBotToken(aesEncryption.encrypt(v));
+            }
+
+            // Slack bot tokens
+            if (body.containsKey("slackBotToken")) {
+                String v = (String) body.get("slackBotToken");
+                if (v != null && !v.contains("*****"))
+                    s.setSlackBotToken(aesEncryption.encrypt(v));
+            }
+            if (body.containsKey("slackAppToken")) {
+                String v = (String) body.get("slackAppToken");
+                if (v != null && !v.contains("*****"))
+                    s.setSlackAppToken(aesEncryption.encrypt(v));
+            }
+            if (body.containsKey("slackSigningSecret")) {
+                String v = (String) body.get("slackSigningSecret");
+                if (v != null && !v.contains("*****"))
+                    s.setSlackSigningSecret(aesEncryption.encrypt(v));
             }
 
             if (body.containsKey("smtpHost"))

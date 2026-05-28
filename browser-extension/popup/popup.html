@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shrtly</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <span class="logo">Shrtly</span>
+    <a class="settings-link" href="#" id="openSettings">Settings</a>
+  </div>
+
+  <div class="shorten-form">
+    <input type="url" id="urlInput" placeholder="Paste a long URL to shorten..." autofocus>
+    <button id="shortenBtn">Shorten</button>
+  </div>
+  <div id="status" class="status"></div>
+
+  <div class="divider"></div>
+
+  <div class="recent-header">
+    <span class="recent-title">Recent Links</span>
+    <button id="clearBtn" class="clear-btn">Clear</button>
+  </div>
+  <div id="recentList" class="recent-list"></div>
+</div>
+<script src="popup.js"></script>
+</body>
+</html>

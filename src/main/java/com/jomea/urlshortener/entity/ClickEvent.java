@@ -33,6 +33,18 @@ public class ClickEvent {
     @Column(name = "ip_address", length = 45)
     private String ipAddress;
 
+    @Column(length = 100)
+    private String country;
+
+    @Column(length = 100)
+    private String city;
+
+    @Column(name = "geo_lat")
+    private Double latitude;
+
+    @Column(name = "geo_lon")
+    private Double longitude;
+
     public ClickEvent() {}
 
     public Long getId() { return id; }
@@ -47,4 +59,12 @@ public class ClickEvent {
     public void setUserAgent(String userAgent) { this.userAgent = userAgent; }
     public String getIpAddress() { return ipAddress; }
     public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
+    public String getCountry() { return country; }
+    public void setCountry(String country) { this.country = country; }
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
 }

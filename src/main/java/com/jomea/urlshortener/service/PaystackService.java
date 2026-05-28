@@ -30,8 +30,10 @@ public class PaystackService {
 
     private String getSecretKey() {
         var settings = appSettingsRepository.findById(1L).orElse(null);
-        if (settings == null || settings.getPaymentSecretKey() == null) return null;
-        return aesEncryption.decrypt(settings.getPaymentSecretKey());
+        if (settings == null) return null;
+        String encrypted = settings.isSandboxMode() ? settings.getPaystackSecretKey() : settings.getPaystackLiveSecretKey();
+        if (encrypted == null) return null;
+        return aesEncryption.decrypt(encrypted);
     }
 
     public String initializeTransaction(String email, String amountKobo, String callbackUrl) throws Exception {

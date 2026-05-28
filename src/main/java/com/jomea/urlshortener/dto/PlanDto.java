@@ -15,6 +15,7 @@ public record PlanDto(
     int maxClicksPerUrl,
     boolean customDomains,
     boolean apiAccess,
+    int maxRequestsPerMinute,
     String features,
     int sortOrder,
     boolean active,

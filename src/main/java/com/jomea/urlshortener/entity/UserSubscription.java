@@ -37,6 +37,9 @@ public class UserSubscription {
     @Column(name = "paystack_reference")
     private String paystackReference;
 
+    @Column(name = "stripe_session_id")
+    private String stripeSessionId;
+
     @Column(precision = 10, scale = 2)
     private BigDecimal amount;
 
@@ -61,6 +64,8 @@ public class UserSubscription {
     public void setEndDate(LocalDateTime endDate) { this.endDate = endDate; }
     public String getPaystackReference() { return paystackReference; }
     public void setPaystackReference(String paystackReference) { this.paystackReference = paystackReference; }
+    public String getStripeSessionId() { return stripeSessionId; }
+    public void setStripeSessionId(String stripeSessionId) { this.stripeSessionId = stripeSessionId; }
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
     public String getCurrency() { return currency; }

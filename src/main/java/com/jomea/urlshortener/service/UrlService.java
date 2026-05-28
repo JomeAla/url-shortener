@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -53,7 +54,8 @@ public class UrlService {
 
     public ShortenResponse shortenUrl(String longUrl, String customCode, String expiresAt, String password,
                                        String tags, String utmSource, String utmMedium, String utmCampaign,
-                                       String utmTerm, String utmContent) {
+                                       String utmTerm, String utmContent, Long folderId, Long workspaceId,
+                                       String ogTitle, String ogDescription, String ogImage) {
         if (longUrl == null || longUrl.isBlank()) {
             throw new IllegalArgumentException("URL must not be blank");
         }
@@ -140,6 +142,11 @@ public class UrlService {
         if (utmCampaign != null && !utmCampaign.isBlank()) url.setUtmCampaign(utmCampaign);
         if (utmTerm != null && !utmTerm.isBlank()) url.setUtmTerm(utmTerm);
         if (utmContent != null && !utmContent.isBlank()) url.setUtmContent(utmContent);
+        if (folderId != null) url.setFolderId(folderId);
+        if (workspaceId != null) url.setWorkspaceId(workspaceId);
+        if (ogTitle != null && !ogTitle.isBlank()) url.setOgTitle(ogTitle);
+        if (ogDescription != null && !ogDescription.isBlank()) url.setOgDescription(ogDescription);
+        if (ogImage != null && !ogImage.isBlank()) url.setOgImage(ogImage);
 
         urlRepository.save(url);
         cacheService.put(shortCode, finalUrl.toString());
@@ -165,7 +172,7 @@ public class UrlService {
             BulkShortenRequest req = requests.get(i);
             try {
                 ShortenResponse response = shortenUrl(req.url(), req.customCode(), req.expiresAt(), req.password(),
-                    null, null, null, null, null, null);
+                    null, null, null, null, null, null, null, null, null, null, null);
                 results.add(new BulkShortenResponseItem(
                     i, "success", response.shortCode(), null, response.shortUrl(), response.longUrl()
                 ));
@@ -178,7 +185,7 @@ public class UrlService {
         return results;
     }
 
-    public List<Url> searchUrls(String query, String dateFrom, String dateTo) {
+    public List<Url> searchUrls(String query, String dateFrom, String dateTo, Long folderId, String tag, Long workspaceId) {
         User user = getCurrentUser();
         List<Url> all;
         if (query != null && !query.isBlank() && dateFrom != null && !dateFrom.isBlank() && dateTo != null && !dateTo.isBlank()) {
@@ -197,15 +204,29 @@ public class UrlService {
         } else {
             all = urlRepository.findAllByOrderByCreatedAtDesc();
         }
+        java.util.stream.Stream<Url> stream = all.stream();
         if (user != null) {
-            return all.stream().filter(u -> u.getUserId() == null || u.getUserId().equals(user.getId())).toList();
+            stream = stream.filter(u -> (u.getUserId() == null || u.getUserId().equals(user.getId())) && u.getDeletedAt() == null);
+        } else {
+            stream = stream.filter(u -> u.getUserId() == null && u.getDeletedAt() == null);
         }
-        return all.stream().filter(u -> u.getUserId() == null).toList();
+        if (workspaceId != null) {
+            stream = stream.filter(u -> u.getWorkspaceId() != null && u.getWorkspaceId().equals(workspaceId));
+        }
+        if (folderId != null) {
+            stream = stream.filter(u -> u.getFolderId() != null && u.getFolderId().equals(folderId));
+        }
+        if (tag != null && !tag.isBlank()) {
+            String lowerTag = tag.toLowerCase();
+            stream = stream.filter(u -> u.getTags() != null && u.getTags().toLowerCase().contains(lowerTag));
+        }
+        return stream.toList();
     }
 
     public Url updateLink(String shortCode, String newLongUrl, String customCode, String expiresAt, String password,
                            String tags, String utmSource, String utmMedium, String utmCampaign,
-                           String utmTerm, String utmContent) {
+                           String utmTerm, String utmContent, Long folderId,
+                           String ogTitle, String ogDescription, String ogImage) {
         Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new IllegalArgumentException("Link not found"));
 
@@ -248,6 +269,10 @@ public class UrlService {
         if (utmCampaign != null) url.setUtmCampaign(utmCampaign.isBlank() ? null : utmCampaign);
         if (utmTerm != null) url.setUtmTerm(utmTerm.isBlank() ? null : utmTerm);
         if (utmContent != null) url.setUtmContent(utmContent.isBlank() ? null : utmContent);
+        if (folderId != null) url.setFolderId(folderId);
+        if (ogTitle != null) url.setOgTitle(ogTitle.isBlank() ? null : ogTitle);
+        if (ogDescription != null) url.setOgDescription(ogDescription.isBlank() ? null : ogDescription);
+        if (ogImage != null) url.setOgImage(ogImage.isBlank() ? null : ogImage);
 
         urlRepository.save(url);
         cacheService.put(url.getShortCode(), url.getLongUrl());
@@ -257,8 +282,72 @@ public class UrlService {
     public void deleteLink(String shortCode) {
         Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new IllegalArgumentException("Link not found"));
+        url.setDeletedAt(LocalDateTime.now());
+        urlRepository.save(url);
+        cacheService.invalidate(shortCode);
+    }
+
+    public void restoreLink(String shortCode) {
+        Url url = urlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new IllegalArgumentException("Link not found"));
+        if (url.getDeletedAt() == null) throw new IllegalArgumentException("Link is not in trash");
+        url.setDeletedAt(null);
+        urlRepository.save(url);
+    }
+
+    public List<Url> getTrashedUrls() {
+        User user = getCurrentUser();
+        if (user == null) return List.of();
+        return urlRepository.findTrashedByUserId(user.getId());
+    }
+
+    public void permanentDelete(String shortCode) {
+        Url url = urlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new IllegalArgumentException("Link not found"));
         urlRepository.delete(url);
         cacheService.invalidate(shortCode);
+    }
+
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void purgeOldTrash() {
+        LocalDateTime cutoff = LocalDateTime.now().minusDays(30);
+        List<Url> oldTrash = urlRepository.findDeletedBefore(cutoff);
+        for (Url url : oldTrash) {
+            urlRepository.delete(url);
+            cacheService.invalidate(url.getShortCode());
+        }
+    }
+
+    public Url shortenUrlEntity(Long userId, String longUrl, String customCode) {
+        if (longUrl == null || longUrl.isBlank()) {
+            throw new IllegalArgumentException("URL must not be blank");
+        }
+        if (customCode != null && !customCode.isBlank()) {
+            if (!isValidCustomCode(customCode)) {
+                throw new IllegalArgumentException("Custom code must be alphanumeric and 4-20 characters");
+            }
+            if (urlRepository.findByCustomCode(customCode).isPresent()) {
+                throw new IllegalArgumentException("Custom code already taken");
+            }
+        }
+        String shortCode = (customCode != null && !customCode.isBlank()) ? customCode : idGenerator.nextId();
+
+        if (!longUrl.startsWith("http://") && !longUrl.startsWith("https://")) {
+            longUrl = "https://" + longUrl;
+        }
+
+        Url url = new Url();
+        url.setShortCode(shortCode);
+        url.setLongUrl(longUrl);
+        url.setUserId(userId);
+        url.setCreatedAt(LocalDateTime.now());
+        url.setClickCount(0);
+        if (customCode != null && !customCode.isBlank()) {
+            url.setCustomCode(customCode);
+        }
+        urlRepository.save(url);
+        cacheService.put(shortCode, longUrl);
+        return url;
     }
 
     public Optional<String> resolveShortCode(String shortCode) {

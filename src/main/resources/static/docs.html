@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shrtly API &mdash; Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f4f2ed; --surface: #ffffff; --text-primary: #1a1a2e; --text-secondary: #6b6b7e; --text-tertiary: #9e9eb0;
+    --accent: #1a1a2e; --accent-soft: #edecf2; --accent-glow: rgba(26,26,46,0.1);
+    --green: #1a7d4a; --green-soft: #e8f5ee; --red: #c93838; --amber: #a67c00;
+    --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+    --font: 'Plus Jakarta Sans', -apple-system, sans-serif; --mono: 'JetBrains Mono', monospace;
+    --shadow-card: 0 0 0 1px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
+    --ease-smooth: cubic-bezier(0.22,1,0.36,1);
+  }
+  body {
+    font-family: var(--font); background: var(--bg); color: var(--text-primary);
+    -webkit-font-smoothing: antialiased; padding: 32px 24px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  .header { margin-bottom: 40px; }
+  .header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
+  .header h1 em { font-style: normal; color: var(--accent); }
+  .header p { font-size: 0.9375rem; color: var(--text-secondary); margin-top: 4px; }
+  .header .back { display: inline-flex; align-items: center; gap: 4px; font-size: 0.8125rem; color: var(--text-tertiary); text-decoration: none; margin-bottom: 12px; }
+  .header .back:hover { color: var(--accent); }
+
+  .section { margin-bottom: 32px; }
+  .section h2 {
+    font-size: 1.25rem; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section .desc { font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .endpoint { margin-bottom: 12px; }
+  .endpoint-card {
+    background: rgba(255,255,255,0.5); padding: 1.5px; border-radius: var(--radius-md);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+  }
+  .endpoint-inner {
+    background: var(--surface); border-radius: calc(var(--radius-md) - 1.5px);
+    padding: 16px 20px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+  }
+  .endpoint-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .method {
+    display: inline-block; padding: 2px 10px; border-radius: 100px;
+    font-family: var(--mono); font-size: 0.6875rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.6;
+  }
+  .method.get { background: var(--green-soft); color: var(--green); }
+  .method.post { background: var(--accent-soft); color: var(--accent); }
+  .method.put { background: #fffbeb; color: var(--amber); }
+  .method.delete { background: #fef2f2; color: var(--red); }
+  .path {
+    font-family: var(--mono); font-size: 0.8125rem; font-weight: 500;
+    color: var(--text-primary); word-break: break-all;
+  }
+  .auth-badge {
+    font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: 100px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .auth-badge.required { background: #fef2f2; color: var(--red); }
+  .auth-badge.optional { background: #fffbeb; color: var(--amber); }
+  .auth-badge.public { background: var(--green-soft); color: var(--green); }
+  .auth-badge.key { background: var(--accent-soft); color: var(--accent); }
+  .endpoint-body { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.6; }
+  .endpoint-body code {
+    font-family: var(--mono); font-size: 0.75rem; background: var(--bg);
+    padding: 1px 6px; border-radius: 4px; color: var(--text-primary);
+  }
+  .endpoint-body strong { color: var(--text-primary); }
+  .endpoint-body .param-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.75rem; }
+  .endpoint-body .param-table th { text-align: left; padding: 6px 8px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  .endpoint-body .param-table td { padding: 6px 8px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .endpoint-body .param-table td:first-child { font-family: var(--mono); font-size: 0.6875rem; color: var(--text-primary); }
+  .endpoint-body .param-table .type { color: var(--text-tertiary); font-size: 0.6875rem; }
+  .endpoint-body .pre {
+    background: var(--bg); border-radius: var(--radius-sm); padding: 12px 14px;
+    font-family: var(--mono); font-size: 0.75rem; line-height: 1.5;
+    overflow-x: auto; white-space: pre; margin-top: 8px;
+    color: var(--text-secondary); border: 1px solid rgba(0,0,0,0.04);
+  }
+  .footer-text { margin-top: 48px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.04); font-size: 0.8125rem; color: var(--text-tertiary); text-align: center; }
+
+  @media (max-width: 640px) {
+    body { padding: 20px 16px; }
+    .header h1 { font-size: 1.5rem; }
+    .endpoint-row { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <a class="back" href="/">&larr; Back to Shrtly</a>
+    <h1><em>API</em> Documentation</h1>
+    <p>Complete reference for the Shrtly URL Shortener REST API.</p>
+  </div>
+
+  <div class="section">
+    <h2>Authentication</h2>
+    <div class="desc">Most endpoints require either a session cookie (logged-in via web) or an API key. API keys are passed via the <code>X-API-Key</code> header and can be created in your dashboard settings.</div>
+    <div class="endpoint-card"><div class="endpoint-inner">
+      <div style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.6">
+        <p><strong>Session Auth:</strong> Login via <code>POST /api/auth/login</code>. The server sets a <code>JSESSIONID</code> cookie.</p>
+        <p style="margin-top:6px"><strong>API Key Auth:</strong> Pass your key in the <code>X-API-Key</code> header on every request.</p>
+        <p style="margin-top:6px"><strong>Public endpoints</strong> (no auth required) are marked <span class="auth-badge public">Public</span>.</p>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="section">
+    <h2>URL Shortening</h2>
+    <div class="desc">Create, list, update, and delete short URLs.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/shorten</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">
+          Create a new short URL. Free-tier users get basic shortening; Pro/Enterprise users can use advanced options.
+          <table class="param-table">
+            <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+            <tr><td>url</td><td class="type">string</td><td>Yes</td><td>The long URL to shorten</td></tr>
+            <tr><td>customCode</td><td class="type">string</td><td>No</td><td>Custom short code (Pro+)</td></tr>
+            <tr><td>expiresAt</td><td class="type">ISO datetime</td><td>No</td><td>Link expiration (Pro+)</td></tr>
+            <tr><td>password</td><td class="type">string</td><td>No</td><td>Password protection (Pro+)</td></tr>
+            <tr><td>tags</td><td class="type">string</td><td>No</td><td>Comma-separated tags (Pro+)</td></tr>
+            <tr><td>utmSource</td><td class="type">string</td><td>No</td><td>UTM source param (Pro+)</td></tr>
+            <tr><td>utmMedium</td><td class="type">string</td><td>No</td><td>UTM medium param (Pro+)</td></tr>
+            <tr><td>utmCampaign</td><td class="type">string</td><td>No</td><td>UTM campaign param (Pro+)</td></tr>
+            <tr><td>utmTerm</td><td class="type">string</td><td>No</td><td>UTM term param (Pro+)</td></tr>
+            <tr><td>utmContent</td><td class="type">string</td><td>No</td><td>UTM content param (Pro+)</td></tr>
+          </table>
+          <div class="pre">{
+  "url": "https://example.com/very/long/url",
+  "customCode": "my-link",
+  "tags": "news, blog"
+}</div>
+          <div class="pre">{
+  "shortCode": "abc123",
+  "shortUrl": "http://localhost:8081/abc123",
+  "longUrl": "https://example.com/very/long/url",
+  "customCode": "my-link",
+  "hasPassword": false,
+  "expiresAt": null,
+  "createdAt": "2026-05-28T00:00:00"
+}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/shorten/bulk</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Bulk create short URLs from an array of objects.
+          <div class="pre">{
+  "urls": [
+    { "url": "https://example.com/1", "tags": "news" },
+    { "url": "https://example.com/2" }
+  ]
+}</div>
+          <div class="pre">{
+  "results": [
+    { "url": "https://example.com/1", "shortUrl": "http://localhost:8081/abc", "success": true },
+    { "url": "https://example.com/2", "shortUrl": "http://localhost:8081/def", "success": true }
+  ]
+}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/urls</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          List all URLs for the authenticated user. Supports search via <code>?q=</code>, <code>?dateFrom=</code>, and <code>?dateTo=</code> query parameters.
+          <div class="pre">[
+  {
+    "id": 1,
+    "shortCode": "abc123",
+    "customCode": "my-link",
+    "longUrl": "https://example.com",
+    "clickCount": 42,
+    "hasPassword": false,
+    "expiresAt": null,
+    "createdAt": "2026-05-28T00:00:00"
+  }
+]</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method put">PUT</span>
+          <span class="path">/api/urls/{shortCode}</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Update a short URL's destination, custom code, expiry, password, tags, or UTM params.
+          <div class="pre">{
+  "url": "https://new-destination.com",
+  "customCode": "new-code",
+  "tags": "updated, link"
+}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method delete">DELETE</span>
+          <span class="path">/api/urls/{shortCode}</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">Delete a short URL permanently.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Analytics &amp; Stats</h2>
+    <div class="desc">Retrieve click data, time series, and export analytics.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/stats/{shortCode}</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">Get public click count for a short URL. Used internally for redirection.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/analytics/{shortCode}</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Full analytics for a short URL: total clicks, referrers, browsers, devices, recent clicks.
+          <div class="pre">{
+  "totalClicks": 142,
+  "referrers": { "twitter.com": 45, "direct": 80 },
+  "browsers": { "Chrome": 90, "Firefox": 30 },
+  "devices": { "Desktop": 100, "Mobile": 42 },
+  "recentClicks": [
+    { "timestamp": "2026-05-28T00:00:00", "referer": "twitter.com", "ip": "::1" }
+  ]
+}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/analytics/{shortCode}/timeseries</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Click time series. Use <code>?interval=day</code> (default) or <code>?interval=hour</code>. Optional <code>from</code> and <code>to</code> ISO datetime params to filter the date range.
+          <div class="pre">{
+  "interval": "day",
+  "dataPoints": [
+    { "timestamp": "2026-05-27T00:00:00", "count": 12 },
+    { "timestamp": "2026-05-28T00:00:00", "count": 8 }
+  ]
+}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/analytics/{shortCode}/export/csv</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">Download click data as a CSV file.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>QR Codes</h2>
+    <div class="desc">Generate and download QR codes for short URLs.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/qr/{shortCode}/base64</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">Get QR code as a base64-encoded data URI.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/qr/{shortCode}</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">Download QR code as a PNG image.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Authentication</h2>
+    <div class="desc">User registration, login, logout, and password management.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/auth/register</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="pre">{"name": "John", "email": "john@example.com", "password": "secret123"}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/auth/login</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="pre">{"email": "john@example.com", "password": "secret123"}</div>
+          <div class="pre">{"authenticated": true, "user": {"name": "John", "email": "john@example.com", "role": "USER", "tier": "free"}}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/auth/logout</span>
+          <span class="auth-badge key">Session</span>
+        </div>
+        <div class="endpoint-body">Invalidate the current session.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/auth/me</span>
+          <span class="auth-badge key">Session</span>
+        </div>
+        <div class="endpoint-body">Get current authenticated user info.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/auth/forgot-password</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="pre">{"email": "john@example.com"}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/auth/reset-password</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="pre">{"token": "reset-token", "password": "newpassword123"}</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>API Key Management</h2>
+    <div class="desc">Manage API keys for programmatic access.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/keys</span>
+          <span class="auth-badge key">Session</span>
+        </div>
+        <div class="endpoint-body">List all API keys for the authenticated user.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/keys</span>
+          <span class="auth-badge key">Session</span>
+        </div>
+        <div class="endpoint-body">
+          Create a new API key.
+          <div class="pre">{"name": "CI/CD Pipeline"}</div>
+          <div class="pre">{"key": "sk_live_abc123...", "name": "CI/CD Pipeline", "prefix": "sk_live"}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method delete">DELETE</span>
+          <span class="path">/api/keys/{id}</span>
+          <span class="auth-badge key">Session</span>
+        </div>
+        <div class="endpoint-body">Revoke an API key.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Subscriptions &amp; Plans</h2>
+    <div class="desc">Pricing plans and subscription management.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/plans</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">List all active pricing plans.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/subscriptions/initialize/{planSlug}</span>
+          <span class="auth-badge key">Session</span>
+        </div>
+        <div class="endpoint-body">
+          Initialize a subscription. Optionally include a coupon code.
+          <div class="pre">{"coupon": "SAVE20"}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/subscriptions/verify/{reference}</span>
+          <span class="auth-badge key">Session</span>
+        </div>
+        <div class="endpoint-body">Verify a payment reference and activate the subscription.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/subscriptions/validate-coupon</span>
+          <span class="auth-badge key">Session</span>
+        </div>
+        <div class="endpoint-body">
+          Validate a coupon code for a plan.
+          <div class="pre">{"code": "SAVE20", "planSlug": "pro"}</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Promo Banners &amp; Coupons (Admin)</h2>
+    <div class="desc">Admin-only endpoints for promotional content.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/admin/stats</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Get admin dashboard stats (total URLs, clicks, users).</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/admin/plans</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">List all plans (including inactive).</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/admin/plans</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Create a new plan.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method put">PUT</span>
+          <span class="path">/api/admin/plans/{id}</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Update a plan.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method delete">DELETE</span>
+          <span class="path">/api/admin/plans/{id}</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Delete a plan.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/admin/users</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">List all users.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/admin/users</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Create a new user (with role and tier).</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method delete">DELETE</span>
+          <span class="path">/api/admin/users/{id}</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Delete a user.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/admin/urls</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">List all URLs across all users (admin overview).</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/admin/banners</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Create a new promo banner.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method put">PUT</span>
+          <span class="path">/api/admin/banners/{id}</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Update a promo banner.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method delete">DELETE</span>
+          <span class="path">/api/admin/banners/{id}</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Delete a promo banner.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/banners</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">List active promo banners (public, filtered by date range).</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/admin/coupons</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">List all coupons.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/admin/coupons</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Create a new coupon.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method put">PUT</span>
+          <span class="path">/api/admin/coupons/{id}</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Update a coupon.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method delete">DELETE</span>
+          <span class="path">/api/admin/coupons/{id}</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Delete a coupon.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/admin/settings</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Get app settings (payment, SMTP, branding).</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method put">PUT</span>
+          <span class="path">/api/admin/settings</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Update app settings.</div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/admin/settings/upload</span>
+          <span class="auth-badge key">Admin</span>
+        </div>
+        <div class="endpoint-body">Upload a logo or favicon file for branding.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Resolve &amp; Redirect</h2>
+    <div class="desc">Password-protected link resolution.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/resolve/{shortCode}</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">
+          Resolve a password-protected short URL.
+          <div class="pre">{"password": "mypassword"}</div>
+          <div class="pre">{"longUrl": "https://example.com/secret"}</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Webhooks</h2>
+    <div class="desc">Receive real-time event notifications via HTTP callbacks. Events include <code>link.clicked</code> and <code>test</code>. Payloads are signed with HMAC-SHA256 when a secret is configured.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/webhooks</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Create a new webhook endpoint. The <code>events</code> field accepts a comma-separated list of event types.
+          <table class="param-table">
+            <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+            <tr><td>url</td><td class="type">string</td><td>Yes</td><td>HTTPS callback URL that receives webhook POST requests</td></tr>
+            <tr><td>events</td><td class="type">string</td><td>Yes</td><td>Comma-separated event types (e.g. <code>link.clicked</code>)</td></tr>
+            <tr><td>secret</td><td class="type">string</td><td>No</td><td>HMAC-SHA256 signing secret (auto-generated if omitted)</td></tr>
+          </table>
+          <div class="pre">{
+  "url": "https://myapp.com/webhooks/shrtly",
+  "events": "link.clicked",
+  "secret": "whsec_abc123..."
+}</div>
+          <div class="pre">{
+  "id": 1,
+  "url": "https://myapp.com/webhooks/shrtly",
+  "events": "link.clicked",
+  "active": true,
+  "createdAt": "2026-05-28T00:00:00"
+}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/webhooks</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          List all webhooks for the authenticated user.
+          <div class="pre">[
+  {
+    "id": 1,
+    "url": "https://myapp.com/webhooks/shrtly",
+    "events": "link.clicked",
+    "active": true,
+    "createdAt": "2026-05-28T00:00:00"
+  }
+]</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/webhooks/{id}</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Get a single webhook by ID. The <code>secret</code> field is masked.
+          <div class="pre">{
+  "id": 1,
+  "url": "https://myapp.com/webhooks/shrtly",
+  "events": "link.clicked",
+  "secret": "********",
+  "active": true,
+  "createdAt": "2026-05-28T00:00:00"
+}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method put">PUT</span>
+          <span class="path">/api/webhooks/{id}</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Update a webhook's URL, events, secret, or active status. Only provided fields are updated.
+          <div class="pre">{
+  "url": "https://myapp.com/webhooks/v2",
+  "events": "link.clicked",
+  "active": true
+}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method delete">DELETE</span>
+          <span class="path">/api/webhooks/{id}</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Delete a webhook permanently.
+          <div class="pre">{"success": true}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method post">POST</span>
+          <span class="path">/api/webhooks/{id}/test</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Dispatch a test event to the webhook. The test payload is fire-and-forget (dispatched asynchronously).
+          <div class="pre">{"success": true, "message": "Test webhook dispatched"}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/webhooks/{id}/logs</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          List delivery logs for a webhook, newest first.
+          <div class="pre">[
+  {
+    "id": 1,
+    "event": "link.clicked",
+    "success": true,
+    "responseCode": 200,
+    "errorMessage": null,
+    "createdAt": "2026-05-28T00:00:00"
+  }
+]</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/webhooks/{id}/logs/{logId}</span>
+          <span class="auth-badge key">Key/Session</span>
+        </div>
+        <div class="endpoint-body">
+          Get full detail for a single delivery log, including the request payload and response body.
+          <div class="pre">{
+  "id": 1,
+  "webhookId": 1,
+  "event": "link.clicked",
+  "payload": "{\"event\":\"link.clicked\",\"timestamp\":\"...\",\"data\":{...}}",
+  "responseCode": 200,
+  "responseBody": "{\"ok\":true}",
+  "success": true,
+  "errorMessage": null,
+  "createdAt": "2026-05-28T00:00:00"
+}</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Integrations</h2>
+    <div class="desc">Connect Shrtly with n8n, Make (Integromat), and Zapier for automated workflows.</div>
+
+    <div class="endpoint-card"><div class="endpoint-inner" style="padding:20px">
+      <div style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.7">
+
+        <h3 style="font-size:0.9375rem;font-weight:700;color:var(--text-primary);margin-bottom:6px;margin-top:4px">&rarr; n8n</h3>
+        <p><strong>Trigger: Receive link clicks in n8n</strong></p>
+        <ol style="margin:6px 0 10px 18px;padding:0">
+          <li>In n8n, add a <strong>Webhook</strong> node and copy the production URL (e.g. <code>https://your-n8n.example.com/webhook/xyz</code>).</li>
+          <li>In Shrtly, go to Dashboard &rarr; Webhooks and create a new webhook pointing to that URL with event <code>link.clicked</code>.</li>
+          <li>When someone clicks one of your short links, Shrtly sends an HTTP POST to your n8n webhook with the click data.</li>
+        </ol>
+        <p><strong>Action: Shorten a URL from n8n</strong></p>
+        <ol style="margin:6px 0 0 18px;padding:0">
+          <li>Add an <strong>HTTP Request</strong> node in n8n.</li>
+          <li>Method: <code>POST</code> &mdash; URL: <code>{{baseUrl}}/api/shorten</code></li>
+          <li>Headers: add <code>X-API-Key</code> with your Shrtly API key (create one in Dashboard &rarr; API Keys).</li>
+          <li>Body (JSON): <code>{"url": "{{your_long_url}}"}</code></li>
+          <li>The response contains <code>shortUrl</code> and <code>shortCode</code> for use in downstream nodes.</li>
+        </ol>
+
+        <h3 style="font-size:0.9375rem;font-weight:700;color:var(--text-primary);margin-bottom:6px;margin-top:18px">&rarr; Make (Integromat)</h3>
+        <p><strong>Trigger: Receive link clicks in Make</strong></p>
+        <ol style="margin:6px 0 10px 18px;padding:0">
+          <li>In Make, add a <strong>Webhook</strong> module and choose "Custom Webhook". Copy the webhook URL.</li>
+          <li>In Shrtly, go to Dashboard &rarr; Webhooks and create a new webhook pointing to that URL with event <code>link.clicked</code>.</li>
+          <li>Each click on your short links triggers the Make scenario.</li>
+        </ol>
+        <p><strong>Action: Shorten a URL from Make</strong></p>
+        <ol style="margin:6px 0 0 18px;padding:0">
+          <li>Add an <strong>HTTP</strong> module &rarr; "Make a request".</li>
+          <li>Method: <code>POST</code> &mdash; URL: <code>{{baseUrl}}/api/shorten</code></li>
+          <li>Headers: <code>X-API-Key</code> with your Shrtly API key.</li>
+          <li>Body type: <code>JSON</code> &mdash; <code>{"url": "{{long_url}}"}</code></li>
+        </ol>
+
+        <h3 style="font-size:0.9375rem;font-weight:700;color:var(--text-primary);margin-bottom:6px;margin-top:18px">&rarr; Zapier</h3>
+        <p><strong>Trigger: New link click</strong></p>
+        <ol style="margin:6px 0 10px 18px;padding:0">
+          <li>In Shrtly, go to Dashboard &rarr; Webhooks and create a webhook with event <code>link.clicked</code>.</li>
+          <li>In Zapier, add a <strong>Webhooks by Zapier</strong> trigger &rarr; "Catch Hook".</li>
+          <li>Copy the Zapier webhook URL into Shrtly's webhook URL field and save.</li>
+          <li>Zapier will receive click events in real time.</li>
+        </ol>
+        <p><strong>Action: Create short URL</strong></p>
+        <ol style="margin:6px 0 0 18px;padding:0">
+          <li>In Zapier, add a <strong>Webhooks by Zapier</strong> action &rarr; "POST".</li>
+          <li>URL: <code>{{baseUrl}}/api/shorten</code></li>
+          <li>Headers: <code>X-API-Key</code> with your Shrtly API key.</li>
+          <li>Payload type: <code>JSON</code> &mdash; <code>{"url": "{{long_url}}"}</code></li>
+        </ol>
+        <p style="margin-top:10px">All three platforms support <strong>Bulk Shorten</strong> via <code>POST /api/shorten/bulk</code> and <strong>Analytics</strong> via <code>GET /api/analytics/{code}</code> using the same API key authentication pattern.</p>
+
+      </div>
+    </div></div>
+  </div>
+
+  <div class="section">
+    <h2>Health Check</h2>
+    <div class="desc">Monitor API availability.</div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/api/health</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">
+          Simple health check. Returns the current status and server timestamp.
+          <div class="pre">{"status": "UP", "timestamp": "2026-05-28T12:00:00"}</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-card"><div class="endpoint-inner">
+        <div class="endpoint-row">
+          <span class="method get">GET</span>
+          <span class="path">/actuator/health</span>
+          <span class="auth-badge public">Public</span>
+        </div>
+        <div class="endpoint-body">Spring Actuator health endpoint (same response as <code>/api/health</code>).</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="footer-text">Shrtly API &mdash; Documentation v1.0.0</div>
+</div>
+</body>
+</html>

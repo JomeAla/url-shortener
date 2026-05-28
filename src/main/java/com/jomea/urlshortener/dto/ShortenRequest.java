@@ -13,7 +13,12 @@ public record ShortenRequest(
         String utmMedium,
         String utmCampaign,
         String utmTerm,
-        String utmContent
+        String utmContent,
+        Long folderId,
+        Long workspaceId,
+        String ogTitle,
+        String ogDescription,
+        String ogImage
 ) {
     public ShortenRequest {
         if (tags == null) tags = "";
@@ -22,5 +27,8 @@ public record ShortenRequest(
         if (utmCampaign == null) utmCampaign = "";
         if (utmTerm == null) utmTerm = "";
         if (utmContent == null) utmContent = "";
+        if (ogTitle == null) ogTitle = "";
+        if (ogDescription == null) ogDescription = "";
+        if (ogImage == null) ogImage = "";
     }
 }

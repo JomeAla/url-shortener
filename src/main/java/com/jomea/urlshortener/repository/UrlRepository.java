@@ -41,4 +41,14 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
     long sumClickCountByUserId(@Param("userId") Long userId);
 
     List<Url> findByTagsContainingIgnoreCase(String tag);
+
+    @Query("SELECT u FROM Url u WHERE u.userId = :userId AND u.deletedAt IS NOT NULL ORDER BY u.deletedAt DESC")
+    List<Url> findTrashedByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT u FROM Url u WHERE u.deletedAt IS NOT NULL AND u.deletedAt < :before")
+    List<Url> findDeletedBefore(@Param("before") LocalDateTime before);
+
+    List<Url> findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long userId);
+
+    List<Url> findByUserIdOrderByCreatedAtDesc(Long userId, org.springframework.data.domain.Pageable pageable);
 }
