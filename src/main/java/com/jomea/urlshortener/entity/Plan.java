@@ -49,6 +49,24 @@ public class Plan {
     @Column(nullable = false)
     private boolean apiAccess;
 
+    @Column(name = "has_qr_codes", nullable = false)
+    private boolean hasQrCodes;
+
+    @Column(name = "has_custom_codes", nullable = false)
+    private boolean hasCustomCodes;
+
+    @Column(name = "has_bulk_import", nullable = false)
+    private boolean hasBulkImport;
+
+    @Column(name = "has_advanced_analytics", nullable = false)
+    private boolean hasAdvancedAnalytics;
+
+    @Column(name = "has_webhooks", nullable = false)
+    private boolean hasWebhooks;
+
+    @Column(name = "has_team_access", nullable = false)
+    private boolean hasTeamAccess;
+
     @Column(name = "max_requests_per_minute", nullable = false)
     private int maxRequestsPerMinute = 60;
 
@@ -88,6 +106,18 @@ public class Plan {
     public void setCustomDomains(boolean customDomains) { this.customDomains = customDomains; }
     public boolean isApiAccess() { return apiAccess; }
     public void setApiAccess(boolean apiAccess) { this.apiAccess = apiAccess; }
+    public boolean isHasQrCodes() { return hasQrCodes; }
+    public void setHasQrCodes(boolean hasQrCodes) { this.hasQrCodes = hasQrCodes; }
+    public boolean isHasCustomCodes() { return hasCustomCodes; }
+    public void setHasCustomCodes(boolean hasCustomCodes) { this.hasCustomCodes = hasCustomCodes; }
+    public boolean isHasBulkImport() { return hasBulkImport; }
+    public void setHasBulkImport(boolean hasBulkImport) { this.hasBulkImport = hasBulkImport; }
+    public boolean isHasAdvancedAnalytics() { return hasAdvancedAnalytics; }
+    public void setHasAdvancedAnalytics(boolean hasAdvancedAnalytics) { this.hasAdvancedAnalytics = hasAdvancedAnalytics; }
+    public boolean isHasWebhooks() { return hasWebhooks; }
+    public void setHasWebhooks(boolean hasWebhooks) { this.hasWebhooks = hasWebhooks; }
+    public boolean isHasTeamAccess() { return hasTeamAccess; }
+    public void setHasTeamAccess(boolean hasTeamAccess) { this.hasTeamAccess = hasTeamAccess; }
     public int getMaxRequestsPerMinute() { return maxRequestsPerMinute; }
     public void setMaxRequestsPerMinute(int maxRequestsPerMinute) { this.maxRequestsPerMinute = maxRequestsPerMinute; }
     public String getFeatures() { return features; }

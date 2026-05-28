@@ -96,6 +96,8 @@ public class AdminController {
             .map(p -> new PlanDto(p.getId(), p.getName(), p.getSlug(), p.getDescription(),
                 p.getPrice(), p.getCurrency(), p.getBillingPeriod(), p.getMaxUrls(),
                 p.getMaxClicksPerUrl(), p.isCustomDomains(), p.isApiAccess(),
+                p.isHasQrCodes(), p.isHasCustomCodes(), p.isHasBulkImport(),
+                p.isHasAdvancedAnalytics(), p.isHasWebhooks(), p.isHasTeamAccess(),
                 p.getMaxRequestsPerMinute(), p.getFeatures(),
                 p.getSortOrder(), p.isActive(), p.getCreatedAt()))
             .toList();
@@ -119,6 +121,12 @@ public class AdminController {
             plan.setMaxClicksPerUrl(Integer.parseInt(body.getOrDefault("maxClicksPerUrl", "0").toString()));
             plan.setCustomDomains(Boolean.parseBoolean(body.getOrDefault("customDomains", "false").toString()));
             plan.setApiAccess(Boolean.parseBoolean(body.getOrDefault("apiAccess", "false").toString()));
+            plan.setHasQrCodes(Boolean.parseBoolean(body.getOrDefault("hasQrCodes", "false").toString()));
+            plan.setHasCustomCodes(Boolean.parseBoolean(body.getOrDefault("hasCustomCodes", "false").toString()));
+            plan.setHasBulkImport(Boolean.parseBoolean(body.getOrDefault("hasBulkImport", "false").toString()));
+            plan.setHasAdvancedAnalytics(Boolean.parseBoolean(body.getOrDefault("hasAdvancedAnalytics", "false").toString()));
+            plan.setHasWebhooks(Boolean.parseBoolean(body.getOrDefault("hasWebhooks", "false").toString()));
+            plan.setHasTeamAccess(Boolean.parseBoolean(body.getOrDefault("hasTeamAccess", "false").toString()));
             plan.setFeatures((String) body.getOrDefault("features", "[]"));
             plan.setSortOrder(Integer.parseInt(body.getOrDefault("sortOrder", "0").toString()));
             plan.setActive(Boolean.parseBoolean(body.getOrDefault("active", "true").toString()));
@@ -144,6 +152,12 @@ public class AdminController {
             if (body.containsKey("maxClicksPerUrl")) plan.setMaxClicksPerUrl(Integer.parseInt(body.get("maxClicksPerUrl").toString()));
             if (body.containsKey("customDomains")) plan.setCustomDomains(Boolean.parseBoolean(body.get("customDomains").toString()));
             if (body.containsKey("apiAccess")) plan.setApiAccess(Boolean.parseBoolean(body.get("apiAccess").toString()));
+            if (body.containsKey("hasQrCodes")) plan.setHasQrCodes(Boolean.parseBoolean(body.get("hasQrCodes").toString()));
+            if (body.containsKey("hasCustomCodes")) plan.setHasCustomCodes(Boolean.parseBoolean(body.get("hasCustomCodes").toString()));
+            if (body.containsKey("hasBulkImport")) plan.setHasBulkImport(Boolean.parseBoolean(body.get("hasBulkImport").toString()));
+            if (body.containsKey("hasAdvancedAnalytics")) plan.setHasAdvancedAnalytics(Boolean.parseBoolean(body.get("hasAdvancedAnalytics").toString()));
+            if (body.containsKey("hasWebhooks")) plan.setHasWebhooks(Boolean.parseBoolean(body.get("hasWebhooks").toString()));
+            if (body.containsKey("hasTeamAccess")) plan.setHasTeamAccess(Boolean.parseBoolean(body.get("hasTeamAccess").toString()));
             if (body.containsKey("features")) plan.setFeatures((String) body.get("features"));
             if (body.containsKey("sortOrder")) plan.setSortOrder(Integer.parseInt(body.get("sortOrder").toString()));
             if (body.containsKey("active")) plan.setActive(Boolean.parseBoolean(body.get("active").toString()));
@@ -358,6 +372,9 @@ public class AdminController {
         dto.setSiteDescription(s.getSiteDescription());
         dto.setLogoUrl(s.getLogoUrl());
         dto.setFaviconUrl(s.getFaviconUrl());
+        dto.setAboutContent(s.getAboutContent());
+        dto.setContactContent(s.getContactContent());
+        dto.setContactEmail(s.getContactEmail());
         dto.setUpdatedAt(s.getUpdatedAt());
         dto.setUpdatedBy(s.getUpdatedBy());
         return ResponseEntity.ok(dto);
@@ -474,6 +491,12 @@ public class AdminController {
                 s.setSiteName((String) body.get("siteName"));
             if (body.containsKey("siteDescription"))
                 s.setSiteDescription((String) body.get("siteDescription"));
+            if (body.containsKey("aboutContent"))
+                s.setAboutContent((String) body.get("aboutContent"));
+            if (body.containsKey("contactContent"))
+                s.setContactContent((String) body.get("contactContent"));
+            if (body.containsKey("contactEmail"))
+                s.setContactEmail((String) body.get("contactEmail"));
 
             s.setUpdatedAt(LocalDateTime.now());
 

@@ -30,6 +30,10 @@ public class AppSettingsDto {
     private String logoUrl;
     private String faviconUrl;
 
+    private String aboutContent;
+    private String contactContent;
+    private String contactEmail;
+
     private LocalDateTime updatedAt;
     private String updatedBy;
 
@@ -83,6 +87,12 @@ public class AppSettingsDto {
     public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
     public String getFaviconUrl() { return faviconUrl; }
     public void setFaviconUrl(String faviconUrl) { this.faviconUrl = faviconUrl; }
+    public String getAboutContent() { return aboutContent; }
+    public void setAboutContent(String aboutContent) { this.aboutContent = aboutContent; }
+    public String getContactContent() { return contactContent; }
+    public void setContactContent(String contactContent) { this.contactContent = contactContent; }
+    public String getContactEmail() { return contactEmail; }
+    public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     public String getUpdatedBy() { return updatedBy; }

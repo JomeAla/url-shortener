@@ -27,6 +27,10 @@ High-performance URL shortener with click analytics, user authentication, team w
 - **Payments** — Stripe checkout, Paystack (African markets), coupon/discount system
 - **Promo Campaigns** — Banner announcements, coupon codes for checkout discounts
 - **Link Blocker** — Block malicious/spam URLs by domain/pattern, block logs
+- **Role-Based Access Control** — Granular permissions for admins, editors, and viewers per workspace
+- **Link Expiration** — Set expiry dates and time limits for time-sensitive campaigns
+- **About & Contact Pages** — CMS-managed static pages with editable content from admin settings
+- **Support Ticket System** — Public contact form creates tickets; admin can reply, close, and manage tickets
 
 ## Tech Stack
 
@@ -171,6 +175,21 @@ redis-server
 | `/shorten <url> [alias]` | Shorten a URL |
 | `/mylinks` | List your recent links |
 | `/stats <code>` | Get click stats |
+
+### Tickets & Support
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/tickets` | — | Submit a support ticket |
+| GET | `/api/admin/tickets` | Admin | List all tickets |
+| PUT | `/api/admin/tickets/{id}/reply` | Admin | Reply to & close ticket |
+| PUT | `/api/admin/tickets/{id}/status` | Admin | Update ticket status |
+| DELETE | `/api/admin/tickets/{id}` | Admin | Delete a ticket |
+
+### Pages (CMS)
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/pages/content?page=about` | Get About page content |
+| GET | `/api/pages/content?page=contact` | Get Contact page content |
 
 ### Health
 | Method | Path | Description |

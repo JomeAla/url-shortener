@@ -4,6 +4,7 @@ import com.jomea.urlshortener.entity.ApiKey;
 import com.jomea.urlshortener.entity.User;
 import com.jomea.urlshortener.repository.ApiKeyRepository;
 import com.jomea.urlshortener.repository.UserRepository;
+import com.jomea.urlshortener.service.TierEnforcementService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,10 +29,13 @@ public class ApiKeyController {
 
     private final ApiKeyRepository apiKeyRepository;
     private final UserRepository userRepository;
+    private final TierEnforcementService tierEnforcement;
 
-    public ApiKeyController(ApiKeyRepository apiKeyRepository, UserRepository userRepository) {
+    public ApiKeyController(ApiKeyRepository apiKeyRepository, UserRepository userRepository,
+                            TierEnforcementService tierEnforcement) {
         this.apiKeyRepository = apiKeyRepository;
         this.userRepository = userRepository;
+        this.tierEnforcement = tierEnforcement;
     }
 
     @GetMapping
@@ -52,6 +56,12 @@ public class ApiKeyController {
         if (auth == null || !auth.isAuthenticated())
             return ResponseEntity.status(401).body(Map.of("error", "Login required"));
         User user = userRepository.findByEmail(auth.getName()).orElseThrow();
+
+        try {
+            tierEnforcement.checkApiAccess(user);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
+        }
 
         String name = body.getOrDefault("name", "API Key");
         SecureRandom rng = new SecureRandom();

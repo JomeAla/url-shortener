@@ -4,6 +4,8 @@ import com.jomea.urlshortener.entity.User;
 import com.jomea.urlshortener.entity.Webhook;
 import com.jomea.urlshortener.entity.WebhookLog;
 import com.jomea.urlshortener.repository.UserRepository;
+import com.jomea.urlshortener.entity.User;
+import com.jomea.urlshortener.service.TierEnforcementService;
 import com.jomea.urlshortener.service.WebhookService;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -27,10 +29,13 @@ public class WebhookController {
 
     private final WebhookService webhookService;
     private final UserRepository userRepository;
+    private final TierEnforcementService tierEnforcement;
 
-    public WebhookController(WebhookService webhookService, UserRepository userRepository) {
+    public WebhookController(WebhookService webhookService, UserRepository userRepository,
+                             TierEnforcementService tierEnforcement) {
         this.webhookService = webhookService;
         this.userRepository = userRepository;
+        this.tierEnforcement = tierEnforcement;
     }
 
     private Long getUserId(Authentication auth) {
@@ -43,6 +48,13 @@ public class WebhookController {
     public ResponseEntity<?> create(@RequestBody Map<String, Object> body, Authentication auth) {
         Long userId = getUserId(auth);
         if (userId == null) return ResponseEntity.status(401).body(Map.of("error", "Authentication required"));
+
+        try {
+            User user = userRepository.findById(userId).orElseThrow();
+            tierEnforcement.checkWebhooks(user);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
+        }
 
         String url = (String) body.get("url");
         String eventsRaw = (String) body.get("events");

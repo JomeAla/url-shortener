@@ -85,6 +85,15 @@ public class AppSettings {
     @Column(name = "favicon_url", columnDefinition = "TEXT")
     private String faviconUrl;
 
+    @Column(name = "about_content", columnDefinition = "TEXT")
+    private String aboutContent;
+
+    @Column(name = "contact_content", columnDefinition = "TEXT")
+    private String contactContent;
+
+    @Column(name = "contact_email")
+    private String contactEmail;
+
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
@@ -143,6 +152,12 @@ public class AppSettings {
     public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
     public String getFaviconUrl() { return faviconUrl; }
     public void setFaviconUrl(String faviconUrl) { this.faviconUrl = faviconUrl; }
+    public String getAboutContent() { return aboutContent; }
+    public void setAboutContent(String aboutContent) { this.aboutContent = aboutContent; }
+    public String getContactContent() { return contactContent; }
+    public void setContactContent(String contactContent) { this.contactContent = contactContent; }
+    public String getContactEmail() { return contactEmail; }
+    public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     public String getUpdatedBy() { return updatedBy; }

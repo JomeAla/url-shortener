@@ -84,6 +84,20 @@ public class UrlService {
         User user = getCurrentUser();
         if (user != null) {
             tierEnforcement.checkCanCreateUrl(user);
+            boolean hasAdvanced = customCode != null && !customCode.isBlank()
+                || (password != null && !password.isBlank())
+                || (expiresAt != null && !expiresAt.isBlank())
+                || (utmSource != null && !utmSource.isBlank())
+                || (utmMedium != null && !utmMedium.isBlank())
+                || (utmCampaign != null && !utmCampaign.isBlank())
+                || (utmTerm != null && !utmTerm.isBlank())
+                || (utmContent != null && !utmContent.isBlank())
+                || (ogTitle != null && !ogTitle.isBlank())
+                || (ogDescription != null && !ogDescription.isBlank())
+                || (ogImage != null && !ogImage.isBlank());
+            if (hasAdvanced) {
+                tierEnforcement.checkCustomCodes(user);
+            }
         }
 
         String shortCode;
@@ -167,6 +181,10 @@ public class UrlService {
     }
 
     public List<BulkShortenResponseItem> shortenBulk(List<BulkShortenRequest> requests) {
+        User user = getCurrentUser();
+        if (user != null) {
+            tierEnforcement.checkBulkImport(user);
+        }
         List<BulkShortenResponseItem> results = new ArrayList<>();
         for (int i = 0; i < requests.size(); i++) {
             BulkShortenRequest req = requests.get(i);

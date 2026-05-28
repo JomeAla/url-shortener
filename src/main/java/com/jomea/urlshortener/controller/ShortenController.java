@@ -169,6 +169,8 @@ public class ShortenController {
             .map(p -> new PlanDto(p.getId(), p.getName(), p.getSlug(), p.getDescription(),
                 p.getPrice(), p.getCurrency(), p.getBillingPeriod(), p.getMaxUrls(),
                 p.getMaxClicksPerUrl(), p.isCustomDomains(), p.isApiAccess(),
+                p.isHasQrCodes(), p.isHasCustomCodes(), p.isHasBulkImport(),
+                p.isHasAdvancedAnalytics(), p.isHasWebhooks(), p.isHasTeamAccess(),
                 p.getMaxRequestsPerMinute(), p.getFeatures(),
                 p.getSortOrder(), p.isActive(), p.getCreatedAt()))
             .toList();
